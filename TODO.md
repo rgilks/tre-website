@@ -71,6 +71,10 @@
 - [ ] **Add fallback UI** for non-embeddable sites
 - [ ] **Create overlay logo component** with green glow
 - [ ] **Implement responsive iframe** with proper sandboxing
+- [ ] **Add YouTube video support** - Create `YouTubeEmbed` component
+- [ ] **Update project types** to include `youtubeUrl` field
+- [ ] **Integrate YouTube videos** in project detail pages
+- [ ] **Implement responsive video layout** - 16:9 aspect ratio across devices
 
 ### 3. PWA Features
 
@@ -94,6 +98,7 @@
 - [ ] **Optimize bundle size** for fast loading
 - [ ] **Set up proper caching headers**
 - [ ] **Add performance monitoring**
+- [ ] **Implement lazy loading** for YouTube embeds
 
 ### 6. Testing & Quality
 
@@ -102,6 +107,7 @@
 - [ ] **Validate responsive design** across devices
 - [ ] **Test offline functionality**
 - [ ] **Performance testing** with real data
+- [ ] **Test YouTube embed functionality** across different video formats
 
 ### 7. Deployment & CI/CD
 
@@ -133,6 +139,7 @@
 - **Project grid:** Responsive cards with screenshots
 - **Navigation:** Sticky header with smooth scrolling
 - **Footer:** Simple, clean design
+- **Video integration:** Responsive YouTube embeds with proper spacing
 
 ## 🚀 Performance Targets
 
@@ -155,6 +162,7 @@
 - **Screen reader** compatibility
 - **High contrast** mode support
 - **Focus indicators** for all interactive elements
+- **Video accessibility** - Proper ARIA labels and keyboard controls
 
 ## 📱 PWA Specifications
 
@@ -182,18 +190,21 @@
 1. **Set up GitHub API integration** - Add environment variables and test data fetching
 2. **Create project detail routes** - Build the individual project view pages
 3. **Test with real data** - Verify all components work with actual GitHub repositories
+4. **Add YouTube video support** - Update types and create embed component
 
 ### Short Term (Next 2 Weeks)
 
 1. **Complete PWA implementation** - Manifest, service worker, and offline support
 2. **Add advanced animations** - Scroll-triggered effects and micro-interactions
-3. **Implement project detail views** - Iframe embedding and fallback UI
+3. **Implement project detail views** - Iframe embedding, YouTube videos, and fallback UI
+4. **Test video integration** - Ensure responsive design and performance
 
 ### Medium Term (Next Month)
 
 1. **Deploy to Cloudflare Workers** - Set up production environment
 2. **Add monitoring and analytics** - Track performance and user engagement
 3. **Optimize for production** - Performance tuning and SEO improvements
+4. **Video optimization** - Implement lazy loading and performance improvements
 
 ## 🔧 Technical Notes
 
@@ -204,3 +215,4 @@
 - **Deployment:** Cloudflare Workers with OpenNext
 - **PWA:** Service worker with offline support
 - **Performance:** Image optimization and lazy loading
+- **Video Integration:** YouTube iframe API with responsive design

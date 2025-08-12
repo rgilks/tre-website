@@ -4,6 +4,7 @@ export interface Project {
   fullName: string
   description: string
   homepageUrl?: string
+  youtubeUrl?: string
   htmlUrl: string
   topics: string[]
   language?: string
@@ -21,8 +22,9 @@ export interface ProjectCardProps {
 }
 
 export interface ProjectGridProps {
-  projects: Project[]
-  highlightedProject?: Project
+  projects?: Project[]
+  isLoading?: boolean
+  error?: string | null
 }
 
 export interface ProjectDetailProps {
@@ -42,16 +44,10 @@ export interface GitHubApiResponse {
   forks_count: number
   updated_at: string
   created_at: string
-  owner: {
-    login: string
-    avatar_url: string
-  }
 }
 
 export interface ProjectFilters {
-  search?: string
-  language?: string
-  topic?: string
-  sortBy?: 'updated' | 'stars' | 'forks' | 'created'
-  sortOrder?: 'asc' | 'desc'
+  search: string
+  language: string
+  topic: string
 }
