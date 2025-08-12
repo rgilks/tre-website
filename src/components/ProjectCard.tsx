@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { ProjectCardProps } from '@/types/project'
-import { StarIcon, GitBranchIcon, CalendarIcon } from '@heroicons/react/24/outline'
+import { StarIcon, CodeBracketIcon, CalendarIcon } from '@heroicons/react/24/outline'
 
 export function ProjectCard({ project, isHighlighted }: ProjectCardProps) {
   const formatDate = (dateString: string) => {
@@ -77,7 +77,7 @@ export function ProjectCard({ project, isHighlighted }: ProjectCardProps) {
             </span>
           </div>
           <div className="flex items-center space-x-1">
-            <GitBranchIcon className="w-4 h-4" />
+            <CodeBracketIcon className="w-4 h-4" />
             <span data-testid={`project-forks-${project.id}`}>
               {project.forksCount}
             </span>

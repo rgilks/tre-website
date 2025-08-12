@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { useProjectStore } from '../projectStore'
+import { useProjectStore } from './projectStore'
 import { Project } from '@/types/project'
 
 describe('Project Store', () => {
