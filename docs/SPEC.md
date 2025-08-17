@@ -28,11 +28,11 @@
 ## Project Detail View ✅ IMPLEMENTED
 
 - Clicking a project opens a **dedicated detail route**: `/project/[name]`.
-- **Iframe embedding**: If `homepageUrl` exists, display it in a responsive iframe.
-- **YouTube video support**: If a project has a `youtubeUrl` field, display an embedded YouTube video player above the iframe or as an alternative to the iframe.
+- **Iframe embedding**: Projects are displayed in responsive iframes (all subdomains of tre.systems).
+- **YouTube video support**: If a project has a `youtubeUrl` field, display an embedded YouTube video player above the iframe.
 - **Overlay**: Bottom-right corner shows the TRE logo with a green glow; clicking it returns to the home page.
-- Fallback if iframe disallowed (`X-Frame-Options`): display a styled link to open in new tab.
-- Project detail page also shows description, topics, GitHub button, and YouTube video if available.
+- **Reliable embedding**: All project websites are subdomains (e.g., geno-1.tre.systems) ensuring consistent iframe functionality.
+- Project detail page shows description, topics, GitHub button, and YouTube video if available.
 
 ---
 
@@ -82,7 +82,7 @@ public/
 3. ✅ Each card shows screenshot, description, Website (if available), GitHub.
 4. ✅ Clicking Website button opens `/project/[name]` detail page with iframe.
 5. ✅ If `youtubeUrl` exists, display embedded YouTube video prominently.
-6. ✅ If homepageUrl exists and is embeddable, load in iframe; else show fallback.
+6. ✅ If homepageUrl exists, load in iframe (all subdomains of tre.systems).
 7. ✅ Overlay TRE logo links back to `/`.
 8. ⏳ PWA passes Lighthouse checks: installable, offline home + cached thumbnails.
 9. ⏳ KV caching, cron refresh, images via CF Resizing.

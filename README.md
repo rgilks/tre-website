@@ -62,7 +62,7 @@ npm run nuke        # Clean install (remove node_modules and reinstall)
 - **Animated TRE Logo** - Custom SVG with entrance animations and glow effects
 - **Responsive Design** - Mobile-first approach with terminal-inspired aesthetics
 - **Project Portfolio** - GitHub integration with screenshots and descriptions
-- **Interactive Demos** - Click "Website" button to view projects in embedded iframes
+- **Interactive Demos** - Click "Website" button to view projects in embedded iframes (tre.systems subdomains)
 - **YouTube Videos** - Embedded video support for project demonstrations
 - **PWA Ready** - Installable with offline support
 - **Performance Optimized** - Image optimization and lazy loading

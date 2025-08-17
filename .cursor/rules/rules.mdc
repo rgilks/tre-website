@@ -13,6 +13,7 @@ Always try and improve the type checking.
 Try and avoid duplication between types.
 Use immer in TypeScript where possible to avoid mutation.
 Use Zustand to manage state in React.
+Use Server Actions for server side logic and not API routes.
 Try to keep the state machine simple, consolidated and easy to understand.
 Don't add a logging facility, the console is fine.
 Logging should be sufficient to diagnose problems at all levels but not overdone.
@@ -21,7 +22,7 @@ Please ALWAYS! keep the README file up to date.
 When reviewing a file, should it be broken up? can it be improved? is this functionality in the right location within the project?
 Keep the test coverage high.
 We are using vitest for unit testing.
-Don't use '__tests__' folders, put the tests in the same folder as the code.
+Don't use '**tests**' folders, put the tests in the same folder as the code.
 We are using playwright for end to end testing.
 Don't write unit tests for UI components.
 Add data-testid to all UI components for e2e testing.
@@ -36,4 +37,3 @@ When I just type 'p' that means "proceed"
 Dont give me a list of options to choose, devise the best plan you can and proceed with it.
 Keep track of tasks in the docs/TODO.md file.
 Keep the SPEC.md file up to date.
-

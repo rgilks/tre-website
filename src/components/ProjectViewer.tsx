@@ -8,23 +8,14 @@ import Link from 'next/link'
 
 interface ProjectViewerProps {
   project: Project
-  isEmbeddable: boolean
 }
 
-export function ProjectViewer({ project, isEmbeddable }: ProjectViewerProps) {
-  const [iframeError, setIframeError] = useState(false)
+export function ProjectViewer({ project }: ProjectViewerProps) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    if (isEmbeddable) {
-      setIsLoading(false)
-    }
-  }, [isEmbeddable])
-
-  const handleIframeError = () => {
-    setIframeError(true)
     setIsLoading(false)
-  }
+  }, [])
 
   const handleIframeLoad = () => {
     setIsLoading(false)
@@ -59,60 +50,23 @@ export function ProjectViewer({ project, isEmbeddable }: ProjectViewerProps) {
       <div
         className={`w-full h-full ${project.youtubeUrl ? 'pt-48' : 'pt-20'}`}
       >
-        {isEmbeddable && !iframeError ? (
-          <div className="relative w-full h-full">
-            {isLoading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-tre-black/50 z-10">
-                <div className="text-tre-green font-mono">
-                  Loading project...
-                </div>
+        <div className="relative w-full h-full">
+          {isLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-tre-black/50 z-10">
+              <div className="text-tre-green font-mono">
+                Loading project...
               </div>
-            )}
+            </div>
+          )}
             <iframe
               data-testid={`project-iframe-${project.id}`}
               src={project.homepageUrl}
               className="w-full h-full border-0"
               sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
-              onError={handleIframeError}
               onLoad={handleIframeLoad}
               title={`${project.name} Demo`}
             />
-          </div>
-        ) : (
-          <div className="flex items-center justify-center h-full bg-tre-black/50">
-            <div className="text-center p-8 max-w-2xl">
-              <h2 className="text-2xl font-bold text-tre-green font-mono mb-4">
-                Demo Not Available
-              </h2>
-              <p className="text-tre-white/80 mb-6">
-                This project cannot be embedded directly. Please visit the
-                website to see it in action.
-              </p>
-              <div className="flex space-x-4 justify-center">
-                {project.homepageUrl && (
-                  <a
-                    data-testid={`project-external-website-${project.id}`}
-                    href={project.homepageUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-6 py-3 bg-tre-green text-tre-black font-bold font-mono rounded hover:bg-tre-green-dark transition-colors duration-200"
-                  >
-                    Open in New Tab
-                  </a>
-                )}
-                <a
-                  data-testid={`project-github-${project.id}`}
-                  href={project.htmlUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-6 py-3 border border-tre-green text-tre-green font-bold font-mono rounded hover:bg-tre-green hover:text-tre-black transition-all duration-200"
-                >
-                  View on GitHub
-                </a>
-              </div>
-            </div>
-          </div>
-        )}
+        </div>
       </div>
 
       {/* Overlay TRE Logo - Bottom Right */}

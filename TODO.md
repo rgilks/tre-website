@@ -67,8 +67,7 @@
 ### 2. Project Detail View
 
 - [x] **Create project detail route** (`/project/[name]`)
-- [x] **Build iframe embedder** for project websites
-- [x] **Add fallback UI** for non-embeddable sites
+- [x] **Build iframe embedder** for project websites (tre.systems subdomains)
 - [x] **Create overlay logo component** with green glow
 - [x] **Implement responsive iframe** with proper sandboxing
 - [x] **Add YouTube video support** - Create `YouTubeEmbed` component
