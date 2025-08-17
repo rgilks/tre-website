@@ -2,7 +2,11 @@
 
 import { motion } from 'framer-motion'
 import { ProjectCardProps } from '@/types/project'
-import { StarIcon, CodeBracketIcon, CalendarIcon } from '@heroicons/react/24/outline'
+import {
+  StarIcon,
+  CodeBracketIcon,
+  CalendarIcon,
+} from '@heroicons/react/24/outline'
 
 export function ProjectCard({ project, isHighlighted }: ProjectCardProps) {
   const formatDate = (dateString: string) => {
@@ -22,9 +26,10 @@ export function ProjectCard({ project, isHighlighted }: ProjectCardProps) {
       whileHover={{ y: -5 }}
       className={`
         relative bg-tre-black/50 border rounded-lg p-6 cursor-pointer transition-all duration-200
-        ${isHighlighted 
-          ? 'border-tre-green shadow-lg shadow-tre-green/25 bg-gradient-to-br from-tre-black/80 to-tre-green/5' 
-          : 'border-tre-green/20 hover:border-tre-green/40 hover:bg-tre-black/70'
+        ${
+          isHighlighted
+            ? 'border-tre-green shadow-lg shadow-tre-green/25 bg-gradient-to-br from-tre-black/80 to-tre-green/5'
+            : 'border-tre-green/20 hover:border-tre-green/40 hover:bg-tre-black/70'
         }
       `}
     >
@@ -33,25 +38,25 @@ export function ProjectCard({ project, isHighlighted }: ProjectCardProps) {
           Currently Working On
         </div>
       )}
-      
+
       <div className="mb-4">
-        <h3 
+        <h3
           data-testid={`project-title-${project.id}`}
           className="text-xl font-bold text-tre-green font-mono mb-2 line-clamp-2"
         >
           {project.name}
         </h3>
-        <p 
+        <p
           data-testid={`project-description-${project.id}`}
           className="text-tre-white/80 text-sm line-clamp-3 leading-relaxed"
         >
           {project.description}
         </p>
       </div>
-      
+
       <div className="mb-4">
         <div className="flex flex-wrap gap-2">
-          {project.topics.slice(0, 3).map((topic) => (
+          {project.topics.slice(0, 3).map(topic => (
             <span
               key={topic}
               data-testid={`project-topic-${project.id}-${topic}`}
@@ -67,7 +72,7 @@ export function ProjectCard({ project, isHighlighted }: ProjectCardProps) {
           )}
         </div>
       </div>
-      
+
       <div className="flex items-center justify-between text-sm text-tre-white/60 mb-4">
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-1">
@@ -90,16 +95,14 @@ export function ProjectCard({ project, isHighlighted }: ProjectCardProps) {
           </span>
         </div>
       </div>
-      
+
       <div className="flex space-x-2">
         {project.homepageUrl && (
           <a
             data-testid={`project-website-${project.id}`}
-            href={project.homepageUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={`/project/${project.name}`}
             className="flex-1 px-4 py-2 bg-tre-green text-tre-black font-bold font-mono rounded text-center hover:bg-tre-green-dark transition-colors duration-200"
-            onClick={(e) => e.stopPropagation()}
+            onClick={e => e.stopPropagation()}
           >
             Website
           </a>
@@ -112,7 +115,7 @@ export function ProjectCard({ project, isHighlighted }: ProjectCardProps) {
           className={`px-4 py-2 border border-tre-green text-tre-green font-bold font-mono rounded text-center hover:bg-tre-green hover:text-tre-black transition-all duration-200 ${
             project.homepageUrl ? 'flex-1' : 'w-full'
           }`}
-          onClick={(e) => e.stopPropagation()}
+          onClick={e => e.stopPropagation()}
         >
           GitHub
         </a>

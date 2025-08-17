@@ -44,10 +44,13 @@ export interface GitHubApiResponse {
   forks_count: number
   updated_at: string
   created_at: string
+  private: boolean
 }
 
 export interface ProjectFilters {
   search: string
   language: string
   topic: string
+  sortBy?: 'stars' | 'forks' | 'created' | 'updated'
+  sortOrder?: 'asc' | 'desc'
 }

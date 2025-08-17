@@ -66,15 +66,15 @@
 
 ### 2. Project Detail View
 
-- [ ] **Create project detail route** (`/project/[name]`)
-- [ ] **Build iframe embedder** for project websites
-- [ ] **Add fallback UI** for non-embeddable sites
-- [ ] **Create overlay logo component** with green glow
-- [ ] **Implement responsive iframe** with proper sandboxing
-- [ ] **Add YouTube video support** - Create `YouTubeEmbed` component
-- [ ] **Update project types** to include `youtubeUrl` field
-- [ ] **Integrate YouTube videos** in project detail pages
-- [ ] **Implement responsive video layout** - 16:9 aspect ratio across devices
+- [x] **Create project detail route** (`/project/[name]`)
+- [x] **Build iframe embedder** for project websites
+- [x] **Add fallback UI** for non-embeddable sites
+- [x] **Create overlay logo component** with green glow
+- [x] **Implement responsive iframe** with proper sandboxing
+- [x] **Add YouTube video support** - Create `YouTubeEmbed` component
+- [x] **Update project types** to include `youtubeUrl` field
+- [x] **Integrate YouTube videos** in project detail pages
+- [x] **Implement responsive video layout** - 16:9 aspect ratio across devices
 
 ### 3. PWA Features
 

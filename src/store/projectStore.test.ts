@@ -15,7 +15,11 @@ describe('Project Store', () => {
     expect(state.highlightedProject).toBeNull()
     expect(state.isLoading).toBe(false)
     expect(state.error).toBeNull()
-    expect(state.filters).toEqual({})
+    expect(state.filters).toEqual({
+      search: '',
+      language: '',
+      topic: '',
+    })
   })
 
   it('should set projects and auto-highlight most recent', () => {
@@ -173,7 +177,11 @@ describe('Project Store', () => {
     useProjectStore.getState().clearFilters()
     
     const state = useProjectStore.getState()
-    expect(state.filters).toEqual({})
+    expect(state.filters).toEqual({
+      search: '',
+      language: '',
+      topic: '',
+    })
     expect(state.filteredProjects).toEqual(mockProjects)
   })
 
@@ -207,6 +215,10 @@ describe('Project Store', () => {
     expect(state.highlightedProject).toBeNull()
     expect(state.isLoading).toBe(false)
     expect(state.error).toBeNull()
-    expect(state.filters).toEqual({})
+    expect(state.filters).toEqual({
+      search: '',
+      language: '',
+      topic: '',
+    })
   })
 })

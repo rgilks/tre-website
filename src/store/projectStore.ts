@@ -27,11 +27,15 @@ const initialState: ProjectState = {
   highlightedProject: null,
   isLoading: false,
   error: null,
-  filters: {},
+  filters: {
+    search: '',
+    language: '',
+    topic: '',
+  },
 }
 
 export const useProjectStore = create<ProjectState & ProjectActions>()(
-  immer((set, get) => ({
+  immer((set) => ({
     ...initialState,
 
     setProjects: (projects) =>
@@ -126,7 +130,11 @@ export const useProjectStore = create<ProjectState & ProjectActions>()(
 
     clearFilters: () =>
       set((state) => {
-        state.filters = {}
+        state.filters = {
+          search: '',
+          language: '',
+          topic: '',
+        }
         state.filteredProjects = state.projects
       }),
 

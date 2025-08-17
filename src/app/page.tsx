@@ -1,5 +1,4 @@
 import { Suspense } from 'react'
-import { TRELogo } from '@/components/TRELogo'
 import { ProjectGrid } from '@/components/ProjectGrid'
 import { HeroSection } from '@/components/HeroSection'
 
@@ -43,7 +42,7 @@ export default function HomePage() {
             Get In Touch
           </h2>
           <p className="text-xl text-tre-white/80 max-w-2xl mx-auto mb-8">
-            Ready to bring your ideas to life? Let's discuss how we can help you 
+            Ready to bring your ideas to life? Let&apos;s discuss how we can help you 
             achieve your engineering goals.
           </p>
           <div className="flex justify-center space-x-6">

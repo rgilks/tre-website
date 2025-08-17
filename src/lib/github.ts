@@ -9,9 +9,9 @@ export async function fetchGitHubProjects(): Promise<Project[]> {
       `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`,
       {
         headers: {
-          'Accept': 'application/vnd.github.v3+json',
-          'Authorization': process.env.GITHUB_TOKEN 
-            ? `token ${process.env.GITHUB_TOKEN}` 
+          Accept: 'application/vnd.github.v3+json',
+          Authorization: process.env.GITHUB_TOKEN
+            ? `token ${process.env.GITHUB_TOKEN}`
             : '',
         },
         next: { revalidate: 3600 }, // Cache for 1 hour
@@ -19,15 +19,17 @@ export async function fetchGitHubProjects(): Promise<Project[]> {
     )
 
     if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.status} ${response.statusText}`)
+      throw new Error(
+        `GitHub API error: ${response.status} ${response.statusText}`
+      )
     }
 
     const repos: GitHubApiResponse[] = await response.json()
-    
+
     // Filter for public repos and transform to our domain model
     const projects = repos
-      .filter((repo) => !repo.private)
-      .map((repo) => ({
+      .filter(repo => !repo.private)
+      .map(repo => ({
         id: repo.id.toString(),
         name: repo.name,
         fullName: repo.full_name,
@@ -56,19 +58,21 @@ export async function fetchGitHubProjects(): Promise<Project[]> {
   }
 }
 
-export async function fetchProjectScreenshots(projectName: string): Promise<string[]> {
+export async function fetchProjectScreenshots(
+  projectName: string
+): Promise<string[]> {
   try {
     // This would integrate with your screenshot storage system
     // For now, returning empty array - implement based on your setup
     const screenshotUrls: string[] = []
-    
+
     // Example implementation:
     // const response = await fetch(`/api/screenshots/${projectName}`)
     // if (response.ok) {
     //   const screenshots = await response.json()
     //   return screenshots.urls
     // }
-    
+
     return screenshotUrls
   } catch (error) {
     console.error(`Error fetching screenshots for ${projectName}:`, error)
@@ -80,21 +84,26 @@ export async function checkIframeEmbeddable(url: string): Promise<boolean> {
   try {
     const response = await fetch(url, { method: 'HEAD' })
     const xFrameOptions = response.headers.get('x-frame-options')
-    const contentSecurityPolicy = response.headers.get('content-security-policy')
-    
+    const contentSecurityPolicy = response.headers.get(
+      'content-security-policy'
+    )
+
     // Check if embedding is explicitly blocked
     if (xFrameOptions === 'DENY' || xFrameOptions === 'SAMEORIGIN') {
       return false
     }
-    
+
     // Check CSP frame-ancestors directive
-    if (contentSecurityPolicy && contentSecurityPolicy.includes('frame-ancestors')) {
-      if (contentSecurityPolicy.includes('frame-ancestors \'none\'')) {
+    if (
+      contentSecurityPolicy &&
+      contentSecurityPolicy.includes('frame-ancestors')
+    ) {
+      if (contentSecurityPolicy.includes("frame-ancestors 'none'")) {
         return false
       }
       // Could add more sophisticated CSP parsing here
     }
-    
+
     return true
   } catch (error) {
     console.error(`Error checking iframe embeddability for ${url}:`, error)

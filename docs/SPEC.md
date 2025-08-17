@@ -25,12 +25,12 @@
 
 ---
 
-## Project Detail View
+## Project Detail View ✅ IMPLEMENTED
 
 - Clicking a project opens a **dedicated detail route**: `/project/[name]`.
 - **Iframe embedding**: If `homepageUrl` exists, display it in a responsive iframe.
 - **YouTube video support**: If a project has a `youtubeUrl` field, display an embedded YouTube video player above the iframe or as an alternative to the iframe.
-- **Overlay**: Bottom-left corner shows the TRE logo with a green glow; clicking it returns to the home page.
+- **Overlay**: Bottom-right corner shows the TRE logo with a green glow; clicking it returns to the home page.
 - Fallback if iframe disallowed (`X-Frame-Options`): display a styled link to open in new tab.
 - Project detail page also shows description, topics, GitHub button, and YouTube video if available.
 
@@ -56,13 +56,12 @@ _(unchanged from previous spec except for PWA and project detail additions)_
 app/
   project/[name]/page.tsx  // Server component: loads project details, shows iframe or fallback
 components/
-  ProjectDetail.tsx        // Contains iframe, YouTube video, and overlay logo link
-  OverlayLogo.tsx          // Positioned bottom-left, links back to home
+  ProjectViewer.tsx        // Contains iframe, YouTube video, and overlay logo link
   YouTubeEmbed.tsx         // Responsive YouTube video embed component
-  PWAInstallPrompt.tsx     // Optional install prompt UI
+  TRELogo.tsx              // TRE logo component used in overlay
 public/
-  manifest.json            // PWA manifest
-  icons/                   // PWA icons in multiple sizes
+  manifest.json            // PWA manifest (TODO)
+  icons/                   // PWA icons in multiple sizes (TODO)
 ```
 
 ---
@@ -78,17 +77,17 @@ public/
 
 ## Acceptance Criteria (Updated)
 
-1. Home renders with hero + project list.
-2. Most recent project highlighted.
-3. Each card shows screenshot, description, Website (if available), GitHub.
-4. Clicking a card opens `/project/[name]` detail page.
-5. If `youtubeUrl` exists, display embedded YouTube video prominently.
-6. If homepageUrl exists and is embeddable, load in iframe; else show fallback.
-7. Overlay TRE logo links back to `/`.
-8. PWA passes Lighthouse checks: installable, offline home + cached thumbnails.
-9. KV caching, cron refresh, images via CF Resizing.
-10. Brand: black, terminal green, white accents.
-11. Deployed at [https://tre.systems](https://tre.systems).
+1. ✅ Home renders with hero + project list.
+2. ✅ Most recent project highlighted.
+3. ✅ Each card shows screenshot, description, Website (if available), GitHub.
+4. ✅ Clicking Website button opens `/project/[name]` detail page with iframe.
+5. ✅ If `youtubeUrl` exists, display embedded YouTube video prominently.
+6. ✅ If homepageUrl exists and is embeddable, load in iframe; else show fallback.
+7. ✅ Overlay TRE logo links back to `/`.
+8. ⏳ PWA passes Lighthouse checks: installable, offline home + cached thumbnails.
+9. ⏳ KV caching, cron refresh, images via CF Resizing.
+10. ✅ Brand: black, terminal green, white accents.
+11. ⏳ Deployed at [https://tre.systems](https://tre.systems).
 
 ---
 

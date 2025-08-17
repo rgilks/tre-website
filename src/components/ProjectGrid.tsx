@@ -6,7 +6,15 @@ import { useEffect } from 'react'
 import { fetchGitHubProjects } from '@/lib/github'
 
 export function ProjectGrid() {
-  const { projects, filteredProjects, isLoading, error, setProjects, setLoading, setError } = useProjectStore()
+  const {
+    projects,
+    filteredProjects,
+    isLoading,
+    error,
+    setProjects,
+    setLoading,
+    setError,
+  } = useProjectStore()
 
   useEffect(() => {
     async function loadProjects() {
@@ -16,7 +24,9 @@ export function ProjectGrid() {
           const fetchedProjects = await fetchGitHubProjects()
           setProjects(fetchedProjects)
         } catch (err) {
-          setError(err instanceof Error ? err.message : 'Failed to load projects')
+          setError(
+            err instanceof Error ? err.message : 'Failed to load projects'
+          )
         } finally {
           setLoading(false)
         }
@@ -30,7 +40,10 @@ export function ProjectGrid() {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[...Array(6)].map((_, i) => (
-          <div key={i} className="bg-tre-black/50 border border-tre-green/20 rounded-lg p-6 animate-pulse">
+          <div
+            key={i}
+            className="bg-tre-black/50 border border-tre-green/20 rounded-lg p-6 animate-pulse"
+          >
             <div className="h-4 bg-tre-green/20 rounded mb-4"></div>
             <div className="h-3 bg-tre-green/20 rounded mb-2"></div>
             <div className="h-3 bg-tre-green/20 rounded mb-4"></div>
@@ -47,7 +60,9 @@ export function ProjectGrid() {
   if (error) {
     return (
       <div className="text-center py-12">
-        <div className="text-tre-red text-xl mb-4">⚠️ Error loading projects</div>
+        <div className="text-tre-red text-xl mb-4">
+          ⚠️ Error loading projects
+        </div>
         <p className="text-tre-white/70 mb-6">{error}</p>
         <button
           onClick={() => window.location.reload()}
@@ -71,9 +86,9 @@ export function ProjectGrid() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {filteredProjects.map((project, index) => (
-        <ProjectCard 
-          key={project.id} 
-          project={project} 
+        <ProjectCard
+          key={project.id}
+          project={project}
           isHighlighted={index === 0}
         />
       ))}
