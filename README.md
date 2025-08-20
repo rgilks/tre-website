@@ -33,6 +33,7 @@ export GITHUB_TOKEN="<your_token>" # classic or fine-grained PAT with at least p
 ```
 
 Notes:
+
 - If `GITHUB_TOKEN` is set, it will be sent as `Authorization: token <PAT>` (works for classic and fine-grained tokens).
 - On a 401 with a provided token, the app retries unauthenticated automatically for resiliency.
 - If `GITHUB_TOKEN` is not set, requests are unauthenticated (no Authorization header), which may hit rate limits but should not 401.
@@ -71,7 +72,7 @@ npm run nuke        # Clean install (remove node_modules and reinstall)
 - **Styling:** Tailwind CSS v4 with custom animations
 - **State Management:** Zustand with Immer
 - **Testing:** Vitest for unit tests, Playwright for e2e
-- **Deployment:** Cloudflare Workers with OpenNext
+- **Deployment:** Cloudflare Pages using `@cloudflare/next-on-pages`
 - **PWA:** Service worker with offline support
 - **Video Integration:** YouTube iframe API with responsive design
 
@@ -97,6 +98,41 @@ To learn more about the technologies used:
 - [Tailwind CSS](https://tailwindcss.com/docs) - utility-first CSS framework
 - [Zustand](https://github.com/pmndrs/zustand) - state management
 - [Framer Motion](https://www.framer.com/motion/) - animation library
+
+## ☁️ Deploying to Cloudflare Workers (OpenNext)
+
+This repo is configured to deploy with **OpenNext** to **Cloudflare Workers** (Pages-style static assets served by Workers).
+
+### Prerequisites
+
+- Create a Cloudflare Pages project (build command will be handled by the GitHub Action).
+- Generate a Cloudflare API token with Pages:Edit and Account:Read permissions.
+
+### GitHub Secrets
+
+Add these repository secrets:
+
+- `CLOUDFLARE_API_TOKEN`: API token with Pages permissions
+- `CLOUDFLARE_ACCOUNT_ID`: Your Cloudflare account ID
+  (No Pages project needed; deployment uses `wrangler deploy`.)
+
+### Build locally (optional)
+
+```bash
+npm install
+npm run build:cf
+# Outputs in `.open-next/` (assets + server functions)
+```
+
+### CI/CD
+
+On push to `main`, the workflow in `.github/workflows/deploy.yml` will:
+
+1. Install deps and run `npm run check`
+2. Build with `open-next --platform cloudflare`
+3. Deploy Worker + assets with `wrangler deploy`
+
+This setup mirrors the approach in the Royal Game of Ur project, which also uses Next.js Server Actions on Cloudflare Pages. See the reference repository for structure and scripts: [`rgilks/rgou-cloudflare`](https://github.com/rgilks/rgou-cloudflare).
 
 ## 📝 License
 

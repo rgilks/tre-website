@@ -110,9 +110,10 @@
 
 ### 7. Deployment & CI/CD
 
-- [ ] **Configure Cloudflare Workers** environment
-- [ ] **Set up build pipeline** with OpenNext
-- [ ] **Configure custom domain** (tre.systems)
+- [x] **Configure Cloudflare Workers** environment
+- [x] **Set up build pipeline** with OpenNext (GitHub Actions + Wrangler)
+- [x] **Configure domain routing** (tre.systems, www.tre.systems in `wrangler.toml`)
+- [ ] **Attach custom domain in Cloudflare** (ensure proxied DNS and bind Worker)
 - [ ] **Set up monitoring** and error tracking
 - [ ] **Implement staging environment**
 

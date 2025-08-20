@@ -1,0 +1,39 @@
+name: Deploy to Cloudflare Workers (OpenNext)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run checks (lint, types, unit tests)
+        run: npm run check
+
+      - name: Build with OpenNext (Cloudflare)
+        run: npx open-next@3.1.3 build --platform cloudflare
+
+      - name: Publish to Cloudflare Workers with Wrangler
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler deploy --account-id $CLOUDFLARE_ACCOUNT_ID --message "${{ github.sha }}" --minify

@@ -1,0 +1,9 @@
+name = "tre-website"
+main = ".open-next/server-functions/default/index.mjs"
+compatibility_date = "2025-07-18"
+workers_dev = true
+
+[site]
+bucket = ".open-next/assets"
+
+routes = [{ pattern = "tre.systems/*" }, { pattern = "www.tre.systems/*" }]
