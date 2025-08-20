@@ -17,3 +17,7 @@ head_sampling_rate = 1
 [[routes]]
 pattern = "tre.systems/*"
 zone_name = "tre.systems"
+
+[[routes]]
+pattern = "www.tre.systems/*"
+zone_name = "tre.systems"
