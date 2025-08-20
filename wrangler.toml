@@ -1,9 +1,20 @@
 name = "tre-website"
-main = ".open-next/server-functions/default/index.mjs"
-compatibility_date = "2025-07-18"
-workers_dev = true
+main = ".open-next/worker.js"
+compatibility_date = "2025-06-14"
+compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
+account_id = "571f130502618993d848f58d27ae288d"
 
-[site]
-bucket = ".open-next/assets"
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
 
-routes = [{ pattern = "tre.systems/*" }, { pattern = "www.tre.systems/*" }]
+[vars]
+ENVIRONMENT = "production"
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+[[routes]]
+pattern = "tre.systems/*"
+zone_name = "tre.systems"

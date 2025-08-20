@@ -45,7 +45,7 @@
 
 - [x] **Add data-testid attributes** to all UI components for e2e testing
 - [x] **Implement proper error boundaries** and loading states
-- [x] **Follow coding rules** - No __tests__ folders, proper client/server separation
+- [x] **Follow coding rules** - No **tests** folders, proper client/server separation
 - [x] **Ensure all linting issues resolved** - Clean build and development
 
 ## 🔄 In Progress

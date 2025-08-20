@@ -37,3 +37,4 @@ When I just type 'p' that means "proceed"
 Dont give me a list of options to choose, devise the best plan you can and proceed with it.
 Keep track of tasks in the docs/TODO.md file.
 Keep the SPEC.md file up to date.
+Never use Cloudflare Pages, only workers.
