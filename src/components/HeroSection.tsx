@@ -17,8 +17,8 @@ export function HeroSection() {
           className="mb-8"
         >
           <TRELogo
-            width={120}
-            height={120}
+            width={600}
+            height={600}
             className="mx-auto mb-6 animate-glow"
           />
         </motion.div>

@@ -20,6 +20,24 @@ npm start
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## 🔐 GitHub API configuration
+
+This site lists repositories via the GitHub REST API. You can run it without authentication (low rate limits), or configure a token for higher limits.
+
+Environment variables:
+
+```bash
+# Optional: increases rate limits
+export GITHUB_USERNAME="rgilks"    # or your GitHub username
+export GITHUB_TOKEN="<your_token>" # classic or fine-grained PAT with at least public repo read
+```
+
+Notes:
+- If `GITHUB_TOKEN` is set, it will be sent as `Authorization: token <PAT>` (works for classic and fine-grained tokens).
+- On a 401 with a provided token, the app retries unauthenticated automatically for resiliency.
+- If `GITHUB_TOKEN` is not set, requests are unauthenticated (no Authorization header), which may hit rate limits but should not 401.
+- Make sure the token has not expired and has at least public repo read permissions.
+
 ## 📚 Available Scripts
 
 ```bash

@@ -5,18 +5,58 @@ const GITHUB_USERNAME = process.env.GITHUB_USERNAME || 'rgilks'
 
 export async function fetchGitHubProjects(): Promise<Project[]> {
   try {
-    const response = await fetch(
-      `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`,
-      {
-        headers: {
-          Accept: 'application/vnd.github.v3+json',
-          Authorization: process.env.GITHUB_TOKEN
-            ? `token ${process.env.GITHUB_TOKEN}`
-            : '',
-        },
-        next: { revalidate: 3600 }, // Cache for 1 hour
+    const baseHeaders: Record<string, string> = {
+      Accept: 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+      'User-Agent': 'tre-website',
+    }
+
+    // Prepare auth headers if a token is provided. Trim to avoid invisible
+    // whitespace issues from copy/paste into .env files.
+    const rawToken = process.env.GITHUB_TOKEN
+    const token = typeof rawToken === 'string' ? rawToken.trim() : undefined
+    const authHeaders: Record<string, string> = { ...baseHeaders }
+    if (token) {
+      authHeaders.Authorization = `token ${token}`
+    }
+
+    const url = `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`
+
+    // First attempt: with auth if provided
+    let response = await fetch(url, {
+      headers: authHeaders,
+      next: { revalidate: 3600 }, // Cache for 1 hour
+    })
+
+    // If token was provided but is invalid/expired (401), try Bearer scheme (for some environments),
+    // then retry unauthenticated for resiliency
+    if (!response.ok && response.status === 401 && token) {
+      // Retry with Bearer scheme
+      const bearerHeaders: Record<string, string> = {
+        ...baseHeaders,
+        Authorization: `Bearer ${token}`,
       }
-    )
+      let bearerResponse: Response | undefined
+      try {
+        bearerResponse = await fetch(url, {
+          headers: bearerHeaders,
+          next: { revalidate: 3600 },
+        })
+      } catch {
+        // ignore network errors and proceed to unauthenticated fallback
+      }
+      if (bearerResponse && bearerResponse.ok) {
+        response = bearerResponse
+      } else {
+        console.error(
+          'GitHub API returned 401 with provided token. Falling back to unauthenticated request. Ensure GITHUB_TOKEN is valid/authorized.'
+        )
+        response = await fetch(url, {
+          headers: baseHeaders,
+          next: { revalidate: 3600 },
+        })
+      }
+    }
 
     if (!response.ok) {
       throw new Error(
