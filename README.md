@@ -83,12 +83,39 @@ npm run nuke        # Clean install (remove node_modules and reinstall)
 - **Project Portfolio** - GitHub integration with screenshots and descriptions
 - **Interactive Demos** - Click "Website" button to view projects in embedded iframes (tre.systems subdomains)
 - **YouTube Videos** - Embedded video support for project demonstrations
-- **PWA Ready** - Installable with offline support
+- **PWA Ready** - Fully installable Progressive Web App with offline support
 - **Performance Optimized** - Image optimization and lazy loading
+- **Offline Capable** - Service worker caches critical assets and provides offline fallbacks
 
 ## 🌐 Live Demo
 
 Visit [tre.systems](https://tre.systems) to see the live portfolio.
+
+## 📱 PWA Features
+
+This website is a fully functional Progressive Web App (PWA) that provides:
+
+- **Installable** - Add to home screen on mobile and desktop
+- **Offline Support** - Access previously visited pages without internet
+- **Fast Loading** - Intelligent caching strategies for optimal performance
+- **Native App Experience** - Standalone mode with custom theme colors
+
+### PWA Testing
+
+```bash
+# Run PWA audit with Lighthouse
+npm run pwa:audit
+
+# Generate full Lighthouse report
+npm run pwa:test
+```
+
+### PWA Components
+
+- **Service Worker** (`/public/sw.js`) - Handles caching and offline functionality
+- **Web App Manifest** (`/public/manifest.webmanifest`) - Defines app appearance and behavior
+- **Install Prompt** - Smart banner for PWA installation
+- **Offline Page** - Graceful fallback when offline
 
 ## 📖 Learn More
 

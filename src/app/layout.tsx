@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { TRELogo } from '@/components/TRELogo'
+import { PWAProvider } from '@/components/PWAProvider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -49,50 +50,52 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-icon.png" />
       </head>
       <body className={`${inter.className} bg-tre-black text-tre-white antialiased`}>
-        <div className="min-h-screen flex flex-col">
-          <header className="border-b border-tre-green/20 bg-tre-black/95 backdrop-blur-sm sticky top-0 z-50">
-            <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <TRELogo width={40} height={40} className="animate-fade-in" />
-                <h1 className="text-2xl font-bold text-tre-green font-mono">
-                  Total Reality Engineering
-                </h1>
+        <PWAProvider>
+          <div className="min-h-screen flex flex-col">
+            <header className="border-b border-tre-green/20 bg-tre-black/95 backdrop-blur-sm sticky top-0 z-50">
+              <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <TRELogo width={40} height={40} className="animate-fade-in" />
+                  <h1 className="text-2xl font-bold text-tre-green font-mono">
+                    Total Reality Engineering
+                  </h1>
+                </div>
+                <nav className="hidden md:flex items-center space-x-6">
+                  <a 
+                    href="#projects" 
+                    className="text-tre-white hover:text-tre-green transition-colors duration-200 font-mono"
+                  >
+                    Projects
+                  </a>
+                  <a 
+                    href="#about" 
+                    className="text-tre-white hover:text-tre-green transition-colors duration-200 font-mono"
+                  >
+                    About
+                  </a>
+                  <a 
+                    href="#contact" 
+                    className="text-tre-white hover:text-tre-green transition-colors duration-200 font-mono"
+                  >
+                    Contact
+                  </a>
+                </nav>
               </div>
-              <nav className="hidden md:flex items-center space-x-6">
-                <a 
-                  href="#projects" 
-                  className="text-tre-white hover:text-tre-green transition-colors duration-200 font-mono"
-                >
-                  Projects
-                </a>
-                <a 
-                  href="#about" 
-                  className="text-tre-white hover:text-tre-green transition-colors duration-200 font-mono"
-                >
-                  About
-                </a>
-                <a 
-                  href="#contact" 
-                  className="text-tre-white hover:text-tre-green transition-colors duration-200 font-mono"
-                >
-                  Contact
-                </a>
-              </nav>
-            </div>
-          </header>
-          
-          <main className="flex-1">
-            {children}
-          </main>
-          
-          <footer className="border-t border-tre-green/20 bg-tre-black/95 backdrop-blur-sm">
-            <div className="container mx-auto px-4 py-6 text-center">
-              <p className="text-tre-white/70 font-mono">
-                © {new Date().getFullYear()} Total Reality Engineering. Built with innovation.
-              </p>
-            </div>
-          </footer>
-        </div>
+            </header>
+            
+            <main className="flex-1">
+              {children}
+            </main>
+            
+            <footer className="border-t border-tre-green/20 bg-tre-black/95 backdrop-blur-sm">
+              <div className="container mx-auto px-4 py-6 text-center">
+                <p className="text-tre-white/70 font-mono">
+                  © {new Date().getFullYear()} Total Reality Engineering. Built with innovation.
+                </p>
+              </div>
+            </footer>
+          </div>
+        </PWAProvider>
       </body>
     </html>
   )
