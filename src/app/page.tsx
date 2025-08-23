@@ -55,10 +55,12 @@ export default function HomePage() {
               GitHub
             </a>
             <a 
-              href="mailto:contact@tre.systems" 
+              href="https://www.linkedin.com/in/rob-gilks-39bb03/" 
+              target="_blank" 
+              rel="noopener noreferrer"
               className="px-8 py-3 border-2 border-tre-green text-tre-green font-bold font-mono rounded-lg hover:bg-tre-green hover:text-tre-black transition-all duration-200 animate-slide-up"
             >
-              Email
+              LinkedIn
             </a>
           </div>
         </div>
