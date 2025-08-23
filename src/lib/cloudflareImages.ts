@@ -1,5 +1,3 @@
-import { Project } from '@/types/project'
-
 export interface CloudflareImageUpload {
   id: string
   variants: string[]
@@ -7,7 +5,10 @@ export interface CloudflareImageUpload {
 }
 
 export interface CloudflareImageService {
-  uploadImageFromUrl(imageUrl: string, projectName: string): Promise<CloudflareImageUpload | null>
+  uploadImageFromUrl(
+    imageUrl: string,
+    projectName: string
+  ): Promise<CloudflareImageUpload | null>
   getImageUrl(imageId: string, variant?: string): string
   deleteImage(imageId: string): Promise<boolean>
 }
@@ -26,7 +27,10 @@ export class CloudflareImagesService implements CloudflareImageService {
   /**
    * Upload an image from a GitHub URL to Cloudflare Images
    */
-  async uploadImageFromUrl(imageUrl: string, projectName: string): Promise<CloudflareImageUpload | null> {
+  async uploadImageFromUrl(
+    imageUrl: string,
+    projectName: string
+  ): Promise<CloudflareImageUpload | null> {
     if (!this.accountId || !this.apiToken) {
       console.warn('Cloudflare Images not configured, skipping upload')
       return null
@@ -41,25 +45,28 @@ export class CloudflareImagesService implements CloudflareImageService {
 
       const imageBuffer = await response.arrayBuffer()
       const formData = new FormData()
-      
+
       // Add the image file
       const blob = new Blob([imageBuffer])
       formData.append('file', blob, `${projectName}-screenshot.png`)
-      
+
       // Add metadata
-      formData.append('metadata', JSON.stringify({
-        project: projectName,
-        source: 'github',
-        uploaded: new Date().toISOString()
-      }))
+      formData.append(
+        'metadata',
+        JSON.stringify({
+          project: projectName,
+          source: 'github',
+          uploaded: new Date().toISOString(),
+        })
+      )
 
       // Upload to Cloudflare Images
       const uploadResponse = await fetch(this.baseUrl, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.apiToken}`,
+          Authorization: `Bearer ${this.apiToken}`,
         },
-        body: formData
+        body: formData,
       })
 
       if (!uploadResponse.ok) {
@@ -67,17 +74,29 @@ export class CloudflareImagesService implements CloudflareImageService {
         throw new Error(`Cloudflare upload failed: ${error}`)
       }
 
-      const result = await uploadResponse.json()
-      
+      const result = (await uploadResponse.json()) as {
+        success: boolean
+        result: {
+          id: string
+          variants?: string[]
+          uploaded: string
+        }
+        errors?: Array<{ message: string }>
+      }
+
       if (result.success) {
-        console.log(`Successfully uploaded image for ${projectName} to Cloudflare Images`)
+        console.log(
+          `Successfully uploaded image for ${projectName} to Cloudflare Images`
+        )
         return {
           id: result.result.id,
           variants: result.result.variants || [],
-          uploaded: result.result.uploaded
+          uploaded: result.result.uploaded,
         }
       } else {
-        throw new Error(`Upload failed: ${result.errors?.[0]?.message || 'Unknown error'}`)
+        throw new Error(
+          `Upload failed: ${result.errors?.[0]?.message || 'Unknown error'}`
+        )
       }
     } catch (error) {
       console.error(`Error uploading image for ${projectName}:`, error)
@@ -104,8 +123,8 @@ export class CloudflareImagesService implements CloudflareImageService {
       const response = await fetch(`${this.baseUrl}/${imageId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${this.apiToken}`,
-        }
+          Authorization: `Bearer ${this.apiToken}`,
+        },
       })
 
       return response.ok
@@ -127,11 +146,11 @@ export class CloudflareImagesService implements CloudflareImageService {
    */
   getImageVariants(): string[] {
     return [
-      'public',           // Original size
-      'thumbnail',        // 150x150
-      'card',            // 300x300
-      'hero',            // 600x600
-      'responsive'        // Auto-responsive
+      'public', // Original size
+      'thumbnail', // 150x150
+      'card', // 300x300
+      'hero', // 600x600
+      'responsive', // Auto-responsive
     ]
   }
 }

@@ -5,12 +5,6 @@ import { ImageCacheService } from './imageCache'
 const GITHUB_API_BASE = 'https://api.github.com'
 const GITHUB_USERNAME = process.env.GITHUB_USERNAME || 'rgilks'
 
-// GitHub API content response type
-interface GitHubContentResponse {
-  download_url: string
-  [key: string]: unknown
-}
-
 export async function fetchGitHubProjects(
   cacheService?: CacheService,
   imageCacheService?: ImageCacheService
@@ -202,7 +196,10 @@ export async function fetchProjectScreenshots(
           continue
         }
 
-        const data = await response.json()
+        const data = (await response.json()) as {
+          download_url?: string
+          _links?: { git?: string }
+        }
 
         // Handle both cases: when download_url is provided and when it's not (large files)
         let downloadUrl: string | undefined
@@ -218,7 +215,6 @@ export async function fetchProjectScreenshots(
           // Extract the blob SHA from the git URL
           const blobMatch = gitUrl.match(/\/blobs\/([a-f0-9]+)$/)
           if (blobMatch) {
-            const blobSha = blobMatch[1]
             downloadUrl = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${projectName}/main/${path}`
           }
         }

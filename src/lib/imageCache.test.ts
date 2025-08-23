@@ -31,6 +31,7 @@ describe('ImageCacheService', () => {
       const mockCache: ScreenshotCache = {
         'test-project': {
           urls: ['https://example.com/screenshot1.png'],
+          cloudflareIds: ['cloudflare-id-1'],
           timestamp: now,
         },
       }
@@ -55,6 +56,7 @@ describe('ImageCacheService', () => {
       const mockCache: ScreenshotCache = {
         'test-project': {
           urls: ['https://example.com/screenshot1.png'],
+          cloudflareIds: ['cloudflare-id-1'],
           timestamp: expiredTimestamp,
         },
       }
@@ -71,6 +73,7 @@ describe('ImageCacheService', () => {
       const mockCache: ScreenshotCache = {
         'other-project': {
           urls: ['https://example.com/screenshot1.png'],
+          cloudflareIds: ['cloudflare-id-1'],
           timestamp: Math.floor(Date.now() / 1000),
         },
       }
@@ -121,6 +124,7 @@ describe('ImageCacheService', () => {
       const existingCache: ScreenshotCache = {
         'existing-project': {
           urls: ['https://example.com/existing.png'],
+          cloudflareIds: ['cloudflare-id-1'],
           timestamp: Math.floor(Date.now() / 1000),
         },
       }
@@ -149,10 +153,12 @@ describe('ImageCacheService', () => {
       const mockCache: ScreenshotCache = {
         project1: {
           urls: ['https://example.com/screenshot1.png'],
+          cloudflareIds: ['cloudflare-id-1'],
           timestamp: Math.floor(Date.now() / 1000),
         },
         project2: {
           urls: ['https://example.com/screenshot2.png'],
+          cloudflareIds: ['cloudflare-id-2'],
           timestamp: Math.floor(Date.now() / 1000),
         },
       }
@@ -179,10 +185,12 @@ describe('ImageCacheService', () => {
       const existingCache: ScreenshotCache = {
         project1: {
           urls: ['https://example.com/screenshot1.png'],
+          cloudflareIds: ['cloudflare-id-1'],
           timestamp: Math.floor(Date.now() / 1000),
         },
         project2: {
           urls: ['https://example.com/screenshot2.png'],
+          cloudflareIds: ['cloudflare-id-2'],
           timestamp: Math.floor(Date.now() / 1000),
         },
       }
@@ -220,6 +228,7 @@ describe('ImageCacheService', () => {
       const mockCache: ScreenshotCache = {
         'test-project': {
           urls: ['https://example.com/screenshot1.png'],
+          cloudflareIds: ['cloudflare-id-1'],
           timestamp: now,
         },
       }
@@ -237,6 +246,7 @@ describe('ImageCacheService', () => {
       const mockCache: ScreenshotCache = {
         'test-project': {
           urls: ['https://example.com/screenshot1.png'],
+          cloudflareIds: ['cloudflare-id-1'],
           timestamp: expiredTimestamp,
         },
       }
@@ -258,10 +268,12 @@ describe('ImageCacheService', () => {
             'https://example.com/screenshot1.png',
             'https://example.com/screenshot2.png',
           ],
+          cloudflareIds: ['cloudflare-id-1', 'cloudflare-id-2'],
           timestamp: Math.floor(Date.now() / 1000),
         },
         project2: {
           urls: ['https://example.com/screenshot3.png'],
+          cloudflareIds: ['cloudflare-id-3'],
           timestamp: Math.floor(Date.now() / 1000),
         },
       }

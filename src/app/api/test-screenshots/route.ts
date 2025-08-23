@@ -19,7 +19,10 @@ export async function GET() {
       console.log(`Direct API response ok: ${response.ok}`)
       
       if (response.ok) {
-        const content = await response.json()
+        const content = await response.json() as {
+          download_url?: string
+          _links?: { git?: string }
+        }
         console.log(`Direct API content:`, content)
         if (content.download_url) {
           console.log(`Direct API download_url: ${content.download_url}`)

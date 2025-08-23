@@ -1,6 +1,6 @@
-import { Project } from '@/types/project'
 import { LocalCacheService } from './localCache'
-import { GitHubCacheService, createGitHubCacheService } from './githubCache'
+import { Project } from '@/types/project'
+import { createGitHubCacheService } from './githubCache'
 
 export interface CacheService {
   getCachedProjects(): Promise<Project[] | null>
