@@ -3,38 +3,27 @@
 import { ProjectCard } from './ProjectCard'
 import { useProjectStore } from '@/store/projectStore'
 import { useEffect } from 'react'
-import { fetchGitHubProjects } from '@/lib/github'
+import { Project } from '@/types/project'
 
-export function ProjectGrid() {
+interface ProjectGridProps {
+  initialProjects: Project[]
+}
+
+export function ProjectGrid({ initialProjects }: ProjectGridProps) {
   const {
     projects,
     filteredProjects,
     isLoading,
     error,
     setProjects,
-    setLoading,
-    setError,
   } = useProjectStore()
 
   useEffect(() => {
-    async function loadProjects() {
-      if (projects.length === 0) {
-        setLoading(true)
-        try {
-          const fetchedProjects = await fetchGitHubProjects()
-          setProjects(fetchedProjects)
-        } catch (err) {
-          setError(
-            err instanceof Error ? err.message : 'Failed to load projects'
-          )
-        } finally {
-          setLoading(false)
-        }
-      }
+    // Use initial projects from server-side rendering
+    if (projects.length === 0 && initialProjects.length > 0) {
+      setProjects(initialProjects)
     }
-
-    loadProjects()
-  }, [projects.length, setProjects, setLoading, setError])
+  }, [projects.length, initialProjects, setProjects])
 
   if (isLoading) {
     return (

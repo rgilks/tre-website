@@ -30,6 +30,13 @@ Environment variables:
 # Optional: increases rate limits
 export GITHUB_USERNAME="rgilks"    # or your GitHub username
 export GITHUB_TOKEN="<your_token>" # classic or fine-grained PAT with at least public repo read
+
+# Required for production: cron job authentication
+export CRON_SECRET="<random_secret>" # secret key for cron job authentication
+
+# Optional: Cloudflare Images for image hosting
+export CLOUDFLARE_ACCOUNT_ID="<your_account_id>" # Cloudflare account ID
+export CLOUDFLARE_IMAGES_API_TOKEN="<your_api_token>" # API token with Images:Edit permissions
 ```
 
 Notes:
@@ -38,6 +45,8 @@ Notes:
 - On a 401 with a provided token, the app retries unauthenticated automatically for resiliency.
 - If `GITHUB_TOKEN` is not set, requests are unauthenticated (no Authorization header), which may hit rate limits but should not 401.
 - Make sure the token has not expired and has at least public repo read permissions.
+- `CRON_SECRET` should be a random string used to authenticate cron job requests to refresh GitHub data.
+- `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_IMAGES_API_TOKEN` are optional and enable automatic image hosting in Cloudflare Images with CDN optimization.
 
 ## 📚 Available Scripts
 
@@ -72,7 +81,8 @@ npm run nuke        # Clean install (remove node_modules and reinstall)
 - **Styling:** Tailwind CSS v4 with custom animations
 - **State Management:** Zustand with Immer
 - **Testing:** Vitest for unit tests, Playwright for e2e
-- **Deployment:** Cloudflare Pages using `@cloudflare/next-on-pages`
+- **Deployment:** Cloudflare Workers using OpenNext
+- **Caching:** Cloudflare KV for GitHub data with 6-hour TTL
 - **PWA:** Service worker with offline support
 - **Video Integration:** YouTube iframe API with responsive design
 
@@ -130,6 +140,34 @@ To learn more about the technologies used:
 
 This repo is configured to deploy with **OpenNext** to **Cloudflare Workers** (Pages-style static assets served by Workers).
 
+### Caching System
+
+The application uses intelligent caching to avoid GitHub API rate limits:
+
+**Production (Cloudflare Workers):**
+
+- **Cloudflare KV** storage for cached GitHub API responses
+- **Cache TTL:** 6 hours (configurable in `src/lib/githubCache.ts`)
+- **Automatic Refresh:** Cron trigger runs every 6 hours to refresh data
+
+**Development (Local):**
+
+- **File-based caching** in `.cache/` directory (automatically created)
+- **Same TTL:** 6 hours to match production behavior
+- **No KV dependency:** Works without Cloudflare infrastructure
+- **Screenshot caching:** Separate 24-hour TTL for screenshot URLs
+
+**Features:**
+
+- **Fallback:** If caching fails, falls back to direct GitHub API calls
+- **Smart Detection:** Automatically chooses the right cache based on environment
+- **Transparent:** Users always get the latest data within the TTL window
+- **Dual Caching:** Separate caches for project metadata (6h) and screenshots (24h)
+- **Rate Limit Protection:** Minimizes GitHub API calls for both data and images
+- **Cloudflare Images:** Optional image hosting with automatic optimization and CDN
+
+The caching system ensures consistent behavior between development and production while efficiently managing API calls.
+
 ### Prerequisites
 
 - Create a Cloudflare Pages project (build command will be handled by the GitHub Action).
@@ -155,12 +193,4 @@ npm run build:cf
 
 On push to `main`, the workflow in `.github/workflows/deploy.yml` will:
 
-1. Install deps and run `npm run check`
-2. Build with `open-next --platform cloudflare`
-3. Deploy Worker + assets with `wrangler deploy`
-
-This setup mirrors the approach in the Royal Game of Ur project, which also uses Next.js Server Actions on Cloudflare Pages. See the reference repository for structure and scripts: [`rgilks/rgou-cloudflare`](https://github.com/rgilks/rgou-cloudflare).
-
-## 📝 License
-
-This project is proprietary to Total Reality Engineering.
+1. Install deps and run `

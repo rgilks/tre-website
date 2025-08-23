@@ -85,7 +85,7 @@ public/
 6. ✅ If homepageUrl exists, load in iframe (all subdomains of tre.systems).
 7. ✅ Overlay TRE logo links back to `/`.
 8. ⏳ PWA passes Lighthouse checks: installable, offline home + cached thumbnails.
-9. ⏳ KV caching, cron refresh, images via CF Resizing.
+9. ✅ KV caching, cron refresh, images via CF Resizing.
 10. ✅ Brand: black, terminal green, white accents.
 11. ⏳ Deployed at [https://tre.systems](https://tre.systems).
 
@@ -183,7 +183,7 @@ public/
 - **Video Embed**: Use YouTube's iframe embed API with responsive design.
 - **Video Position**: Display above the project iframe or as primary content if no iframe.
 - **Responsive Design**: Video maintains 16:9 aspect ratio across all screen sizes.
-- **Performance**: Lazy load YouTube embeds to improve page load performance.
+§- **Performance**: Lazy load YouTube embeds to improve page load performance.
 
 **CSP / Security**
 

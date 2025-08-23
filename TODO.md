@@ -56,11 +56,15 @@
 
 ### 1. Data Integration & API (Next Priority)
 
+- [x] **Implement data caching** with Cloudflare KV storage
+- [x] **Set up cron triggers** for automatic data refresh every 6 hours
+- [x] **Create caching service** with TTL management and fallback handling
+- [x] **Update GitHub service** to use caching system
+- [x] **Convert to server-side rendering** for better caching and performance
 - [ ] **Test GitHub API integration** with real data
 - [ ] **Set up environment variables** for GitHub token
 - [ ] **Implement screenshot handling** from `docs/screenshot.*` files
 - [ ] **Set up Cloudflare Image Resizing** for thumbnails
-- [ ] **Implement data caching** with KV storage
 - [ ] **Add error boundaries** for graceful failure handling
 - [ ] **Test data fetching** with actual GitHub repositories
 
@@ -215,6 +219,7 @@
 - **State Management:** Zustand with Immer
 - **Testing:** Vitest for unit tests, Playwright for e2e
 - **Deployment:** Cloudflare Workers with OpenNext
+- **Caching:** Cloudflare KV with 6-hour TTL and cron-based refresh
 - **PWA:** Service worker with offline support
 - **Performance:** Image optimization and lazy loading
 - **Video Integration:** YouTube iframe API with responsive design

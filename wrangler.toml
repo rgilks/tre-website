@@ -14,6 +14,16 @@ ENVIRONMENT = "production"
 enabled = true
 head_sampling_rate = 1
 
+# KV namespace for caching GitHub data
+[[kv_namespaces]]
+binding = "GITHUB_CACHE"
+id = "github-cache"
+preview_id = "github-cache-preview"
+
+# Cron trigger to refresh GitHub data every 6 hours
+[triggers]
+crons = ["0 */6 * * *"]
+
 [[routes]]
 pattern = "tre.systems/*"
 zone_name = "tre.systems"
