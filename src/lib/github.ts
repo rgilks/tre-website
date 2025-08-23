@@ -82,9 +82,22 @@ export async function fetchGitHubProjects(): Promise<Project[]> {
         forksCount: repo.forks_count,
         updatedAt: repo.updated_at,
         createdAt: repo.created_at,
-        screenshotUrl: undefined, // Will be populated from docs/screenshot.* files
+        screenshotUrl: undefined, // Will be populated below
         isCurrentlyWorking: false, // Will be determined by logic
       }))
+
+    // Fetch screenshots for each project
+    for (const project of projects) {
+      try {
+        const screenshots = await fetchProjectScreenshots(project.name)
+        if (screenshots.length > 0) {
+          (project as Project).screenshotUrl = screenshots[0] // Use first screenshot found
+        }
+      } catch (error) {
+        console.error(`Error fetching screenshot for ${project.name}:`, error)
+        // Continue with other projects
+      }
+    }
 
     // Mark the most recently updated project as "currently working on"
     if (projects.length > 0) {
@@ -102,16 +115,50 @@ export async function fetchProjectScreenshots(
   projectName: string
 ): Promise<string[]> {
   try {
-    // This would integrate with your screenshot storage system
-    // For now, returning empty array - implement based on your setup
+    const baseHeaders: Record<string, string> = {
+      Accept: 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+      'User-Agent': 'tre-website',
+    }
+
+    const rawToken = process.env.GITHUB_TOKEN
+    const token = typeof rawToken === 'string' ? rawToken.trim() : undefined
+    const authHeaders: Record<string, string> = { ...baseHeaders }
+    if (token) {
+      authHeaders.Authorization = `token ${token}`
+    }
+
+    // Check for screenshots in public/ and docs/ directories
+    const screenshotPaths = [
+      `public/screenshot.png`,
+      `public/screenshot.jpg`,
+      `public/screenshot.jpeg`,
+      `docs/screenshot.png`,
+      `docs/screenshot.jpg`,
+      `docs/screenshot.jpeg`,
+    ]
+
     const screenshotUrls: string[] = []
 
-    // Example implementation:
-    // const response = await fetch(`/api/screenshots/${projectName}`)
-    // if (response.ok) {
-    //   const screenshots = await response.json()
-    //   return screenshots.urls
-    // }
+    for (const path of screenshotPaths) {
+      try {
+        const url = `${GITHUB_API_BASE}/repos/${GITHUB_USERNAME}/${projectName}/contents/${path}`
+        const response = await fetch(url, {
+          headers: authHeaders,
+          next: { revalidate: 3600 }, // Cache for 1 hour
+        })
+
+        if (response.ok) {
+          const content = await response.json()
+          if (content.download_url) {
+            screenshotUrls.push(content.download_url)
+          }
+        }
+              } catch {
+          // Continue checking other paths if one fails
+          continue
+        }
+    }
 
     return screenshotUrls
   } catch (error) {

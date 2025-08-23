@@ -21,14 +21,38 @@ export function ProjectCard({ project, isHighlighted }: ProjectCardProps) {
       transition={{ duration: 0.5, ease: 'easeOut' }}
       whileHover={{ y: -5 }}
       className={`
-        relative bg-tre-black/50 border rounded-lg p-6 cursor-pointer transition-all duration-200
+        relative border rounded-lg p-6 cursor-pointer transition-all duration-200 overflow-hidden
         ${
           isHighlighted
-            ? 'border-tre-green shadow-lg shadow-tre-green/25 bg-gradient-to-br from-tre-black/80 to-tre-green/5'
-            : 'border-tre-green/20 hover:border-tre-green/40 hover:bg-tre-black/70'
+            ? 'border-tre-green shadow-lg shadow-tre-green/25'
+            : 'border-tre-green/20 hover:border-tre-green/40'
         }
       `}
+      style={{
+        background: project.screenshotUrl 
+          ? `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9)), url(${project.screenshotUrl})`
+          : 'rgba(0, 0, 0, 0.5)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
     >
+      {/* Blurred screenshot background */}
+      {project.screenshotUrl && (
+        <div 
+          className="absolute inset-0 -z-10"
+          style={{
+            backgroundImage: `url(${project.screenshotUrl})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            filter: 'blur(20px) brightness(0.3)',
+            transform: 'scale(1.1)', // Prevent blur edges from showing
+          }}
+        />
+      )}
+      
+      {/* Content overlay */}
+      <div className="relative z-10">
 
 
       <div className="mb-4">
@@ -97,6 +121,7 @@ export function ProjectCard({ project, isHighlighted }: ProjectCardProps) {
         >
           GitHub
         </a>
+      </div>
       </div>
     </motion.div>
   )
