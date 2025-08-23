@@ -11,6 +11,7 @@ export function HeroSection() {
 
       <div className="container mx-auto px-4 text-center relative z-10">
         <motion.div
+          key="hero-logo"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
@@ -24,6 +25,7 @@ export function HeroSection() {
         </motion.div>
 
         <motion.h1
+          key="hero-title"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
@@ -33,6 +35,7 @@ export function HeroSection() {
         </motion.h1>
 
         <motion.p
+          key="hero-description"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
