@@ -3,8 +3,6 @@
 import { motion } from 'framer-motion'
 import { ProjectCardProps } from '@/types/project'
 import {
-  StarIcon,
-  CodeBracketIcon,
   CalendarIcon,
 } from '@heroicons/react/24/outline'
 
@@ -69,21 +67,7 @@ export function ProjectCard({ project, isHighlighted }: ProjectCardProps) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between text-sm text-tre-white/60 mb-4">
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-1">
-            <StarIcon className="w-4 h-4" />
-            <span data-testid={`project-stars-${project.id}`}>
-              {project.stargazersCount}
-            </span>
-          </div>
-          <div className="flex items-center space-x-1">
-            <CodeBracketIcon className="w-4 h-4" />
-            <span data-testid={`project-forks-${project.id}`}>
-              {project.forksCount}
-            </span>
-          </div>
-        </div>
+      <div className="flex items-center justify-end text-sm text-tre-white/60 mb-4">
         <div className="flex items-center space-x-1">
           <CalendarIcon className="w-4 h-4" />
           <span data-testid={`project-updated-${project.id}`}>
