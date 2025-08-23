@@ -131,11 +131,7 @@ export async function fetchProjectScreenshots(
     // Check for screenshots in public/ and docs/ directories
     const screenshotPaths = [
       `public/screenshot.png`,
-      `public/screenshot.jpg`,
-      `public/screenshot.jpeg`,
       `docs/screenshot.png`,
-      `docs/screenshot.jpg`,
-      `docs/screenshot.jpeg`,
     ]
 
     const screenshotUrls: string[] = []
