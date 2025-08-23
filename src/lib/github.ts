@@ -59,6 +59,9 @@ export async function fetchGitHubProjects(): Promise<Project[]> {
     }
 
     if (!response.ok) {
+      if (response.status === 403) {
+        console.warn('GitHub API rate limit reached. Consider adding a GITHUB_TOKEN to your .env.local file.')
+      }
       throw new Error(
         `GitHub API error: ${response.status} ${response.statusText}`
       )
@@ -86,16 +89,19 @@ export async function fetchGitHubProjects(): Promise<Project[]> {
         isCurrentlyWorking: false, // Will be determined by logic
       }))
 
-    // Fetch screenshots for each project
-    for (const project of projects) {
+    // Fetch screenshots for projects (but only for first few to avoid rate limits)
+    const projectsToFetchScreenshots = projects.slice(0, 3) // Limit to first 3 projects
+    for (const project of projectsToFetchScreenshots) {
       try {
         const screenshots = await fetchProjectScreenshots(project.name)
         if (screenshots.length > 0) {
           (project as Project).screenshotUrl = screenshots[0] // Use first screenshot found
         }
+        // Add small delay between requests to be respectful of rate limits
+        await new Promise(resolve => setTimeout(resolve, 100))
       } catch (error) {
-        console.error(`Error fetching screenshot for ${project.name}:`, error)
-        // Continue with other projects
+        console.warn(`Could not fetch screenshot for ${project.name}:`, error)
+        // Continue with other projects - screenshots are optional
       }
     }
 
