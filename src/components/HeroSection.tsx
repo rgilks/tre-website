@@ -16,6 +16,7 @@ export function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
           className="mb-8"
+          suppressHydrationWarning
         >
           <TRELogo
             width={600}
@@ -30,6 +31,7 @@ export function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
           className="text-6xl md:text-7xl font-bold text-tre-green font-mono mb-6 tracking-tight"
+          suppressHydrationWarning
         >
           Total Reality Engineering
         </motion.h1>
@@ -40,13 +42,12 @@ export function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
           className="text-xl md:text-2xl text-tre-white/80 max-w-3xl mx-auto mb-12 leading-relaxed"
+          suppressHydrationWarning
         >
           Where imagination meets implementation. We build innovative solutions
           that bridge the gap between dreams and reality through cutting-edge
           engineering.
         </motion.p>
-
-
       </div>
     </section>
   )
