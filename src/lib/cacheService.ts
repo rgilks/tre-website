@@ -1,4 +1,3 @@
-import { LocalCacheService } from './localCache'
 import { Project } from '@/types/project'
 import { createGitHubCacheService } from './githubCache'
 
@@ -15,18 +14,39 @@ declare global {
 
 // Factory function to create appropriate cache service based on environment
 export function createCacheService(): CacheService {
-  // Check if we're in a Cloudflare Workers environment
+  // Check if we're in a Cloudflare Workers environment with KV binding
   const isCloudflare = typeof globalThis.GITHUB_CACHE !== 'undefined' && 
                       typeof globalThis.GITHUB_CACHE.get === 'function'
   
-  // In development or when KV is not available, use local file cache
-  if (process.env.NODE_ENV === 'development' || !isCloudflare) {
-    return new LocalCacheService()
+  if (isCloudflare) {
+    // In Cloudflare Workers environment, use KV cache
+    return createGitHubCacheService(globalThis.GITHUB_CACHE!)
+  }
+  
+  // Fallback for development or when KV is not available
+  // This should only happen in local development
+  console.warn('GITHUB_CACHE KV binding not available, using fallback cache service')
+  return createFallbackCacheService()
+}
+
+// Simple fallback cache service for development
+class FallbackCacheService implements CacheService {
+  async getCachedProjects(): Promise<Project[] | null> {
+    // In development without KV, just return null to force fresh fetch
+    return null
   }
 
-  // In production with Cloudflare Workers, use KV cache
-  // At this point we know GITHUB_CACHE is defined and has the get method
-  return createGitHubCacheService(globalThis.GITHUB_CACHE!)
+  async setCachedProjects(): Promise<void> {
+    // No-op in development
+  }
+
+  async clearCache(): Promise<void> {
+    // No-op in development
+  }
+}
+
+function createFallbackCacheService(): CacheService {
+  return new FallbackCacheService()
 }
 
 // Factory function for KV-based cache service (used in Cloudflare Workers)

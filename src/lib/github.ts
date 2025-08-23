@@ -1,6 +1,6 @@
 import { GitHubApiResponse, Project } from '@/types/project'
 import { CacheService } from './cacheService'
-import { ImageCacheService, CloudflareImageCacheService } from './imageCache'
+import { CloudflareImageCacheService, FallbackImageCacheService } from './imageCache'
 
 const GITHUB_API_BASE = 'https://api.github.com'
 const GITHUB_USERNAME = process.env.GITHUB_USERNAME || 'rgilks'
@@ -13,7 +13,7 @@ declare global {
 
 export async function fetchGitHubProjects(
   cacheService?: CacheService,
-  imageCacheService?: ImageCacheService | CloudflareImageCacheService
+  imageCacheService?: CloudflareImageCacheService | FallbackImageCacheService
 ): Promise<Project[]> {
   // Try to get cached data first
   if (cacheService) {

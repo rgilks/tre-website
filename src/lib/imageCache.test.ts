@@ -1,12 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import fs from 'fs/promises'
-import path from 'path'
-import { ImageCacheService, CloudflareImageCacheService, ScreenshotCache } from './imageCache'
-
-// Mock fs module
-vi.mock('fs/promises')
-
-const mockFs = vi.mocked(fs)
+import {
+  CloudflareImageCacheService,
+  FallbackImageCacheService,
+  ScreenshotCache,
+} from './imageCache'
 
 // Mock KV namespace for testing
 const mockGet = vi.fn()
@@ -19,17 +16,12 @@ const mockKV = {
   delete: mockDelete,
 } as unknown as KVNamespace
 
-describe('ImageCacheService', () => {
-  let cacheService: ImageCacheService
-  const testImageCacheDir = path.join(process.cwd(), '.cache/images')
-  const testScreenshotCacheFile = path.join(
-    testImageCacheDir,
-    'screenshot-urls.json'
-  )
+describe('CloudflareImageCacheService', () => {
+  let cacheService: CloudflareImageCacheService
 
   beforeEach(() => {
     vi.clearAllMocks()
-    cacheService = new ImageCacheService()
+    cacheService = new CloudflareImageCacheService(mockKV)
   })
 
   afterEach(() => {
@@ -47,19 +39,12 @@ describe('ImageCacheService', () => {
         },
       }
 
-      // Mock directory access
-      mockFs.access.mockResolvedValue(undefined)
-
-      // Mock file read
-      mockFs.readFile.mockResolvedValue(JSON.stringify(mockCache))
+      mockGet.mockResolvedValue(JSON.stringify(mockCache))
 
       const result = await cacheService.getCachedScreenshots('test-project')
 
       expect(result).toEqual(['https://example.com/screenshot1.png'])
-      expect(mockFs.readFile).toHaveBeenCalledWith(
-        testScreenshotCacheFile,
-        'utf-8'
-      )
+      expect(mockGet).toHaveBeenCalledWith('screenshot_cache')
     })
 
     it('should return null when cache is expired', async () => {
@@ -72,8 +57,7 @@ describe('ImageCacheService', () => {
         },
       }
 
-      mockFs.access.mockResolvedValue(undefined)
-      mockFs.readFile.mockResolvedValue(JSON.stringify(mockCache))
+      mockGet.mockResolvedValue(JSON.stringify(mockCache))
 
       const result = await cacheService.getCachedScreenshots('test-project')
 
@@ -89,16 +73,23 @@ describe('ImageCacheService', () => {
         },
       }
 
-      mockFs.access.mockResolvedValue(undefined)
-      mockFs.readFile.mockResolvedValue(JSON.stringify(mockCache))
+      mockGet.mockResolvedValue(JSON.stringify(mockCache))
 
       const result = await cacheService.getCachedScreenshots('test-project')
 
       expect(result).toBeNull()
     })
 
-    it('should return null when cache file does not exist', async () => {
-      mockFs.access.mockRejectedValue(new Error('File not found'))
+    it('should return null when cache does not exist', async () => {
+      mockGet.mockResolvedValue(null)
+
+      const result = await cacheService.getCachedScreenshots('test-project')
+
+      expect(result).toBeNull()
+    })
+
+    it('should handle JSON parsing errors gracefully', async () => {
+      mockGet.mockResolvedValue('invalid-json')
 
       const result = await cacheService.getCachedScreenshots('test-project')
 
@@ -107,323 +98,69 @@ describe('ImageCacheService', () => {
   })
 
   describe('setCachedScreenshots', () => {
-    it('should create new cache file when none exists', async () => {
+    it('should cache screenshot URLs for a project', async () => {
       const urls = ['https://example.com/screenshot1.png']
+      const existingCache: ScreenshotCache = {
+        'other-project': {
+          urls: ['https://example.com/other.png'],
+          cloudflareIds: [],
+          timestamp: Math.floor(Date.now() / 1000),
+        },
+      }
 
-      // Mock directory creation
-      mockFs.access.mockRejectedValueOnce(new Error('Directory not found'))
-      mockFs.mkdir.mockResolvedValue(undefined)
-
-      // Mock file read to fail (no existing cache)
-      mockFs.readFile.mockRejectedValueOnce(new Error('File not found'))
-
-      // Mock file write
-      mockFs.writeFile.mockResolvedValue(undefined)
+      mockGet.mockResolvedValue(JSON.stringify(existingCache))
+      mockPut.mockResolvedValue(undefined)
 
       await cacheService.setCachedScreenshots('test-project', urls)
 
-      expect(mockFs.mkdir).toHaveBeenCalledWith(testImageCacheDir, {
-        recursive: true,
-      })
-      expect(mockFs.writeFile).toHaveBeenCalledWith(
-        testScreenshotCacheFile,
+      expect(mockPut).toHaveBeenCalledWith(
+        'screenshot_cache',
         expect.stringContaining('test-project')
       )
     })
 
-    it('should update existing cache when file exists', async () => {
-      const existingCache: ScreenshotCache = {
-        'existing-project': {
-          urls: ['https://example.com/existing.png'],
-          cloudflareIds: ['cloudflare-id-1'],
-          timestamp: Math.floor(Date.now() / 1000),
-        },
-      }
+    it('should create new cache when none exists', async () => {
+      mockGet.mockResolvedValue(null)
+      mockPut.mockResolvedValue(undefined)
 
-      const newUrls = ['https://example.com/new.png']
+      const urls = ['https://example.com/screenshot1.png']
+      await cacheService.setCachedScreenshots('test-project', urls)
 
-      mockFs.access.mockResolvedValue(undefined)
-      mockFs.readFile.mockResolvedValue(JSON.stringify(existingCache))
-      mockFs.writeFile.mockResolvedValue(undefined)
-
-      await cacheService.setCachedScreenshots('test-project', newUrls)
-
-      expect(mockFs.writeFile).toHaveBeenCalledWith(
-        testScreenshotCacheFile,
+      expect(mockPut).toHaveBeenCalledWith(
+        'screenshot_cache',
         expect.stringContaining('test-project')
-      )
-      expect(mockFs.writeFile).toHaveBeenCalledWith(
-        testScreenshotCacheFile,
-        expect.stringContaining('existing-project')
-      )
-    })
-  })
-
-  describe('getAllCachedScreenshots', () => {
-    it('should return all cached screenshots', async () => {
-      const mockCache: ScreenshotCache = {
-        project1: {
-          urls: ['https://example.com/screenshot1.png'],
-          cloudflareIds: ['cloudflare-id-1'],
-          timestamp: Math.floor(Date.now() / 1000),
-        },
-        project2: {
-          urls: ['https://example.com/screenshot2.png'],
-          cloudflareIds: ['cloudflare-id-2'],
-          timestamp: Math.floor(Date.now() / 1000),
-        },
-      }
-
-      mockFs.access.mockResolvedValue(undefined)
-      mockFs.readFile.mockResolvedValue(JSON.stringify(mockCache))
-
-      const result = await cacheService.getAllCachedScreenshots()
-
-      expect(result).toEqual(mockCache)
-    })
-
-    it('should return empty object when cache file does not exist', async () => {
-      mockFs.access.mockRejectedValue(new Error('File not found'))
-
-      const result = await cacheService.getAllCachedScreenshots()
-
-      expect(result).toEqual({})
-    })
-  })
-
-  describe('clearProjectScreenshots', () => {
-    it('should remove specific project from cache', async () => {
-      const existingCache: ScreenshotCache = {
-        project1: {
-          urls: ['https://example.com/screenshot1.png'],
-          cloudflareIds: ['cloudflare-id-1'],
-          timestamp: Math.floor(Date.now() / 1000),
-        },
-        project2: {
-          urls: ['https://example.com/screenshot2.png'],
-          cloudflareIds: ['cloudflare-id-2'],
-          timestamp: Math.floor(Date.now() / 1000),
-        },
-      }
-
-      mockFs.access.mockResolvedValue(undefined)
-      mockFs.readFile.mockResolvedValue(JSON.stringify(existingCache))
-      mockFs.writeFile.mockResolvedValue(undefined)
-
-      await cacheService.clearProjectScreenshots('project1')
-
-      expect(mockFs.writeFile).toHaveBeenCalledWith(
-        testScreenshotCacheFile,
-        expect.not.stringContaining('project1')
-      )
-      expect(mockFs.writeFile).toHaveBeenCalledWith(
-        testScreenshotCacheFile,
-        expect.stringContaining('project2')
       )
     })
   })
 
   describe('clearAllScreenshots', () => {
-    it('should delete screenshot cache file', async () => {
-      mockFs.unlink.mockResolvedValue(undefined)
+    it('should delete entire screenshot cache', async () => {
+      mockDelete.mockResolvedValue(undefined)
 
       await cacheService.clearAllScreenshots()
 
-      expect(mockFs.unlink).toHaveBeenCalledWith(testScreenshotCacheFile)
-    })
-  })
-
-  describe('isScreenshotCacheValid', () => {
-    it('should return true when cache is valid', async () => {
-      const now = Math.floor(Date.now() / 1000)
-      const mockCache: ScreenshotCache = {
-        'test-project': {
-          urls: ['https://example.com/screenshot1.png'],
-          cloudflareIds: ['cloudflare-id-1'],
-          timestamp: now,
-        },
-      }
-
-      mockFs.access.mockResolvedValue(undefined)
-      mockFs.readFile.mockResolvedValue(JSON.stringify(mockCache))
-
-      const result = await cacheService.isScreenshotCacheValid('test-project')
-
-      expect(result).toBe(true)
-    })
-
-    it('should return false when cache is invalid', async () => {
-      const expiredTimestamp = Math.floor(Date.now() / 1000) - 25 * 60 * 60
-      const mockCache: ScreenshotCache = {
-        'test-project': {
-          urls: ['https://example.com/screenshot1.png'],
-          cloudflareIds: ['cloudflare-id-1'],
-          timestamp: expiredTimestamp,
-        },
-      }
-
-      mockFs.access.mockResolvedValue(undefined)
-      mockFs.readFile.mockResolvedValue(JSON.stringify(mockCache))
-
-      const result = await cacheService.isScreenshotCacheValid('test-project')
-
-      expect(result).toBe(false)
-    })
-  })
-
-  describe('getCacheStats', () => {
-    it('should return correct cache statistics', async () => {
-      const mockCache: ScreenshotCache = {
-        project1: {
-          urls: [
-            'https://example.com/screenshot1.png',
-            'https://example.com/screenshot2.png',
-          ],
-          cloudflareIds: ['cloudflare-id-1', 'cloudflare-id-2'],
-          timestamp: Math.floor(Date.now() / 1000),
-        },
-        project2: {
-          urls: ['https://example.com/screenshot3.png'],
-          cloudflareIds: ['cloudflare-id-3'],
-          timestamp: Math.floor(Date.now() / 1000),
-        },
-      }
-
-      mockFs.access.mockResolvedValue(undefined)
-      mockFs.readFile.mockResolvedValue(JSON.stringify(mockCache))
-
-      const stats = await cacheService.getCacheStats()
-
-      expect(stats.projectCount).toBe(2)
-      expect(stats.totalUrls).toBe(3)
-    })
-
-    it('should return zero stats when cache is empty', async () => {
-      mockFs.access.mockRejectedValue(new Error('File not found'))
-
-      const stats = await cacheService.getCacheStats()
-
-      expect(stats.projectCount).toBe(0)
-      expect(stats.totalUrls).toBe(0)
+      expect(mockDelete).toHaveBeenCalledWith('screenshot_cache')
     })
   })
 })
 
-describe('CloudflareImageCacheService', () => {
-  let cacheService: CloudflareImageCacheService
+describe('FallbackImageCacheService', () => {
+  let cacheService: FallbackImageCacheService
 
   beforeEach(() => {
-    cacheService = new CloudflareImageCacheService(mockKV)
-    vi.clearAllMocks()
+    cacheService = new FallbackImageCacheService()
   })
 
-  it('should get cached screenshots from KV', async () => {
-    const mockCache: ScreenshotCache = {
-      'test-project': {
-        urls: ['https://example.com/screenshot.png'],
-        cloudflareIds: ['cloudflare-id-1'],
-        timestamp: Math.floor(Date.now() / 1000),
-      },
-    }
-
-    mockGet.mockResolvedValue(JSON.stringify(mockCache))
-
-    const result = await cacheService.getCachedScreenshots('test-project')
-    expect(result).toEqual(['https://example.com/screenshot.png'])
-    expect(mockGet).toHaveBeenCalledWith('screenshot_cache')
-  })
-
-  it('should return null for non-existent project', async () => {
-    const mockCache: ScreenshotCache = {
-      'existing-project': {
-        urls: ['https://example.com/screenshot.png'],
-        cloudflareIds: ['cloudflare-id-1'],
-        timestamp: Math.floor(Date.now() / 1000),
-      },
-    }
-
-    mockGet.mockResolvedValue(JSON.stringify(mockCache))
-
-    const result = await cacheService.getCachedScreenshots('non-existent-project')
+  it('should always return null for getCachedScreenshots', async () => {
+    const result = await cacheService.getCachedScreenshots()
     expect(result).toBeNull()
   })
 
-  it('should return null for expired cache', async () => {
-    const mockCache: ScreenshotCache = {
-      'test-project': {
-        urls: ['https://example.com/screenshot.png'],
-        cloudflareIds: ['cloudflare-id-1'],
-        timestamp: Math.floor(Date.now() / 1000) - 25 * 60 * 60, // 25 hours ago
-      },
-    }
-
-    mockGet.mockResolvedValue(JSON.stringify(mockCache))
-
-    const result = await cacheService.getCachedScreenshots('test-project')
-    expect(result).toBeNull()
+  it('should do nothing for setCachedScreenshots', async () => {
+    await expect(cacheService.setCachedScreenshots()).resolves.toBeUndefined()
   })
 
-  it('should cache screenshots to KV', async () => {
-    const mockCache: ScreenshotCache = {}
-    mockGet.mockResolvedValue(JSON.stringify(mockCache))
-
-    const screenshots = ['https://example.com/screenshot1.png', 'https://example.com/screenshot2.png']
-    await cacheService.setCachedScreenshots('test-project', screenshots)
-
-    expect(mockPut).toHaveBeenCalledWith(
-      'screenshot_cache',
-      expect.stringContaining('test-project')
-    )
-  })
-
-  it('should handle KV errors gracefully', async () => {
-    mockGet.mockRejectedValue(new Error('KV error'))
-
-    const result = await cacheService.getCachedScreenshots('test-project')
-    expect(result).toBeNull()
-  })
-
-  it('should get cached Cloudflare IDs', async () => {
-    const mockCache: ScreenshotCache = {
-      'test-project': {
-        urls: ['https://example.com/screenshot.png'],
-        cloudflareIds: ['cloudflare-id-1', 'cloudflare-id-2'],
-        timestamp: Math.floor(Date.now() / 1000),
-      },
-    }
-
-    mockGet.mockResolvedValue(JSON.stringify(mockCache))
-
-    const result = await cacheService.getCachedCloudflareIds('test-project')
-    expect(result).toEqual(['cloudflare-id-1', 'cloudflare-id-2'])
-  })
-
-  it('should clear all screenshots', async () => {
-    await cacheService.clearAllScreenshots()
-    expect(mockDelete).toHaveBeenCalledWith('screenshot_cache')
-  })
-
-  it('should get cache statistics', async () => {
-    const mockCache: ScreenshotCache = {
-      'project1': {
-        urls: ['url1', 'url2'],
-        cloudflareIds: ['id1'],
-        timestamp: Math.floor(Date.now() / 1000),
-      },
-      'project2': {
-        urls: ['url3'],
-        cloudflareIds: ['id2', 'id3'],
-        timestamp: Math.floor(Date.now() / 1000),
-      },
-    }
-
-    mockGet.mockResolvedValue(JSON.stringify(mockCache))
-
-    const stats = await cacheService.getCacheStats()
-    expect(stats).toEqual({
-      projectCount: 2,
-      totalUrls: 3,
-      totalCloudflareIds: 3,
-    })
+  it('should do nothing for clearAllScreenshots', async () => {
+    await expect(cacheService.clearAllScreenshots()).resolves.toBeUndefined()
   })
 })

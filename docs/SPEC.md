@@ -161,7 +161,7 @@ public/
 
 **Behavior**
 
-1. Server component resolves the project from the cached feed (`getProjects()`), finds `homepageUrl` and `youtubeUrl`.
+1. Server component resolves the project from the cached feed (`getProjects()`), finds `homepageUrl` and `youtubeUrl`. The cache service uses Cloudflare KV storage for optimal performance in production.
 2. **YouTube Video**: If `youtubeUrl` exists, display a responsive YouTube embed at the top of the page.
 3. **Embed check** (server‑side): attempt a `HEAD` to `homepageUrl` and inspect headers:
    - If `x-frame-options` is `DENY`/`SAMEORIGIN`, or CSP `frame-ancestors` excludes our origin → mark as **blocked**.
@@ -183,7 +183,7 @@ public/
 - **Video Embed**: Use YouTube's iframe embed API with responsive design.
 - **Video Position**: Display above the project iframe or as primary content if no iframe.
 - **Responsive Design**: Video maintains 16:9 aspect ratio across all screen sizes.
-§- **Performance**: Lazy load YouTube embeds to improve page load performance.
+  §- **Performance**: Lazy load YouTube embeds to improve page load performance.
 
 **CSP / Security**
 
