@@ -8,11 +8,9 @@ import {
 
 export function ProjectCard({ project, isHighlighted }: ProjectCardProps) {
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    })
+    const date = new Date(dateString)
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`
   }
 
   return (
@@ -70,7 +68,7 @@ export function ProjectCard({ project, isHighlighted }: ProjectCardProps) {
       <div className="flex items-center justify-end text-sm text-tre-white/60 mb-4">
         <div className="flex items-center space-x-1">
           <CalendarIcon className="w-4 h-4" />
-          <span data-testid={`project-updated-${project.id}`}>
+          <span data-testid={`project-updated-${project.id}`} suppressHydrationWarning>
             {formatDate(project.updatedAt)}
           </span>
         </div>
