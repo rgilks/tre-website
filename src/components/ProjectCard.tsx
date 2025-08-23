@@ -81,7 +81,7 @@ export function ProjectCard({ project, isHighlighted }: ProjectCardProps) {
           <a
             data-testid={`project-website-${project.id}`}
             href={`/project/${project.name}`}
-            className="flex-1 px-4 py-2 bg-tre-green text-tre-black font-bold font-mono rounded text-center hover:bg-tre-green-dark transition-colors duration-200"
+            className="flex-1 px-4 py-2 border border-tre-green text-tre-green font-bold font-mono rounded text-center hover:bg-tre-green hover:text-tre-black transition-all duration-200"
             onClick={e => e.stopPropagation()}
           >
             Website
