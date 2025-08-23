@@ -33,11 +33,7 @@ export function ProjectCard({ project, isHighlighted }: ProjectCardProps) {
         }
       `}
     >
-      {isHighlighted && (
-        <div className="absolute -top-3 left-4 bg-tre-green text-tre-black px-3 py-1 rounded-full text-xs font-bold font-mono">
-          Currently Working On
-        </div>
-      )}
+
 
       <div className="mb-4">
         <h3
