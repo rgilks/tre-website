@@ -15,17 +15,36 @@ declare global {
 // Factory function to create appropriate cache service based on environment
 export function createCacheService(): CacheService {
   // Check if we're in a Cloudflare Workers environment with KV binding
-  const isCloudflare = typeof globalThis.GITHUB_CACHE !== 'undefined' && 
-                      typeof globalThis.GITHUB_CACHE.get === 'function'
-  
-  if (isCloudflare) {
-    // In Cloudflare Workers environment, use KV cache
-    return createGitHubCacheService(globalThis.GITHUB_CACHE!)
+  // Try multiple ways to detect the KV binding
+  let kv: KVNamespace | undefined
+
+  // Method 1: Check globalThis (most common in Cloudflare Workers)
+  if (
+    typeof globalThis.GITHUB_CACHE !== 'undefined' &&
+    typeof globalThis.GITHUB_CACHE.get === 'function'
+  ) {
+    kv = globalThis.GITHUB_CACHE
   }
-  
+
+  // Method 2: Check if we're in a Cloudflare Workers environment by other indicators
+  if (
+    !kv &&
+    typeof globalThis !== 'undefined' &&
+    '__CLOUDFLARE_WORKER__' in globalThis
+  ) {
+    console.warn(
+      'Detected Cloudflare Worker but GITHUB_CACHE not accessible on globalThis'
+    )
+  }
+
+  if (kv) {
+    return createGitHubCacheService(kv)
+  }
+
   // Fallback for development or when KV is not available
-  // This should only happen in local development
-  console.warn('GITHUB_CACHE KV binding not available, using fallback cache service')
+  console.warn(
+    'GITHUB_CACHE KV binding not available, using fallback cache service'
+  )
   return createFallbackCacheService()
 }
 
@@ -52,4 +71,15 @@ function createFallbackCacheService(): CacheService {
 // Factory function for KV-based cache service (used in Cloudflare Workers)
 export function createKVCacheService(kv: KVNamespace): CacheService {
   return createGitHubCacheService(kv)
+}
+
+// Function to initialize cache service with Cloudflare environment
+// This should be called from the worker context where env is available
+export function initializeCacheService(env: {
+  GITHUB_CACHE?: KVNamespace
+}): CacheService {
+  if (env.GITHUB_CACHE) {
+    return createGitHubCacheService(env.GITHUB_CACHE)
+  }
+  return createFallbackCacheService()
 }
