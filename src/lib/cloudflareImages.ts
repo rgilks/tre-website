@@ -13,14 +13,21 @@ export interface CloudflareImageService {
   deleteImage(imageId: string): Promise<boolean>
 }
 
+// Extend globalThis to include Cloudflare environment variables
+declare global {
+  var CLOUDFLARE_ACCOUNT_ID: string | undefined
+  var CLOUDFLARE_IMAGES_API_TOKEN: string | undefined
+}
+
 export class CloudflareImagesService implements CloudflareImageService {
   private accountId: string
   private apiToken: string
   private baseUrl: string
 
   constructor() {
-    this.accountId = process.env.CLOUDFLARE_ACCOUNT_ID || ''
-    this.apiToken = process.env.CLOUDFLARE_IMAGES_API_TOKEN || ''
+    // Get credentials from Cloudflare environment variables or fall back to process.env for local development
+    this.accountId = globalThis.CLOUDFLARE_ACCOUNT_ID || process.env.CLOUDFLARE_ACCOUNT_ID || ''
+    this.apiToken = globalThis.CLOUDFLARE_IMAGES_API_TOKEN || process.env.CLOUDFLARE_IMAGES_API_TOKEN || ''
     this.baseUrl = `https://api.cloudflare.com/client/v4/accounts/${this.accountId}/images/v1`
   }
 

@@ -1,12 +1,23 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import fs from 'fs/promises'
 import path from 'path'
-import { ImageCacheService, ScreenshotCache } from './imageCache'
+import { ImageCacheService, CloudflareImageCacheService, ScreenshotCache } from './imageCache'
 
 // Mock fs module
 vi.mock('fs/promises')
 
 const mockFs = vi.mocked(fs)
+
+// Mock KV namespace for testing
+const mockGet = vi.fn()
+const mockPut = vi.fn()
+const mockDelete = vi.fn()
+
+const mockKV = {
+  get: mockGet,
+  put: mockPut,
+  delete: mockDelete,
+} as unknown as KVNamespace
 
 describe('ImageCacheService', () => {
   let cacheService: ImageCacheService
@@ -294,6 +305,125 @@ describe('ImageCacheService', () => {
 
       expect(stats.projectCount).toBe(0)
       expect(stats.totalUrls).toBe(0)
+    })
+  })
+})
+
+describe('CloudflareImageCacheService', () => {
+  let cacheService: CloudflareImageCacheService
+
+  beforeEach(() => {
+    cacheService = new CloudflareImageCacheService(mockKV)
+    vi.clearAllMocks()
+  })
+
+  it('should get cached screenshots from KV', async () => {
+    const mockCache: ScreenshotCache = {
+      'test-project': {
+        urls: ['https://example.com/screenshot.png'],
+        cloudflareIds: ['cloudflare-id-1'],
+        timestamp: Math.floor(Date.now() / 1000),
+      },
+    }
+
+    mockGet.mockResolvedValue(JSON.stringify(mockCache))
+
+    const result = await cacheService.getCachedScreenshots('test-project')
+    expect(result).toEqual(['https://example.com/screenshot.png'])
+    expect(mockGet).toHaveBeenCalledWith('screenshot_cache')
+  })
+
+  it('should return null for non-existent project', async () => {
+    const mockCache: ScreenshotCache = {
+      'existing-project': {
+        urls: ['https://example.com/screenshot.png'],
+        cloudflareIds: ['cloudflare-id-1'],
+        timestamp: Math.floor(Date.now() / 1000),
+      },
+    }
+
+    mockGet.mockResolvedValue(JSON.stringify(mockCache))
+
+    const result = await cacheService.getCachedScreenshots('non-existent-project')
+    expect(result).toBeNull()
+  })
+
+  it('should return null for expired cache', async () => {
+    const mockCache: ScreenshotCache = {
+      'test-project': {
+        urls: ['https://example.com/screenshot.png'],
+        cloudflareIds: ['cloudflare-id-1'],
+        timestamp: Math.floor(Date.now() / 1000) - 25 * 60 * 60, // 25 hours ago
+      },
+    }
+
+    mockGet.mockResolvedValue(JSON.stringify(mockCache))
+
+    const result = await cacheService.getCachedScreenshots('test-project')
+    expect(result).toBeNull()
+  })
+
+  it('should cache screenshots to KV', async () => {
+    const mockCache: ScreenshotCache = {}
+    mockGet.mockResolvedValue(JSON.stringify(mockCache))
+
+    const screenshots = ['https://example.com/screenshot1.png', 'https://example.com/screenshot2.png']
+    await cacheService.setCachedScreenshots('test-project', screenshots)
+
+    expect(mockPut).toHaveBeenCalledWith(
+      'screenshot_cache',
+      expect.stringContaining('test-project')
+    )
+  })
+
+  it('should handle KV errors gracefully', async () => {
+    mockGet.mockRejectedValue(new Error('KV error'))
+
+    const result = await cacheService.getCachedScreenshots('test-project')
+    expect(result).toBeNull()
+  })
+
+  it('should get cached Cloudflare IDs', async () => {
+    const mockCache: ScreenshotCache = {
+      'test-project': {
+        urls: ['https://example.com/screenshot.png'],
+        cloudflareIds: ['cloudflare-id-1', 'cloudflare-id-2'],
+        timestamp: Math.floor(Date.now() / 1000),
+      },
+    }
+
+    mockGet.mockResolvedValue(JSON.stringify(mockCache))
+
+    const result = await cacheService.getCachedCloudflareIds('test-project')
+    expect(result).toEqual(['cloudflare-id-1', 'cloudflare-id-2'])
+  })
+
+  it('should clear all screenshots', async () => {
+    await cacheService.clearAllScreenshots()
+    expect(mockDelete).toHaveBeenCalledWith('screenshot_cache')
+  })
+
+  it('should get cache statistics', async () => {
+    const mockCache: ScreenshotCache = {
+      'project1': {
+        urls: ['url1', 'url2'],
+        cloudflareIds: ['id1'],
+        timestamp: Math.floor(Date.now() / 1000),
+      },
+      'project2': {
+        urls: ['url3'],
+        cloudflareIds: ['id2', 'id3'],
+        timestamp: Math.floor(Date.now() / 1000),
+      },
+    }
+
+    mockGet.mockResolvedValue(JSON.stringify(mockCache))
+
+    const stats = await cacheService.getCacheStats()
+    expect(stats).toEqual({
+      projectCount: 2,
+      totalUrls: 3,
+      totalCloudflareIds: 3,
     })
   })
 })

@@ -15,13 +15,18 @@ declare global {
 
 // Factory function to create appropriate cache service based on environment
 export function createCacheService(): CacheService {
+  // Check if we're in a Cloudflare Workers environment
+  const isCloudflare = typeof globalThis.GITHUB_CACHE !== 'undefined' && 
+                      typeof globalThis.GITHUB_CACHE.get === 'function'
+  
   // In development or when KV is not available, use local file cache
-  if (process.env.NODE_ENV === 'development' || !globalThis.GITHUB_CACHE) {
+  if (process.env.NODE_ENV === 'development' || !isCloudflare) {
     return new LocalCacheService()
   }
 
   // In production with Cloudflare Workers, use KV cache
-  return createGitHubCacheService(globalThis.GITHUB_CACHE)
+  // At this point we know GITHUB_CACHE is defined and has the get method
+  return createGitHubCacheService(globalThis.GITHUB_CACHE!)
 }
 
 // Factory function for KV-based cache service (used in Cloudflare Workers)

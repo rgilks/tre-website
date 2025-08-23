@@ -1,32 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { fetchGitHubProjects } from '@/lib/github'
+import { refreshProjects } from '@/lib/projects'
 
-export async function POST(request: NextRequest) {
+// Extend globalThis to include Cloudflare environment variables
+declare global {
+  var CRON_SECRET: string | undefined
+}
+
+export async function GET(request: NextRequest) {
+  const authHeader = request.headers.get('authorization')
+  
+  // Get cron secret from Cloudflare environment variables or fall back to process.env for local development
+  const cronSecret = globalThis.CRON_SECRET || process.env.CRON_SECRET
+  
+  if (!cronSecret) {
+    return NextResponse.json({ error: 'CRON_SECRET not configured' }, { status: 500 })
+  }
+
+  if (authHeader !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   try {
-    // Verify this is a legitimate cron request (you can add more security here)
-    const authHeader = request.headers.get('authorization')
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    console.log('Cron trigger: refreshing GitHub data')
-    
-    // In production, this will have KV access via Cloudflare Workers
-    // For now, we'll just fetch fresh data
-    const projects = await fetchGitHubProjects()
-    
-    console.log(`Successfully refreshed ${projects.length} projects`)
-    
-    return NextResponse.json({ 
-      success: true, 
-      message: `Refreshed ${projects.length} projects`,
-      timestamp: new Date().toISOString()
-    })
-    
+    const result = await refreshProjects()
+    return NextResponse.json(result)
   } catch (error) {
-    console.error('Error during scheduled GitHub refresh:', error)
-    return NextResponse.json({ 
-      error: 'Failed to refresh projects' 
-    }, { status: 500 })
+    console.error('Error in cron job:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
   }
 }

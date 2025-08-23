@@ -1,196 +1,193 @@
-# Total Reality Engineering - Portfolio Website
+# TRE Website
 
-A minimal, flashy portfolio showcasing innovative GitHub projects with a modern, terminal-inspired design.
+The official website for Total Reality Engineering, showcasing innovative projects and engineering solutions.
 
-## 🚀 Getting Started
+## Features
 
-First, install the dependencies:
+- **Modern PWA**: Progressive Web App with offline support and install prompts
+- **Project Showcase**: Dynamic GitHub integration displaying public repositories
+- **Responsive Design**: Mobile-first design with Tailwind CSS
+- **Cloudflare Integration**: Built with Next.js and deployed on Cloudflare Workers
+- **Smart Caching**: KV-based caching for GitHub data and project screenshots
 
-```bash
-npm install
-```
+## Tech Stack
 
-Then, run the development server:
+- **Frontend**: Next.js 14, React 18, TypeScript
+- **Styling**: Tailwind CSS with custom TRE theme
+- **Deployment**: Cloudflare Workers via OpenNext
+- **Caching**: Cloudflare KV for production, local file system for development
+- **Testing**: Vitest for unit tests, Playwright for E2E tests
 
-```bash
-npm run dev
-# or
-npm start
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-## 🔐 GitHub API configuration
-
-This site lists repositories via the GitHub REST API. You can run it without authentication (low rate limits), or configure a token for higher limits.
-
-Environment variables:
-
-```bash
-# Optional: increases rate limits
-export GITHUB_USERNAME="rgilks"    # or your GitHub username
-export GITHUB_TOKEN="<your_token>" # classic or fine-grained PAT with at least public repo read
-
-# Required for production: cron job authentication
-export CRON_SECRET="<random_secret>" # secret key for cron job authentication
-
-# Optional: Cloudflare Images for image hosting
-export CLOUDFLARE_ACCOUNT_ID="<your_account_id>" # Cloudflare account ID
-export CLOUDFLARE_IMAGES_API_TOKEN="<your_api_token>" # API token with Images:Edit permissions
-```
-
-Notes:
-
-- If `GITHUB_TOKEN` is set, it will be sent as `Authorization: token <PAT>` (works for classic and fine-grained tokens).
-- On a 401 with a provided token, the app retries unauthenticated automatically for resiliency.
-- If `GITHUB_TOKEN` is not set, requests are unauthenticated (no Authorization header), which may hit rate limits but should not 401.
-- Make sure the token has not expired and has at least public repo read permissions.
-- `CRON_SECRET` should be a random string used to authenticate cron job requests to refresh GitHub data.
-- `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_IMAGES_API_TOKEN` are optional and enable automatic image hosting in Cloudflare Images with CDN optimization.
-
-## 📚 Available Scripts
-
-```bash
-# Development
-npm run dev          # Start development server
-npm start           # Start production server
-
-# Building
-npm run build       # Build for production
-npm run build:cf    # Build for Cloudflare Workers
-
-# Testing
-npm test            # Run tests in watch mode
-npm test -- --run   # Run tests once
-npm run test:e2e    # Run Playwright e2e tests
-
-# Code Quality
-npm run lint        # Lint code
-npm run type-check  # TypeScript type checking
-npm run format      # Format code with Prettier
-npm run check       # Run all checks (lint + type-check + format)
-
-# Dependencies
-npm run deps:update # Update all dependencies
-npm run nuke        # Clean install (remove node_modules and reinstall)
-```
-
-## 🛠️ Tech Stack
-
-- **Framework:** Next.js 15 with App Router
-- **Styling:** Tailwind CSS v4 with custom animations
-- **State Management:** Zustand with Immer
-- **Testing:** Vitest for unit tests, Playwright for e2e
-- **Deployment:** Cloudflare Workers using OpenNext
-- **Caching:** Cloudflare KV for GitHub data with 6-hour TTL
-- **PWA:** Service worker with offline support
-- **Video Integration:** YouTube iframe API with responsive design
-
-## 🎨 Features
-
-- **Animated TRE Logo** - Custom SVG with entrance animations and glow effects
-- **Responsive Design** - Mobile-first approach with terminal-inspired aesthetics
-- **Project Portfolio** - GitHub integration with screenshots and descriptions
-- **Interactive Demos** - Click "Website" button to view projects in embedded iframes (tre.systems subdomains)
-- **YouTube Videos** - Embedded video support for project demonstrations
-- **PWA Ready** - Fully installable Progressive Web App with offline support
-- **Performance Optimized** - Image optimization and lazy loading
-- **Offline Capable** - Service worker caches critical assets and provides offline fallbacks
-
-## 🌐 Live Demo
-
-Visit [tre.systems](https://tre.systems) to see the live portfolio.
-
-## 📱 PWA Features
-
-This website is a fully functional Progressive Web App (PWA) that provides:
-
-- **Installable** - Add to home screen on mobile and desktop
-- **Offline Support** - Access previously visited pages without internet
-- **Fast Loading** - Intelligent caching strategies for optimal performance
-- **Native App Experience** - Standalone mode with custom theme colors
-
-### PWA Testing
-
-```bash
-# Run PWA audit with Lighthouse
-npm run pwa:audit
-
-# Generate full Lighthouse report
-npm run pwa:test
-```
-
-### PWA Components
-
-- **Service Worker** (`/public/sw.js`) - Handles caching and offline functionality
-- **Web App Manifest** (`/public/manifest.webmanifest`) - Defines app appearance and behavior
-- **Install Prompt** - Smart banner for PWA installation
-- **Offline Page** - Graceful fallback when offline
-
-## 📖 Learn More
-
-To learn more about the technologies used:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Tailwind CSS](https://tailwindcss.com/docs) - utility-first CSS framework
-- [Zustand](https://github.com/pmndrs/zustand) - state management
-- [Framer Motion](https://www.framer.com/motion/) - animation library
-
-## ☁️ Deploying to Cloudflare Workers (OpenNext)
-
-This repo is configured to deploy with **OpenNext** to **Cloudflare Workers** (Pages-style static assets served by Workers).
-
-### Caching System
-
-The application uses intelligent caching to avoid GitHub API rate limits:
-
-**Production (Cloudflare Workers):**
-
-- **Cloudflare KV** storage for cached GitHub API responses
-- **Cache TTL:** 6 hours (configurable in `src/lib/githubCache.ts`)
-- **Automatic Refresh:** Cron trigger runs every 6 hours to refresh data
-
-**Development (Local):**
-
-- **File-based caching** in `.cache/` directory (automatically created)
-- **Same TTL:** 6 hours to match production behavior
-- **No KV dependency:** Works without Cloudflare infrastructure
-- **Screenshot caching:** Separate 24-hour TTL for screenshot URLs
-
-**Features:**
-
-- **Fallback:** If caching fails, falls back to direct GitHub API calls
-- **Smart Detection:** Automatically chooses the right cache based on environment
-- **Transparent:** Users always get the latest data within the TTL window
-- **Dual Caching:** Separate caches for project metadata (6h) and screenshots (24h)
-- **Rate Limit Protection:** Minimizes GitHub API calls for both data and images
-- **Cloudflare Images:** Optional image hosting with automatic optimization and CDN
-
-The caching system ensures consistent behavior between development and production while efficiently managing API calls.
+## Development Setup
 
 ### Prerequisites
 
-- Create a Cloudflare Pages project (build command will be handled by the GitHub Action).
-- Generate a Cloudflare API token with Pages:Edit and Account:Read permissions.
+- Node.js 18+
+- npm or yarn
+- Cloudflare account (for production deployment)
 
-### GitHub Secrets
+### Local Development
 
-Add these repository secrets:
+1. Clone the repository:
 
-- `CLOUDFLARE_API_TOKEN`: API token with Pages permissions
-- `CLOUDFLARE_ACCOUNT_ID`: Your Cloudflare account ID
-  (No Pages project needed; deployment uses `wrangler deploy`.)
+   ```bash
+   git clone <repository-url>
+   cd tre-website
+   ```
 
-### Build locally (optional)
+2. Install dependencies:
 
-```bash
-npm install
-npm run build:cf
-# Outputs in `.open-next/` (assets + server functions)
+   ```bash
+   npm install
+   ```
+
+3. Create a `.env.local` file with your GitHub token:
+
+   ```bash
+   GITHUB_TOKEN=your_github_token_here
+   GITHUB_USERNAME=rgilks
+   ```
+
+4. Run the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Environment Variables
+
+For local development, create a `.env.local` file:
+
+```env
+# GitHub API (required for higher rate limits)
+GITHUB_TOKEN=your_github_personal_access_token
+GITHUB_USERNAME=rgilks
+
+# Cloudflare Images (optional, for image optimization)
+CLOUDFLARE_ACCOUNT_ID=your_cloudflare_account_id
+CLOUDFLARE_IMAGES_API_TOKEN=your_cloudflare_images_api_token
+
+# Cron job secret (for automated data refresh)
+CRON_SECRET=your_random_secret_string
 ```
 
-### CI/CD
+## Production Deployment
 
-On push to `main`, the workflow in `.github/workflows/deploy.yml` will:
+### Cloudflare Workers Setup
 
-1. Install deps and run `
+1. **Install Wrangler CLI**:
+
+   ```bash
+   npm install -g wrangler
+   ```
+
+2. **Login to Cloudflare**:
+
+   ```bash
+   wrangler login
+   ```
+
+3. **Set up Cloudflare Secrets**:
+
+   ```bash
+   # GitHub API token
+   wrangler secret put GITHUB_TOKEN
+
+   # Cloudflare account ID
+   wrangler secret put CLOUDFLARE_ACCOUNT_ID
+
+   # Cloudflare Images API token
+   wrangler secret put CLOUDFLARE_IMAGES_API_TOKEN
+
+   # Cron job secret
+   wrangler secret put CRON_SECRET
+   ```
+
+4. **Deploy to Cloudflare**:
+   ```bash
+   npm run build
+   npm run deploy
+   ```
+
+### KV Namespace
+
+The project uses Cloudflare KV for caching GitHub data and project screenshots. The KV namespace is automatically created during deployment.
+
+### Cron Jobs
+
+A cron job runs every 6 hours to refresh GitHub data and keep the cache up to date. The cron endpoint is protected by the `CRON_SECRET` environment variable.
+
+## Architecture
+
+### Caching Strategy
+
+- **Development**: Local file system caching
+- **Production**: Cloudflare KV caching with automatic fallback
+- **Cache TTL**: 6 hours for project data, 24 hours for screenshots
+
+### Environment Detection
+
+The application automatically detects whether it's running in:
+
+- **Development**: Uses local file system and `.env` variables
+- **Cloudflare Workers**: Uses KV storage and Cloudflare environment variables
+
+### Services
+
+- **GitHub Service**: Fetches repository data and screenshots
+- **Cache Service**: Manages data caching with environment-appropriate backend
+- **Image Cache Service**: Handles screenshot URL caching
+- **Cloudflare Images**: Optional image optimization service
+
+## Testing
+
+### Unit Tests
+
+Run unit tests with Vitest:
+
+```bash
+npm test
+```
+
+### Type Checking
+
+Check TypeScript types:
+
+```bash
+npm run type-check
+```
+
+### Linting
+
+Run ESLint:
+
+```bash
+npm run lint
+```
+
+### Full Check
+
+Run all checks (lint, type-check, tests):
+
+```bash
+npm run check
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Run the full test suite
+6. Submit a pull request
+
+## License
+
+This project is proprietary to Total Reality Engineering.
+
+## Support
+
+For questions or support, contact [Robert Gilks](https://www.linkedin.com/in/rob-gilks-39bb03/).

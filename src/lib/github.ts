@@ -1,13 +1,19 @@
 import { GitHubApiResponse, Project } from '@/types/project'
 import { CacheService } from './cacheService'
-import { ImageCacheService } from './imageCache'
+import { ImageCacheService, CloudflareImageCacheService } from './imageCache'
 
 const GITHUB_API_BASE = 'https://api.github.com'
 const GITHUB_USERNAME = process.env.GITHUB_USERNAME || 'rgilks'
 
+// Extend globalThis to include Cloudflare environment variables
+declare global {
+  var GITHUB_TOKEN: string | undefined
+  var GITHUB_USERNAME: string | undefined
+}
+
 export async function fetchGitHubProjects(
   cacheService?: CacheService,
-  imageCacheService?: ImageCacheService
+  imageCacheService?: ImageCacheService | CloudflareImageCacheService
 ): Promise<Project[]> {
   // Try to get cached data first
   if (cacheService) {
@@ -24,9 +30,8 @@ export async function fetchGitHubProjects(
       'User-Agent': 'tre-website',
     }
 
-    // Prepare auth headers if a token is provided. Trim to avoid invisible
-    // whitespace issues from copy/paste into .env files.
-    const rawToken = process.env.GITHUB_TOKEN
+    // Get GitHub token from environment (Cloudflare or local)
+    const rawToken = globalThis.GITHUB_TOKEN || process.env.GITHUB_TOKEN
     const token = typeof rawToken === 'string' ? rawToken.trim() : undefined
     const authHeaders: Record<string, string> = { ...baseHeaders }
     if (token) {
@@ -173,7 +178,7 @@ export async function fetchProjectScreenshots(
       'User-Agent': 'tre-website',
     }
 
-    const rawToken = process.env.GITHUB_TOKEN
+    const rawToken = globalThis.GITHUB_TOKEN || process.env.GITHUB_TOKEN
     const token = typeof rawToken === 'string' ? rawToken.trim() : undefined
     const authHeaders: Record<string, string> = { ...baseHeaders }
     if (token) {
