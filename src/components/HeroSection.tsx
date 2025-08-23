@@ -43,47 +43,7 @@ export function HeroSection() {
           engineering.
         </motion.p>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
-          className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-        >
-          <a
-            href="#projects"
-            className="px-8 py-4 bg-tre-green text-tre-black font-bold font-mono rounded-lg hover:bg-tre-green-dark transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-tre-green/25"
-          >
-            View Projects
-          </a>
-          <a
-            href="#about"
-            className="px-8 py-4 border-2 border-tre-green text-tre-green font-bold font-mono rounded-lg hover:bg-tre-green hover:text-tre-black transition-all duration-200 transform hover:scale-105"
-          >
-            Learn More
-          </a>
-        </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 1, ease: 'easeOut' }}
-          className="mt-16 text-tre-white/60 font-mono text-sm"
-        >
-          <p>Scroll to explore our portfolio</p>
-          <div className="mt-2 animate-bounce">
-            <svg
-              className="w-6 h-6 mx-auto"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </div>
-        </motion.div>
       </div>
     </section>
   )
