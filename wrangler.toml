@@ -17,8 +17,8 @@ head_sampling_rate = 1
 # KV namespace for caching GitHub data
 [[kv_namespaces]]
 binding = "GITHUB_CACHE"
-id = "github-cache"
-preview_id = "github-cache-preview"
+id = "ef3c7113f48c46b8a04471c03ae0a428"
+preview_id = "ef3c7113f48c46b8a04471c03ae0a428"
 
 # Cron trigger to refresh GitHub data every 6 hours
 [triggers]
