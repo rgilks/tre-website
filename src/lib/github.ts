@@ -261,6 +261,13 @@ export async function fetchGitHubProjects(
     return projects
   } catch (error) {
     console.error('Error fetching GitHub projects:', error)
+    
+    // If it's already a GitHub API error, re-throw it
+    if (error instanceof Error && error.message.startsWith('GitHub API error:')) {
+      throw error
+    }
+    
+    // For other errors, throw a generic message
     throw new Error('Failed to fetch projects from GitHub')
   }
 }

@@ -1,5 +1,14 @@
 import { getCloudflareEnvironment, CloudflareEnvironment } from './cloudflareContext'
 
+// Logger function that can be easily mocked in tests
+const logger = {
+  warn: (message: string) => {
+    if (typeof console !== 'undefined' && console.warn) {
+      console.warn(message)
+    }
+  }
+}
+
 const SCREENSHOT_CACHE_TTL = 24 * 60 * 60 // 24 hours for screenshot URLs
 
 export interface ScreenshotCache {
@@ -119,7 +128,7 @@ export function createImageCacheService(env?: CloudflareEnvironment):
   }
 
   // Fallback for development or when KV is not available
-  console.warn(
+  logger.warn(
     'GITHUB_CACHE KV binding not available, using fallback image cache service'
   )
   return new FallbackImageCacheService()

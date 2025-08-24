@@ -2,6 +2,15 @@ import { Project } from '@/types/project'
 import { createGitHubCacheService } from './githubCache'
 import { getCloudflareEnvironment, CloudflareEnvironment } from './cloudflareContext'
 
+// Logger function that can be easily mocked in tests
+const logger = {
+  warn: (message: string) => {
+    if (typeof console !== 'undefined' && console.warn) {
+      console.warn(message)
+    }
+  }
+}
+
 export interface CacheService {
   getCachedProjects(): Promise<Project[] | null>
   setCachedProjects(projects: Project[]): Promise<void>
@@ -18,7 +27,7 @@ export function createCacheService(env?: CloudflareEnvironment): CacheService {
   }
 
   // Fallback for development or when KV is not available
-  console.warn(
+  logger.warn(
     'GITHUB_CACHE KV binding not available, using fallback cache service'
   )
   return createFallbackCacheService()

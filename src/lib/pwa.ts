@@ -19,7 +19,7 @@ let deferredPrompt: BeforeInstallPromptEvent | null = null;
 
 // Register service worker
 export async function registerServiceWorker(): Promise<void> {
-  if ('serviceWorker' in navigator) {
+  if (typeof navigator !== 'undefined' && navigator.serviceWorker && 'serviceWorker' in navigator) {
     try {
       const registration = await navigator.serviceWorker.register('/sw.js');
       console.log('Service Worker registered successfully:', registration);
@@ -45,15 +45,17 @@ export async function registerServiceWorker(): Promise<void> {
 
 // Handle install prompt
 export function setupInstallPrompt(): void {
-  window.addEventListener('beforeinstallprompt', (e) => {
-    // Prevent the mini-infobar from appearing on mobile
-    e.preventDefault();
-    // Stash the event so it can be triggered later
-    deferredPrompt = e;
-    
-    // Dispatch custom event to notify components
-    window.dispatchEvent(new CustomEvent('pwa-install-available'));
-  });
+  if (typeof window !== 'undefined') {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Prevent the mini-infobar from appearing on mobile
+      e.preventDefault();
+      // Stash the event so it can be triggered later
+      deferredPrompt = e;
+      
+      // Dispatch custom event to notify components
+      window.dispatchEvent(new CustomEvent('pwa-install-available'));
+    });
+  }
 }
 
 // Show install prompt
@@ -64,7 +66,13 @@ export async function showInstallPrompt(): Promise<boolean> {
   
   try {
     // Show the install prompt
-    deferredPrompt.prompt();
+    try {
+      deferredPrompt.prompt();
+    } catch (promptError) {
+      console.error('Error calling prompt():', promptError);
+      deferredPrompt = null;
+      return false;
+    }
     
     // Wait for the user to respond to the prompt
     const { outcome } = await deferredPrompt.userChoice;
@@ -75,19 +83,29 @@ export async function showInstallPrompt(): Promise<boolean> {
     return outcome === 'accepted';
   } catch (error) {
     console.error('Error showing install prompt:', error);
+    // Clear the deferred prompt on error
+    deferredPrompt = null;
     return false;
   }
 }
 
 // Check if app is installed
 export function isAppInstalled(): boolean {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+    return false;
+  }
   return window.matchMedia('(display-mode: standalone)').matches ||
-         (window.navigator as { standalone?: boolean }).standalone === true;
+         (navigator as { standalone?: boolean }).standalone === true;
 }
 
 // Check if install prompt is available
 export function isInstallPromptAvailable(): boolean {
   return deferredPrompt !== null;
+}
+
+// Clear deferred prompt (useful for testing)
+export function clearDeferredPrompt(): void {
+  deferredPrompt = null;
 }
 
 // Initialize PWA functionality
