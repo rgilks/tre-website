@@ -168,6 +168,7 @@ The project follows a robust testing strategy with high coverage for business lo
 ### Test Coverage
 
 Current coverage focuses on business logic files:
+
 - ✅ **100% Coverage**: `animationUtils.ts`, `dateUtils.ts`, `projectUtils.ts`, `youtube.ts`
 - ✅ **80%+ Coverage**: `githubCache.ts` (86.56%), `imageCache.ts` (73.95%), `projectStore.ts` (72.63%)
 
