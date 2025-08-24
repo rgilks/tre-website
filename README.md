@@ -19,7 +19,7 @@ The official website for Total Reality Engineering, showcasing innovative projec
 - **State Management**: Zustand with Immer for immutable updates
 - **Deployment**: Cloudflare Workers via OpenNext
 - **Caching**: Cloudflare KV for production, local file system for development
-- **Testing**: Vitest for unit tests, Playwright for E2E tests
+- **Testing**: Vitest for unit tests with comprehensive coverage, Playwright for E2E tests
 - **PWA**: Service worker with offline caching and install prompts
 
 ## Development Setup
@@ -145,6 +145,15 @@ The application automatically detects whether it's running in:
 - **Image Cache Service**: Handles screenshot URL caching
 - **Cloudflare Images**: Optional image optimization service
 
+### Code Architecture
+
+The codebase follows clean architecture principles:
+
+- **UI Components** (`src/components/`): Pure presentational components with extracted business logic
+- **Business Logic** (`src/lib/`): Testable utility functions for date formatting, animations, and project operations
+- **State Management** (`src/store/`): Zustand stores with comprehensive test coverage
+- **Type Safety** (`src/types/`): Centralized TypeScript definitions
+
 ### PWA Features
 
 - **Service Worker**: Cache-first for static assets, stale-while-revalidate for navigation
@@ -154,12 +163,26 @@ The application automatically detects whether it's running in:
 
 ## Testing
 
+The project follows a robust testing strategy with high coverage for business logic while keeping UI components untested as per workspace standards.
+
+### Test Coverage
+
+Current coverage focuses on business logic files:
+- ✅ **100% Coverage**: `animationUtils.ts`, `dateUtils.ts`, `projectUtils.ts`, `youtube.ts`
+- ✅ **80%+ Coverage**: `githubCache.ts` (86.56%), `imageCache.ts` (73.95%), `projectStore.ts` (72.63%)
+
 ### Unit Tests
 
 Run unit tests with Vitest:
 
 ```bash
 npm test
+```
+
+Run tests with coverage report:
+
+```bash
+npm test -- --coverage
 ```
 
 ### E2E Tests

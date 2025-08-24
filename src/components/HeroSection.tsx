@@ -2,8 +2,11 @@
 
 import { motion } from 'framer-motion'
 import { TRELogo } from './TRELogo'
+import { getHeroAnimations } from '@/lib/animationUtils'
 
 export function HeroSection() {
+  const animations = getHeroAnimations()
+
   return (
     <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-tre-black via-tre-black to-tre-black/95 relative overflow-hidden">
       {/* Background glow effect */}
@@ -12,9 +15,7 @@ export function HeroSection() {
       <div className="container mx-auto px-4 text-center relative z-10">
         <motion.div
           key="hero-logo"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
+          {...animations[0]}
           className="mb-8"
           suppressHydrationWarning
         >
@@ -27,9 +28,7 @@ export function HeroSection() {
 
         <motion.h1
           key="hero-title"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
+          {...animations[1]}
           className="text-6xl md:text-7xl font-bold text-tre-green font-mono mb-6 tracking-tight"
           suppressHydrationWarning
         >
@@ -38,9 +37,7 @@ export function HeroSection() {
 
         <motion.p
           key="hero-description"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
+          {...animations[2]}
           className="text-xl md:text-2xl text-tre-white/80 max-w-3xl mx-auto mb-12 leading-relaxed"
           suppressHydrationWarning
         >

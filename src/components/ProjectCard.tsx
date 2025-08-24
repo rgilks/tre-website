@@ -3,61 +3,37 @@
 import { motion } from 'framer-motion'
 import { ProjectCardProps } from '@/types/project'
 import { CalendarIcon } from '@heroicons/react/24/outline'
+import { formatDate } from '@/lib/dateUtils'
+import { 
+  getVisibleTopics, 
+  getProjectCardBorderClass, 
+  getProjectButtonClass, 
+  getProjectBackgroundStyle 
+} from '@/lib/projectUtils'
+import { getQuickFadeInAnimation, getHoverAnimation } from '@/lib/animationUtils'
 
-export function ProjectCard({ project, isHighlighted }: ProjectCardProps) {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ]
-    return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`
-  }
+export function ProjectCard({ project, isHighlighted = false }: ProjectCardProps) {
+  const { visibleTopics, overflowCount, hasOverflow } = getVisibleTopics(project.topics)
+  const borderClass = getProjectCardBorderClass(isHighlighted)
+  const websiteButtonClass = getProjectButtonClass(!!project.homepageUrl)
+  const githubButtonClass = getProjectButtonClass(!project.homepageUrl)
+  const backgroundStyle = getProjectBackgroundStyle(project.screenshotUrl)
 
   return (
     <motion.div
       data-testid={`project-card-${project.id}`}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-      whileHover={{ y: -5 }}
+      {...getQuickFadeInAnimation()}
+      {...getHoverAnimation()}
       className={`
         relative border rounded-lg p-6 cursor-pointer transition-all duration-200 overflow-hidden
-        ${
-          isHighlighted
-            ? 'border-tre-green shadow-lg shadow-tre-green/25'
-            : 'border-tre-green/20 hover:border-tre-green/40'
-        }
+        ${borderClass}
       `}
     >
       {/* Screenshot background */}
-      {project.screenshotUrl ? (
-        <>
-          {/* Blurred background */}
-          <div
-            className="absolute inset-0 -z-10"
-            style={{
-              backgroundImage: `url(${project.screenshotUrl})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              filter: 'blur(20px) brightness(0.3)',
-              transform: 'scale(1.1)', // Prevent blur edges from showing
-            }}
-          />
-        </>
-      ) : (
-        <div className="absolute inset-0 -z-10 bg-tre-black/50" />
-      )}
+      <div
+        className="absolute inset-0 -z-10"
+        style={backgroundStyle}
+      />
 
       {/* Content overlay */}
       <div className="relative z-10">
@@ -78,7 +54,7 @@ export function ProjectCard({ project, isHighlighted }: ProjectCardProps) {
 
         <div className="mb-4">
           <div className="flex flex-wrap gap-2">
-            {project.topics.slice(0, 3).map(topic => (
+            {visibleTopics.map(topic => (
               <span
                 key={topic}
                 data-testid={`project-topic-${project.id}-${topic}`}
@@ -87,9 +63,9 @@ export function ProjectCard({ project, isHighlighted }: ProjectCardProps) {
                 {topic}
               </span>
             ))}
-            {project.topics.length > 3 && (
+            {hasOverflow && (
               <span className="px-2 py-1 bg-tre-white/20 text-tre-white/60 text-xs rounded font-mono">
-                +{project.topics.length - 3}
+                +{overflowCount}
               </span>
             )}
           </div>
@@ -112,7 +88,7 @@ export function ProjectCard({ project, isHighlighted }: ProjectCardProps) {
             <a
               data-testid={`project-website-${project.id}`}
               href={`/project/${project.name}`}
-              className="flex-1 px-4 py-2 border border-tre-green text-tre-green font-bold font-mono rounded text-center hover:bg-tre-green hover:text-tre-black transition-all duration-200"
+              className={`px-4 py-2 border border-tre-green text-tre-green font-bold font-mono rounded text-center hover:bg-tre-green hover:text-tre-black transition-all duration-200 ${websiteButtonClass}`}
               onClick={e => e.stopPropagation()}
             >
               Website
@@ -123,9 +99,7 @@ export function ProjectCard({ project, isHighlighted }: ProjectCardProps) {
             href={project.htmlUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className={`px-4 py-2 border border-tre-green text-tre-green font-bold font-mono rounded text-center hover:bg-tre-green hover:text-tre-black transition-all duration-200 ${
-              project.homepageUrl ? 'flex-1' : 'w-full'
-            }`}
+            className={`px-4 py-2 border border-tre-green text-tre-green font-bold font-mono rounded text-center hover:bg-tre-green hover:text-tre-black transition-all duration-200 ${githubButtonClass}`}
             onClick={e => e.stopPropagation()}
           >
             GitHub

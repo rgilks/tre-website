@@ -4,6 +4,7 @@ import { ProjectCard } from './ProjectCard'
 import { useProjectStore } from '@/store/projectStore'
 import { useEffect } from 'react'
 import { Project } from '@/types/project'
+import { shouldHighlightProject } from '@/lib/projectUtils'
 
 interface ProjectGridProps {
   initialProjects: Project[]
@@ -78,7 +79,7 @@ export function ProjectGrid({ initialProjects }: ProjectGridProps) {
         <ProjectCard
           key={project.id}
           project={project}
-          isHighlighted={index === 0}
+          isHighlighted={shouldHighlightProject(index)}
         />
       ))}
     </div>
