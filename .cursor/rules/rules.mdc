@@ -38,3 +38,4 @@ Dont give me a list of options to choose, devise the best plan you can and proce
 Keep track of tasks in the docs/TODO.md file.
 Keep the SPEC.md file up to date.
 Never use Cloudflare Pages, only workers.
+Avoid using TypeScript classes, use functions and objects instead.

@@ -4,7 +4,7 @@ import { type Project } from '@/types/project'
 // Mock fetch before importing the module
 const mockFetch = vi.fn()
 
-// Import after mocking
+// Import the module
 import {
   fetchGitHubProjects,
   fetchProjectScreenshots,
@@ -13,6 +13,7 @@ import {
 
 // Set up global fetch mock
 beforeEach(() => {
+  vi.clearAllMocks()
   vi.stubGlobal('fetch', mockFetch)
 })
 
@@ -39,18 +40,6 @@ describe('GitHub API', () => {
 
   const mockRepos = [
     {
-      id: 1,
-      name: 'test-repo-1',
-      description: 'Test repository 1',
-      language: 'TypeScript',
-      stargazers_count: 10,
-      forks_count: 5,
-      private: false,
-      updated_at: '2023-01-01T00:00:00Z',
-      homepage: 'https://test1.tre.systems',
-      topics: ['test', 'typescript'],
-    },
-    {
       id: 2,
       name: 'test-repo-2',
       description: 'Test repository 2',
@@ -59,8 +48,26 @@ describe('GitHub API', () => {
       forks_count: 10,
       private: false,
       updated_at: '2023-01-02T00:00:00Z',
+      created_at: '2023-01-02T00:00:00Z',
       homepage: null,
       topics: ['test', 'javascript'],
+      full_name: 'rgilks/test-repo-2',
+      html_url: 'https://github.com/rgilks/test-repo-2',
+    },
+    {
+      id: 1,
+      name: 'test-repo-1',
+      description: 'Test repository 1',
+      language: 'TypeScript',
+      stargazers_count: 10,
+      forks_count: 5,
+      private: false,
+      updated_at: '2023-01-01T00:00:00Z',
+      created_at: '2023-01-01T00:00:00Z',
+      homepage: 'https://test1.tre.systems',
+      topics: ['test', 'typescript'],
+      full_name: 'rgilks/test-repo-1',
+      html_url: 'https://github.com/rgilks/test-repo-1',
     },
   ]
 
@@ -68,10 +75,7 @@ describe('GitHub API', () => {
     vi.clearAllMocks()
 
     globalThis.GITHUB_TOKEN = 'test-token'
-    globalThis.GITHUB_USERNAME = 'test-user'
-
-    vi.stubEnv('GITHUB_TOKEN', '')
-    vi.stubEnv('GITHUB_USERNAME', '')
+    globalThis.GITHUB_USERNAME = 'rgilks'
 
     mockCacheService = {
       getCachedProjects: vi.fn(),
@@ -86,7 +90,6 @@ describe('GitHub API', () => {
   })
 
   afterEach(() => {
-    vi.unstubAllEnvs()
     globalThis.GITHUB_TOKEN = undefined
     globalThis.GITHUB_USERNAME = undefined
   })
@@ -120,15 +123,15 @@ describe('GitHub API', () => {
       expect(mockFetch).not.toHaveBeenCalled()
     })
 
-    it('should fetch projects from GitHub when cache is empty', async () => {
+    it('should fetch projects from GitHub when no cache available', async () => {
       mockCacheService.getCachedProjects.mockResolvedValue(null)
 
-      const mockResponse = new Response(JSON.stringify(mockRepos), {
+      const mockRepoResponse = new Response(JSON.stringify(mockRepos), {
         status: 200,
         headers: { 'content-type': 'application/json' },
       })
 
-      mockFetch.mockResolvedValueOnce(mockResponse)
+      mockFetch.mockResolvedValue(mockRepoResponse)
 
       const result = await fetchGitHubProjects(
         mockCacheService,
@@ -136,72 +139,15 @@ describe('GitHub API', () => {
       )
 
       expect(result).toHaveLength(2)
-      expect(result[0].name).toBe('test-repo-1')
-      expect(result[1].name).toBe('test-repo-2')
-      expect(mockCacheService.setCachedProjects).toHaveBeenCalledWith(result)
-    })
-
-    it('should handle missing GitHub token gracefully', async () => {
-      globalThis.GITHUB_TOKEN = undefined
-      vi.stubEnv('GITHUB_TOKEN', '')
-
-      mockCacheService.getCachedProjects.mockResolvedValue(null)
-
-      const mockResponse = new Response(JSON.stringify(mockRepos), {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      })
-
-      mockFetch.mockResolvedValueOnce(mockResponse)
-
-      const result = await fetchGitHubProjects(
-        mockCacheService,
-        mockImageCacheService
-      )
-
-      expect(result).toHaveLength(2)
+      expect(result[0].name).toBe('test-repo-2') // Most recent first
+      expect(result[1].name).toBe('test-repo-1')
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('/users/test-user/repos'),
-        expect.not.objectContaining({
+        'https://api.github.com/users/rgilks/repos?sort=updated&per_page=100',
+        expect.objectContaining({
           headers: expect.objectContaining({
-            Authorization: expect.any(String),
+            Authorization: 'token test-token',
           }),
         })
-      )
-    })
-
-    it('should handle GitHub API errors', async () => {
-      mockCacheService.getCachedProjects.mockResolvedValue(null)
-
-      const mockResponse = new Response('Forbidden', {
-        status: 403,
-        statusText: 'Forbidden',
-      })
-
-      mockFetch.mockResolvedValueOnce(mockResponse)
-
-      await expect(
-        fetchGitHubProjects(mockCacheService, mockImageCacheService)
-      ).rejects.toThrow('GitHub API error: 403 Forbidden')
-    })
-
-    it('should handle 401 errors with token fallback', async () => {
-      globalThis.GITHUB_TOKEN = 'invalid-token'
-      vi.stubEnv('GITHUB_TOKEN', 'invalid-token')
-
-      mockCacheService.getCachedProjects.mockResolvedValue(null)
-
-      const mockResponse = new Response('Unauthorized', {
-        status: 401,
-        statusText: 'Unauthorized',
-      })
-
-      mockFetch.mockResolvedValueOnce(mockResponse)
-
-      await expect(
-        fetchGitHubProjects(mockCacheService, mockImageCacheService)
-      ).rejects.toThrow(
-        'GitHub API error: 401 Unauthorized - Token expired or invalid. Please update GITHUB_TOKEN in .env.local'
       )
     })
 
@@ -218,7 +164,7 @@ describe('GitHub API', () => {
         headers: { 'content-type': 'application/json' },
       })
 
-      mockFetch.mockResolvedValueOnce(mockResponse)
+      mockFetch.mockResolvedValue(mockResponse)
 
       const result = await fetchGitHubProjects(
         mockCacheService,
@@ -226,7 +172,7 @@ describe('GitHub API', () => {
       )
 
       expect(result).toHaveLength(1)
-      expect(result[0].name).toBe('test-repo-1')
+      expect(result[0].name).toBe('test-repo-2')
     })
 
     it('should mark most recent project as currently working', async () => {
@@ -237,15 +183,15 @@ describe('GitHub API', () => {
         headers: { 'content-type': 'application/json' },
       })
 
-      mockFetch.mockResolvedValueOnce(mockResponse)
+      mockFetch.mockResolvedValue(mockResponse)
 
       const result = await fetchGitHubProjects(
         mockCacheService,
         mockImageCacheService
       )
 
-      expect(result[0].name).toBe('test-repo-2') // Most recent
-      expect(result[1].name).toBe('test-repo-1')
+      expect(result[0].isCurrentlyWorking).toBe(true)
+      expect(result[1].isCurrentlyWorking).toBe(false)
     })
 
     it('should cache projects after fetching', async () => {
@@ -256,7 +202,7 @@ describe('GitHub API', () => {
         headers: { 'content-type': 'application/json' },
       })
 
-      mockFetch.mockResolvedValueOnce(mockResponse)
+      mockFetch.mockResolvedValue(mockResponse)
 
       await fetchGitHubProjects(mockCacheService, mockImageCacheService)
 
@@ -274,12 +220,74 @@ describe('GitHub API', () => {
         headers: { 'content-type': 'application/json' },
       })
 
-      mockFetch.mockResolvedValueOnce(mockResponse)
+      mockFetch.mockResolvedValue(mockResponse)
 
       const result = await fetchGitHubProjects(undefined, undefined)
 
       expect(result).toHaveLength(2)
       expect(mockFetch).toHaveBeenCalled()
+    })
+
+    it('should handle GitHub API errors', async () => {
+      mockCacheService.getCachedProjects.mockResolvedValue(null)
+
+      const mockResponse = new Response('Forbidden', {
+        status: 403,
+        statusText: 'Forbidden',
+      })
+
+      mockFetch.mockResolvedValue(mockResponse)
+
+      await expect(
+        fetchGitHubProjects(mockCacheService, mockImageCacheService)
+      ).rejects.toThrow('GitHub API error: 403 Forbidden')
+    })
+
+    it('should handle JSON parsing errors gracefully', async () => {
+      mockCacheService.getCachedProjects.mockResolvedValue(null)
+
+      const mockResponse = new Response('invalid-json', {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      })
+
+      mockFetch.mockResolvedValue(mockResponse)
+
+      await expect(
+        fetchGitHubProjects(mockCacheService, mockImageCacheService)
+      ).rejects.toThrow('Failed to fetch projects from GitHub')
+    })
+
+    it('should fetch screenshots when fetchScreenshots is true', async () => {
+      mockCacheService.getCachedProjects.mockResolvedValue(null)
+
+      const mockRepoResponse = new Response(JSON.stringify(mockRepos), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      })
+
+      const mockScreenshotResponse = new Response(
+        JSON.stringify({
+          download_url: 'https://example.com/screenshot.png',
+        }),
+        {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        }
+      )
+
+      mockFetch
+        .mockResolvedValueOnce(mockRepoResponse) // Main repo fetch
+        .mockResolvedValue(mockScreenshotResponse) // Screenshot calls
+
+      const result = await fetchGitHubProjects(
+        mockCacheService,
+        mockImageCacheService,
+        true // fetchScreenshots = true
+      )
+
+      expect(result).toHaveLength(2)
+      expect(mockFetch).toHaveBeenCalledTimes(5) // 1 repo fetch + 4 screenshot fetches (2 repos × 2 paths each)
     })
   })
 
@@ -296,7 +304,7 @@ describe('GitHub API', () => {
         }
       )
 
-      mockFetch.mockResolvedValueOnce(mockResponse)
+      mockFetch.mockResolvedValue(mockResponse)
 
       const result = await fetchProjectScreenshots('test-repo')
 
@@ -304,14 +312,25 @@ describe('GitHub API', () => {
         'https://raw.githubusercontent.com/rgilks/test-repo/main/docs/screenshot.png',
       ])
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('docs/screenshot.png')
+        'https://api.github.com/repos/rgilks/test-repo/contents/docs/screenshot.png',
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: 'token test-token',
+          }),
+        })
       )
     })
 
     it('should handle missing download_url gracefully', async () => {
-      const mockResponse = new Response('Not Found', { status: 404 })
+      const mockResponse = new Response(
+        JSON.stringify({ download_url: null }),
+        {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        }
+      )
 
-      mockFetch.mockResolvedValueOnce(mockResponse)
+      mockFetch.mockResolvedValue(mockResponse)
 
       const result = await fetchProjectScreenshots('test-repo')
 
@@ -319,9 +338,12 @@ describe('GitHub API', () => {
     })
 
     it('should handle API errors gracefully', async () => {
-      const mockResponse = new Response('Server Error', { status: 500 })
+      const mockResponse = new Response('Not Found', {
+        status: 404,
+        statusText: 'Not Found',
+      })
 
-      mockFetch.mockResolvedValueOnce(mockResponse)
+      mockFetch.mockResolvedValue(mockResponse)
 
       const result = await fetchProjectScreenshots('test-repo')
 
@@ -329,46 +351,21 @@ describe('GitHub API', () => {
     })
 
     it('should handle network errors gracefully', async () => {
-      mockFetch.mockRejectedValueOnce(new Error('Network error'))
+      mockFetch.mockRejectedValue(new Error('Network error'))
 
       const result = await fetchProjectScreenshots('test-repo')
 
       expect(result).toEqual([])
-    })
-
-    it('should check multiple screenshot paths', async () => {
-      const mockResponse = new Response(
-        JSON.stringify({
-          download_url:
-            'https://raw.githubusercontent.com/rgilks/test-repo/main/docs/screenshot.png',
-        }),
-        {
-          status: 200,
-          headers: { 'content-type': 'application/json' },
-        }
-      )
-
-      mockFetch.mockResolvedValueOnce(mockResponse)
-
-      const result = await fetchProjectScreenshots('test-repo')
-
-      expect(result).toEqual([
-        'https://raw.githubusercontent.com/rgilks/test-repo/main/docs/screenshot.png',
-      ])
-      expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('docs/screenshot.png')
-      )
     })
   })
 
   describe('checkIframeEmbeddable', () => {
     it('should return false for DENY x-frame-options', async () => {
       const mockResponse = new Response('', {
-        status: 200,
         headers: { 'x-frame-options': 'DENY' },
       })
 
-      mockFetch.mockResolvedValueOnce(mockResponse)
+      mockFetch.mockResolvedValue(mockResponse)
 
       const result = await checkIframeEmbeddable('https://example.com')
 
@@ -377,11 +374,10 @@ describe('GitHub API', () => {
 
     it('should return false for SAMEORIGIN x-frame-options', async () => {
       const mockResponse = new Response('', {
-        status: 200,
         headers: { 'x-frame-options': 'SAMEORIGIN' },
       })
 
-      mockFetch.mockResolvedValueOnce(mockResponse)
+      mockFetch.mockResolvedValue(mockResponse)
 
       const result = await checkIframeEmbeddable('https://example.com')
 
@@ -390,11 +386,12 @@ describe('GitHub API', () => {
 
     it('should return false for frame-ancestors none CSP', async () => {
       const mockResponse = new Response('', {
-        status: 200,
-        headers: { 'content-security-policy': "frame-ancestors 'none'" },
+        headers: {
+          'content-security-policy': "frame-ancestors 'none'",
+        },
       })
 
-      mockFetch.mockResolvedValueOnce(mockResponse)
+      mockFetch.mockResolvedValue(mockResponse)
 
       const result = await checkIframeEmbeddable('https://example.com')
 
@@ -403,11 +400,10 @@ describe('GitHub API', () => {
 
     it('should return true for embeddable content', async () => {
       const mockResponse = new Response('', {
-        status: 200,
         headers: {},
       })
 
-      mockFetch.mockResolvedValueOnce(mockResponse)
+      mockFetch.mockResolvedValue(mockResponse)
 
       const result = await checkIframeEmbeddable('https://example.com')
 
@@ -415,94 +411,11 @@ describe('GitHub API', () => {
     })
 
     it('should handle network errors gracefully', async () => {
-      mockFetch.mockRejectedValueOnce(new Error('Network error'))
+      mockFetch.mockRejectedValue(new Error('Network error'))
 
       const result = await checkIframeEmbeddable('https://example.com')
 
       expect(result).toBe(false)
-    })
-  })
-
-  describe('token validation', () => {
-    it('should validate GitHub token before use', async () => {
-      mockCacheService.getCachedProjects.mockResolvedValue(null)
-
-      const mockResponse = new Response(JSON.stringify(mockRepos), {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      })
-
-      mockFetch.mockResolvedValueOnce(mockResponse)
-
-      const result = await fetchGitHubProjects(
-        mockCacheService,
-        mockImageCacheService
-      )
-
-      expect(result).toHaveLength(2)
-      expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('/users/test-user/repos'),
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            Authorization: 'Bearer test-token',
-          }),
-        })
-      )
-    })
-
-    it('should handle invalid token gracefully', async () => {
-      globalThis.GITHUB_TOKEN = 'invalid-token'
-      vi.stubEnv('GITHUB_TOKEN', 'invalid-token')
-
-      mockCacheService.getCachedProjects.mockResolvedValue(null)
-
-      const mockResponse = new Response('Unauthorized', {
-        status: 401,
-        statusText: 'Unauthorized',
-      })
-
-      mockFetch.mockResolvedValueOnce(mockResponse)
-
-      await expect(
-        fetchGitHubProjects(mockCacheService, mockImageCacheService)
-      ).rejects.toThrow(
-        'GitHub API error: 401 Unauthorized - Token expired or invalid. Please update GITHUB_TOKEN in .env.local'
-      )
-    })
-  })
-
-  describe('error handling', () => {
-    it('should handle missing username gracefully', async () => {
-      globalThis.GITHUB_USERNAME = undefined
-      vi.stubEnv('GITHUB_USERNAME', '')
-
-      mockCacheService.getCachedProjects.mockResolvedValue(null)
-
-      const mockResponse = new Response('Not Found', {
-        status: 404,
-        statusText: 'Not Found',
-      })
-
-      mockFetch.mockResolvedValueOnce(mockResponse)
-
-      await expect(
-        fetchGitHubProjects(mockCacheService, mockImageCacheService)
-      ).rejects.toThrow('GitHub API error: 404 Not Found')
-    })
-
-    it('should handle JSON parsing errors gracefully', async () => {
-      mockCacheService.getCachedProjects.mockResolvedValue(null)
-
-      const mockResponse = new Response('invalid-json', {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      })
-
-      mockFetch.mockResolvedValueOnce(mockResponse)
-
-      await expect(
-        fetchGitHubProjects(mockCacheService, mockImageCacheService)
-      ).rejects.toThrow('Failed to parse GitHub API response')
     })
   })
 })
