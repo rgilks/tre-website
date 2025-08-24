@@ -1,6 +1,9 @@
 'use client'
 
 import { ProjectCard } from './ProjectCard'
+import { LoadingSkeleton } from './LoadingSkeleton'
+import { ErrorMessage } from './ErrorMessage'
+import { EmptyState } from './EmptyState'
 import { useProjectStore } from '@/store/projectStore'
 import { useEffect } from 'react'
 import { Project } from '@/types/project'
@@ -21,50 +24,17 @@ export function ProjectGrid({ initialProjects }: ProjectGridProps) {
   }, [projects.length, initialProjects, setProjects])
 
   if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[...Array(6)].map((_, i) => (
-          <div
-            key={i}
-            className="bg-tre-black/50 border border-tre-green/20 rounded-lg p-6 animate-pulse"
-          >
-            <div className="h-4 bg-tre-green/20 rounded mb-4"></div>
-            <div className="h-3 bg-tre-green/20 rounded mb-2"></div>
-            <div className="h-3 bg-tre-green/20 rounded mb-4"></div>
-            <div className="flex space-x-2">
-              <div className="h-6 bg-tre-green/20 rounded px-2 py-1"></div>
-              <div className="h-6 bg-tre-green/20 rounded px-2 py-1"></div>
-            </div>
-          </div>
-        ))}
-      </div>
-    )
+    return <LoadingSkeleton />
   }
 
   if (error) {
     return (
-      <div className="text-center py-12">
-        <div className="text-tre-red text-xl mb-4">
-          ⚠️ Error loading projects
-        </div>
-        <p className="text-tre-white/70 mb-6">{error}</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="px-6 py-3 bg-tre-green text-tre-black font-bold font-mono rounded-lg hover:bg-tre-green-dark transition-colors duration-200"
-        >
-          Retry
-        </button>
-      </div>
+      <ErrorMessage error={error} onRetry={() => window.location.reload()} />
     )
   }
 
   if (filteredProjects.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <div className="text-tre-white/70 text-xl">No projects found</div>
-        <p className="text-tre-white/50 mt-2">Check back later for updates</p>
-      </div>
-    )
+    return <EmptyState />
   }
 
   return (

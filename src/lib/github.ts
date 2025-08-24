@@ -119,38 +119,35 @@ async function fetchProjectScreenshots(
   projects: Project[],
   imageCacheService: ImageCacheService
 ): Promise<void> {
-  for (const project of projects) {
-    try {
-      let screenshots: string[] = []
+  // Process projects in parallel for better performance
+  await Promise.all(
+    projects.map(async project => {
+      try {
+        // Try to get cached screenshots first
+        let screenshots =
+          (await imageCacheService.getCachedScreenshots(project.name)) || []
 
-      // Try to get cached screenshots first
-      const cachedScreenshots = await imageCacheService.getCachedScreenshots(
-        project.name
-      )
-      if (cachedScreenshots) {
-        screenshots = cachedScreenshots
-      }
+        // If no cached screenshots, fetch from GitHub
+        if (screenshots.length === 0) {
+          screenshots = await fetchProjectScreenshotsFromGitHub(project.name)
 
-      // If no cached screenshots, fetch from GitHub
-      if (screenshots.length === 0) {
-        screenshots = await fetchProjectScreenshotsFromGitHub(project.name)
-
-        // Cache the screenshots for future use
-        if (screenshots.length > 0) {
-          await imageCacheService.setCachedScreenshots(
-            project.name,
-            screenshots
-          )
+          // Cache the screenshots for future use
+          if (screenshots.length > 0) {
+            await imageCacheService.setCachedScreenshots(
+              project.name,
+              screenshots
+            )
+          }
         }
-      }
 
-      if (screenshots.length > 0) {
-        project.screenshotUrl = screenshots[0]
+        if (screenshots.length > 0) {
+          project.screenshotUrl = screenshots[0]
+        }
+      } catch (error) {
+        console.warn(`Could not fetch screenshot for ${project.name}:`, error)
       }
-    } catch (error) {
-      console.warn(`Could not fetch screenshot for ${project.name}:`, error)
-    }
-  }
+    })
+  )
 }
 
 export async function fetchProjectScreenshotsFromGitHub(
@@ -159,27 +156,27 @@ export async function fetchProjectScreenshotsFromGitHub(
   try {
     const headers = getGitHubHeaders()
     const screenshotPaths = [`docs/screenshot.png`, `public/screenshot.png`]
-    const screenshots: string[] = []
 
-    for (const path of screenshotPaths) {
+    // Check paths in parallel for better performance
+    const screenshotPromises = screenshotPaths.map(async path => {
       try {
         const response = await fetch(
           `https://api.github.com/repos/${GITHUB_USERNAME}/${projectName}/contents/${path}`,
           { headers }
         )
 
-        if (!response.ok) continue
+        if (!response.ok) return null
 
         const data = (await response.json()) as { download_url?: string }
-        if (data.download_url) {
-          screenshots.push(data.download_url)
-        }
+        return data.download_url || null
       } catch (error) {
         console.error(`Error checking path ${path}:`, error)
+        return null
       }
-    }
+    })
 
-    return screenshots
+    const results = await Promise.all(screenshotPromises)
+    return results.filter((url): url is string => url !== null)
   } catch (error) {
     console.error(`Error fetching screenshots for ${projectName}:`, error)
     return []
