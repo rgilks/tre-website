@@ -6,6 +6,10 @@ import { AboutSection } from '@/components/AboutSection'
 import { ContactSection } from '@/components/ContactSection'
 import { getProjects } from '@/lib/projects'
 
+// Force dynamic rendering to ensure we get fresh data from the worker environment
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function HomePage() {
   const projects = await getProjects()
 
