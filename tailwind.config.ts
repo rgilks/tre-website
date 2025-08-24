@@ -30,15 +30,19 @@ const config: Config = {
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       animation: {
-        'glow': 'glow 2s ease-in-out infinite alternate',
-        'breath': 'breath 4s ease-in-out infinite',
+        glow: 'glow 2s ease-in-out infinite alternate',
+        breath: 'breath 4s ease-in-out infinite',
         'fade-in': 'fadeIn 0.5s ease-out',
         'slide-up': 'slideUp 0.5s ease-out',
       },
       keyframes: {
         glow: {
-          '0%': { boxShadow: '0 0 5px #39FF14, 0 0 10px #39FF14, 0 0 15px #39FF14' },
-          '100%': { boxShadow: '0 0 10px #39FF14, 0 0 20px #39FF14, 0 0 30px #39FF14' },
+          '0%': {
+            boxShadow: '0 0 5px #39FF14, 0 0 10px #39FF14, 0 0 15px #39FF14',
+          },
+          '100%': {
+            boxShadow: '0 0 10px #39FF14, 0 0 20px #39FF14, 0 0 30px #39FF14',
+          },
         },
         breath: {
           '0%, 100%': { transform: 'scale(1)' },

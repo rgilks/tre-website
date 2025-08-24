@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+
 import {
   createCloudflareImagesService,
   type CloudflareImageService,
@@ -77,7 +78,10 @@ describe('CloudflareImagesService', () => {
       vi.stubEnv('CLOUDFLARE_IMAGES_API_TOKEN', '')
 
       const serviceWithoutCreds = createCloudflareImagesService()
-      const result = await serviceWithoutCreds.uploadImageFromUrl('test-project', 'https://example.com/image.jpg')
+      const result = await serviceWithoutCreds.uploadImageFromUrl(
+        'test-project',
+        'https://example.com/image.jpg'
+      )
 
       expect(result).toBeNull()
     })
@@ -85,31 +89,37 @@ describe('CloudflareImagesService', () => {
     it('should successfully upload an image', async () => {
       const mockImageResponse = new Response('fake-image-data', {
         status: 200,
-        headers: { 'content-type': 'image/jpeg' }
+        headers: { 'content-type': 'image/jpeg' },
       })
 
-      const mockUploadResponse = new Response(JSON.stringify({ 
-        success: true,
-        result: { 
-          id: 'image-123', 
-          variants: ['public'],
-          uploaded: '2024-01-01T00:00:00Z'
+      const mockUploadResponse = new Response(
+        JSON.stringify({
+          success: true,
+          result: {
+            id: 'image-123',
+            variants: ['public'],
+            uploaded: '2024-01-01T00:00:00Z',
+          },
+        }),
+        {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
         }
-      }), {
-        status: 200,
-        headers: { 'content-type': 'application/json' }
-      })
+      )
 
       mockFetch
         .mockResolvedValueOnce(mockImageResponse)
         .mockResolvedValueOnce(mockUploadResponse)
 
-      const result = await service.uploadImageFromUrl('https://example.com/image.jpg', 'test-project')
+      const result = await service.uploadImageFromUrl(
+        'https://example.com/image.jpg',
+        'test-project'
+      )
 
       expect(result).toEqual({
         id: 'image-123',
         variants: ['public'],
-        uploaded: '2024-01-01T00:00:00Z'
+        uploaded: '2024-01-01T00:00:00Z',
       })
       expect(mockFetch).toHaveBeenCalledTimes(2)
     })
@@ -119,7 +129,10 @@ describe('CloudflareImagesService', () => {
 
       mockFetch.mockResolvedValueOnce(mockImageResponse)
 
-      const result = await service.uploadImageFromUrl('https://example.com/image.jpg', 'test-project')
+      const result = await service.uploadImageFromUrl(
+        'https://example.com/image.jpg',
+        'test-project'
+      )
 
       expect(result).toBeNull()
     })
@@ -127,7 +140,7 @@ describe('CloudflareImagesService', () => {
     it('should handle Cloudflare upload failure', async () => {
       const mockImageResponse = new Response('fake-image-data', {
         status: 200,
-        headers: { 'content-type': 'image/jpeg' }
+        headers: { 'content-type': 'image/jpeg' },
       })
 
       const mockUploadResponse = new Response('Upload failed', { status: 400 })
@@ -136,7 +149,10 @@ describe('CloudflareImagesService', () => {
         .mockResolvedValueOnce(mockImageResponse)
         .mockResolvedValueOnce(mockUploadResponse)
 
-      const result = await service.uploadImageFromUrl('https://example.com/image.jpg', 'test-project')
+      const result = await service.uploadImageFromUrl(
+        'https://example.com/image.jpg',
+        'test-project'
+      )
 
       expect(result).toBeNull()
     })
@@ -144,19 +160,25 @@ describe('CloudflareImagesService', () => {
     it('should handle Cloudflare API error response', async () => {
       const mockImageResponse = new Response('fake-image-data', {
         status: 200,
-        headers: { 'content-type': 'image/jpeg' }
+        headers: { 'content-type': 'image/jpeg' },
       })
 
-      const mockUploadResponse = new Response(JSON.stringify({ error: 'Invalid image format' }), {
-        status: 400,
-        headers: { 'content-type': 'application/json' }
-      })
+      const mockUploadResponse = new Response(
+        JSON.stringify({ error: 'Invalid image format' }),
+        {
+          status: 400,
+          headers: { 'content-type': 'application/json' },
+        }
+      )
 
       mockFetch
         .mockResolvedValueOnce(mockImageResponse)
         .mockResolvedValueOnce(mockUploadResponse)
 
-      const result = await service.uploadImageFromUrl('https://example.com/image.jpg', 'test-project')
+      const result = await service.uploadImageFromUrl(
+        'https://example.com/image.jpg',
+        'test-project'
+      )
 
       expect(result).toBeNull()
     })
@@ -164,7 +186,10 @@ describe('CloudflareImagesService', () => {
     it('should handle network errors gracefully', async () => {
       mockFetch.mockRejectedValueOnce(new Error('Network error'))
 
-      const result = await service.uploadImageFromUrl('https://example.com/image.jpg', 'test-project')
+      const result = await service.uploadImageFromUrl(
+        'https://example.com/image.jpg',
+        'test-project'
+      )
 
       expect(result).toBeNull()
     })
@@ -172,34 +197,40 @@ describe('CloudflareImagesService', () => {
     it('should include correct metadata in upload', async () => {
       const mockImageResponse = new Response('fake-image-data', {
         status: 200,
-        headers: { 'content-type': 'image/jpeg' }
+        headers: { 'content-type': 'image/jpeg' },
       })
 
-      const mockUploadResponse = new Response(JSON.stringify({ 
-        success: true,
-        result: { 
-          id: 'image-123', 
-          variants: ['public'],
-          uploaded: '2024-01-01T00:00:00Z'
+      const mockUploadResponse = new Response(
+        JSON.stringify({
+          success: true,
+          result: {
+            id: 'image-123',
+            variants: ['public'],
+            uploaded: '2024-01-01T00:00:00Z',
+          },
+        }),
+        {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
         }
-      }), {
-        status: 200,
-        headers: { 'content-type': 'application/json' }
-      })
+      )
 
       mockFetch
         .mockResolvedValueOnce(mockImageResponse)
         .mockResolvedValueOnce(mockUploadResponse)
 
-      await service.uploadImageFromUrl('https://example.com/image.jpg', 'test-project')
+      await service.uploadImageFromUrl(
+        'https://example.com/image.jpg',
+        'test-project'
+      )
 
       expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining('/images/v1'),
         expect.objectContaining({
           method: 'POST',
           headers: expect.objectContaining({
-            'Authorization': 'Bearer test-api-token'
-          })
+            Authorization: 'Bearer test-api-token',
+          }),
         })
       )
     })
@@ -208,12 +239,16 @@ describe('CloudflareImagesService', () => {
   describe('getImageUrl', () => {
     it('should return correct URL with default variant', () => {
       const url = service.getImageUrl('image-123')
-      expect(url).toBe('https://imagedelivery.net/test-account-id/image-123/public')
+      expect(url).toBe(
+        'https://imagedelivery.net/test-account-id/image-123/public'
+      )
     })
 
     it('should return correct URL with custom variant', () => {
       const url = service.getImageUrl('image-123', 'thumbnail')
-      expect(url).toBe('https://imagedelivery.net/test-account-id/image-123/thumbnail')
+      expect(url).toBe(
+        'https://imagedelivery.net/test-account-id/image-123/thumbnail'
+      )
     })
   })
 
@@ -240,8 +275,8 @@ describe('CloudflareImagesService', () => {
         expect.objectContaining({
           method: 'DELETE',
           headers: expect.objectContaining({
-            'Authorization': 'Bearer test-api-token'
-          })
+            Authorization: 'Bearer test-api-token',
+          }),
         })
       )
     })
@@ -299,7 +334,13 @@ describe('CloudflareImagesService', () => {
   describe('getImageVariants', () => {
     it('should return expected image variants', () => {
       const variants = service.getImageVariants()
-      expect(variants).toEqual(['public', 'thumbnail', 'card', 'hero', 'responsive'])
+      expect(variants).toEqual([
+        'public',
+        'thumbnail',
+        'card',
+        'hero',
+        'responsive',
+      ])
     })
   })
 
@@ -320,9 +361,15 @@ describe('CloudflareImagesService', () => {
 
       mockFetch.mockRejectedValueOnce(new Error('Test error'))
 
-      await service.uploadImageFromUrl('https://example.com/image.jpg', 'test-project')
+      await service.uploadImageFromUrl(
+        'https://example.com/image.jpg',
+        'test-project'
+      )
 
-      expect(consoleSpy).toHaveBeenCalledWith('Error uploading image for test-project:', expect.any(Error))
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Error uploading image for test-project:',
+        expect.any(Error)
+      )
 
       consoleSpy.mockRestore()
     })

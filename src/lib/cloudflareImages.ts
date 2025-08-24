@@ -23,8 +23,12 @@ declare global {
 
 export function createCloudflareImagesService(): CloudflareImageService {
   // Get credentials from Cloudflare environment variables or fall back to process.env for local development
-  const accountId = globalThis.CLOUDFLARE_ACCOUNT_ID || process.env.CLOUDFLARE_ACCOUNT_ID || ''
-  const apiToken = globalThis.CLOUDFLARE_IMAGES_API_TOKEN || process.env.CLOUDFLARE_IMAGES_API_TOKEN || ''
+  const accountId =
+    globalThis.CLOUDFLARE_ACCOUNT_ID || process.env.CLOUDFLARE_ACCOUNT_ID || ''
+  const apiToken =
+    globalThis.CLOUDFLARE_IMAGES_API_TOKEN ||
+    process.env.CLOUDFLARE_IMAGES_API_TOKEN ||
+    ''
   const baseUrl = `https://api.cloudflare.com/client/v4/accounts/${accountId}/images/v1`
 
   return {
@@ -156,6 +160,6 @@ export function createCloudflareImagesService(): CloudflareImageService {
         'hero', // 600x600
         'responsive', // Auto-responsive
       ]
-    }
+    },
   }
 }

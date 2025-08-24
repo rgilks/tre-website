@@ -1,7 +1,9 @@
 'use client'
 
 import { motion } from 'framer-motion'
+
 import { Project } from '@/types/project'
+
 import { ProjectCardHeader } from './ProjectCardHeader'
 import { ProjectCardTopics } from './ProjectCardTopics'
 import { ProjectCardFooter } from './ProjectCardFooter'

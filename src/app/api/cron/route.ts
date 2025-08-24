@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+
 import { refreshProjects } from '@/lib/projects'
 import { validateCronAuth } from '@/lib/cronAuth'
 

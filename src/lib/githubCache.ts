@@ -76,6 +76,6 @@ export function createGitHubCacheService(kv: KVNamespace) {
         console.error('Error checking cache validity:', error)
         return false
       }
-    }
+    },
   }
 }

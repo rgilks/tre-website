@@ -1,10 +1,17 @@
 import { describe, it, expect } from 'vitest'
+
 import { getVisibleTopics } from './projectUtils'
 
 describe('ProjectUtils', () => {
   describe('getVisibleTopics', () => {
     it('should return visible topics within limit', () => {
-      const topics = ['react', 'typescript', 'nextjs', 'tailwind', 'framer-motion']
+      const topics = [
+        'react',
+        'typescript',
+        'nextjs',
+        'tailwind',
+        'framer-motion',
+      ]
       const result = getVisibleTopics(topics, 3)
 
       expect(result.visibleTopics).toEqual(['react', 'typescript', 'nextjs'])

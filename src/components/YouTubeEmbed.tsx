@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+
 import { extractYouTubeVideoId, generateYouTubeEmbedUrl } from '@/lib/youtube'
 
 interface YouTubeEmbedProps {
@@ -9,12 +10,16 @@ interface YouTubeEmbedProps {
   className?: string
 }
 
-export function YouTubeEmbed({ videoIdOrUrl, title, className = '' }: YouTubeEmbedProps) {
+export function YouTubeEmbed({
+  videoIdOrUrl,
+  title,
+  className = '',
+}: YouTubeEmbedProps) {
   const videoId = extractYouTubeVideoId(videoIdOrUrl)
-  
+
   if (!videoId) {
     return (
-      <div 
+      <div
         data-testid="youtube-embed-error"
         className={`w-full p-8 text-center border border-tre-red/20 rounded-lg bg-tre-red/5 ${className}`}
       >
@@ -24,9 +29,9 @@ export function YouTubeEmbed({ videoIdOrUrl, title, className = '' }: YouTubeEmb
       </div>
     )
   }
-  
+
   const embedUrl = generateYouTubeEmbedUrl(videoId)
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -47,7 +52,7 @@ export function YouTubeEmbed({ videoIdOrUrl, title, className = '' }: YouTubeEmb
         />
       </div>
       {title && (
-        <h3 
+        <h3
           data-testid={`youtube-title-${videoId}`}
           className="mt-3 text-lg font-semibold text-tre-white font-mono"
         >

@@ -8,19 +8,19 @@
  */
 export function extractYouTubeVideoId(url: string): string | null {
   if (!url) return null
-  
+
   const patterns = [
     /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/)([a-zA-Z0-9_-]{11})/,
-    /^([a-zA-Z0-9_-]{11})$/
+    /^([a-zA-Z0-9_-]{11})$/,
   ]
-  
+
   for (const pattern of patterns) {
     const match = url.match(pattern)
     if (match) {
       return match[1]
     }
   }
-  
+
   return null
 }
 
@@ -41,14 +41,17 @@ export function generateYouTubeEmbedUrl(videoId: string): string {
 /**
  * Generate YouTube thumbnail URL from video ID
  */
-export function generateYouTubeThumbnailUrl(videoId: string, quality: 'default' | 'hq' | 'mq' | 'sd' | 'maxres' = 'hq'): string {
+export function generateYouTubeThumbnailUrl(
+  videoId: string,
+  quality: 'default' | 'hq' | 'mq' | 'sd' | 'maxres' = 'hq'
+): string {
   const qualities = {
     default: 'default.jpg',
     hq: 'hqdefault.jpg',
     mq: 'mqdefault.jpg',
     sd: 'sddefault.jpg',
-    maxres: 'maxresdefault.jpg'
+    maxres: 'maxresdefault.jpg',
   }
-  
+
   return `https://img.youtube.com/vi/${videoId}/${qualities[quality]}`
 }

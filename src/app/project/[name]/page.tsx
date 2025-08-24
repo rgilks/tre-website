@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+
 import { fetchGitHubProjects } from '@/lib/github'
 import { ProjectViewer } from '@/components/ProjectViewer'
 

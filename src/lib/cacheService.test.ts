@@ -1,8 +1,18 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+
 import { Project } from '@/types/project'
-import { createCacheService, createKVCacheService, initializeCacheService } from './cacheService'
+
+import {
+  createCacheService,
+  createKVCacheService,
+  initializeCacheService,
+} from './cacheService'
 import { createGitHubCacheService } from './githubCache'
-import { getCloudflareEnvironment, setCloudflareEnvironment, type CloudflareEnvironment } from './cloudflareContext'
+import {
+  getCloudflareEnvironment,
+  setCloudflareEnvironment,
+  type CloudflareEnvironment,
+} from './cloudflareContext'
 
 // Mock the dependencies
 vi.mock('./githubCache')
@@ -19,13 +29,13 @@ describe('CacheService', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    
+
     mockKV = {
       get: vi.fn(),
       put: vi.fn(),
       delete: vi.fn(),
     } as unknown as KVNamespace
-    
+
     mockEnv = {
       GITHUB_CACHE: mockKV,
     }
@@ -37,7 +47,7 @@ describe('CacheService', () => {
       kv: mockKV,
       isCacheValid: vi.fn(),
     } as unknown as ReturnType<typeof createGitHubCacheService>
-    
+
     // Reset the global environment
     mockGetCloudflareEnvironment.mockReturnValue(undefined)
   })
@@ -136,14 +146,14 @@ describe('CacheService', () => {
     it('should do nothing for setCachedProjects', async () => {
       const service = createCacheService()
       const projects = [{ id: '1', name: 'test' } as Project]
-      
+
       // Should not throw
       await expect(service.setCachedProjects(projects)).resolves.toBeUndefined()
     })
 
     it('should do nothing for clearCache', async () => {
       const service = createCacheService()
-      
+
       // Should not throw
       await expect(service.clearCache()).resolves.toBeUndefined()
     })

@@ -1,10 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
+
 import { Project } from '@/types/project'
+
 import { TRELogo } from './TRELogo'
 import { YouTubeEmbed } from './YouTubeEmbed'
-import Link from 'next/link'
 
 interface ProjectViewerProps {
   project: Project
@@ -53,19 +55,17 @@ export function ProjectViewer({ project }: ProjectViewerProps) {
         <div className="relative w-full h-full">
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center bg-tre-black/50 z-10">
-              <div className="text-tre-green font-mono">
-                Loading project...
-              </div>
+              <div className="text-tre-green font-mono">Loading project...</div>
             </div>
           )}
-            <iframe
-              data-testid={`project-iframe-${project.id}`}
-              src={project.homepageUrl}
-              className="w-full h-full border-0"
-              sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
-              onLoad={handleIframeLoad}
-              title={`${project.name} Demo`}
-            />
+          <iframe
+            data-testid={`project-iframe-${project.id}`}
+            src={project.homepageUrl}
+            className="w-full h-full border-0"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+            onLoad={handleIframeLoad}
+            title={`${project.name} Demo`}
+          />
         </div>
       </div>
 

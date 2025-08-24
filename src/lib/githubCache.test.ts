@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { createGitHubCacheService } from './githubCache'
+
 import { Project } from '@/types/project'
+
+import { createGitHubCacheService } from './githubCache'
 
 // Mock KV namespace interface
 interface MockKV {

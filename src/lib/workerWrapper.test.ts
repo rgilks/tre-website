@@ -1,9 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { 
-  withCloudflareContext, 
-  withCloudflareContextSync
+
+import {
+  withCloudflareContext,
+  withCloudflareContextSync,
 } from './workerWrapper'
-import { setCloudflareEnvironment, type CloudflareEnvironment } from './cloudflareContext'
+import {
+  setCloudflareEnvironment,
+  type CloudflareEnvironment,
+} from './cloudflareContext'
 
 // Mock the cloudflareContext module
 vi.mock('./cloudflareContext', () => ({
@@ -19,11 +23,11 @@ describe('WorkerWrapper', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    
+
     mockEnv = {
       GITHUB_CACHE: {} as KVNamespace,
     }
-    
+
     mockFn = vi.fn().mockResolvedValue('async result')
     mockSyncFn = vi.fn().mockReturnValue('sync result')
   })
@@ -52,7 +56,9 @@ describe('WorkerWrapper', () => {
     it('should clean up environment even if async function throws', async () => {
       const errorFn = vi.fn().mockRejectedValue(new Error('Test error'))
 
-      await expect(withCloudflareContext(mockEnv, errorFn)).rejects.toThrow('Test error')
+      await expect(withCloudflareContext(mockEnv, errorFn)).rejects.toThrow(
+        'Test error'
+      )
 
       expect(mockSetCloudflareEnvironment).toHaveBeenCalledWith(mockEnv)
       expect(mockSetCloudflareEnvironment).toHaveBeenCalledWith(undefined)
@@ -60,7 +66,7 @@ describe('WorkerWrapper', () => {
 
     it('should execute function with correct context', async () => {
       let capturedEnv: CloudflareEnvironment | undefined
-      
+
       const contextAwareFn = vi.fn().mockImplementation(async () => {
         capturedEnv = mockEnv
         return 'context result'
@@ -103,7 +109,9 @@ describe('WorkerWrapper', () => {
         throw new Error('Test error')
       })
 
-      expect(() => withCloudflareContextSync(mockEnv, errorFn)).toThrow('Test error')
+      expect(() => withCloudflareContextSync(mockEnv, errorFn)).toThrow(
+        'Test error'
+      )
 
       expect(mockSetCloudflareEnvironment).toHaveBeenCalledWith(mockEnv)
       expect(mockSetCloudflareEnvironment).toHaveBeenCalledWith(undefined)
@@ -111,7 +119,7 @@ describe('WorkerWrapper', () => {
 
     it('should execute function with correct context', () => {
       let capturedEnv: CloudflareEnvironment | undefined
-      
+
       const contextAwareFn = vi.fn().mockImplementation(() => {
         capturedEnv = mockEnv
         return 'context result'
@@ -136,7 +144,7 @@ describe('WorkerWrapper', () => {
   describe('error handling and cleanup', () => {
     it('should ensure cleanup happens in finally block for async function', async () => {
       const cleanupSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-      
+
       try {
         await withCloudflareContext(mockEnv, async () => {
           throw new Error('Intentional error')
@@ -151,7 +159,7 @@ describe('WorkerWrapper', () => {
 
     it('should ensure cleanup happens in finally block for sync function', () => {
       const cleanupSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-      
+
       try {
         withCloudflareContextSync(mockEnv, () => {
           throw new Error('Intentional error')

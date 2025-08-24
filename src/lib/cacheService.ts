@@ -1,6 +1,10 @@
 import { Project } from '@/types/project'
+
 import { createGitHubCacheService } from './githubCache'
-import { getCloudflareEnvironment, CloudflareEnvironment } from './cloudflareContext'
+import {
+  getCloudflareEnvironment,
+  CloudflareEnvironment,
+} from './cloudflareContext'
 
 // Logger function that can be easily mocked in tests
 const logger = {
@@ -8,7 +12,7 @@ const logger = {
     if (typeof console !== 'undefined' && console.warn) {
       console.warn(message)
     }
-  }
+  },
 }
 
 export interface CacheService {
@@ -21,7 +25,7 @@ export interface CacheService {
 export function createCacheService(env?: CloudflareEnvironment): CacheService {
   // Use provided environment or try to get from context
   const cloudflareEnv = env || getCloudflareEnvironment()
-  
+
   if (cloudflareEnv?.GITHUB_CACHE) {
     return createGitHubCacheService(cloudflareEnv.GITHUB_CACHE)
   }
@@ -47,7 +51,7 @@ function createFallbackCacheService(): CacheService {
 
     async clearCache(): Promise<void> {
       // No-op in development
-    }
+    },
   }
 }
 

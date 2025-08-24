@@ -1,8 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import {
-  getHeroAnimationDelays,
-  getHeroAnimations,
-} from './animationUtils'
+
+import { getHeroAnimationDelays, getHeroAnimations } from './animationUtils'
 
 describe('AnimationUtils', () => {
   describe('getHeroAnimationDelays', () => {

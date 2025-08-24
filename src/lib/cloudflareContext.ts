@@ -7,7 +7,9 @@ export interface CloudflareEnvironment {
 let cloudflareEnv: CloudflareEnvironment | undefined
 
 // Set the Cloudflare environment (called by the worker)
-export function setCloudflareEnvironment(env: CloudflareEnvironment | undefined): void {
+export function setCloudflareEnvironment(
+  env: CloudflareEnvironment | undefined
+): void {
   cloudflareEnv = env
 }
 
@@ -18,5 +20,7 @@ export function getCloudflareEnvironment(): CloudflareEnvironment | undefined {
 
 // Check if we're in a Cloudflare Workers environment
 export function isCloudflareWorker(): boolean {
-  return typeof globalThis !== 'undefined' && '__CLOUDFLARE_WORKER__' in globalThis
+  return (
+    typeof globalThis !== 'undefined' && '__CLOUDFLARE_WORKER__' in globalThis
+  )
 }

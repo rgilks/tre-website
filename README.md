@@ -77,6 +77,7 @@ A modern, elegant portfolio website showcasing innovative software engineering p
    > 3. Copy the token to your `.env.local` file
 
    **Test your token** (optional but recommended):
+
    ```bash
    # You can test your token by running the app and checking the console
    npm run dev

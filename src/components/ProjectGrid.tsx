@@ -1,12 +1,15 @@
 'use client'
 
+import { useEffect } from 'react'
+
+import { useProjectStore } from '@/store/projectStore'
+import { Project } from '@/types/project'
+
 import { ProjectCard } from './ProjectCard'
 import { LoadingSkeleton } from './LoadingSkeleton'
 import { ErrorMessage } from './ErrorMessage'
 import { EmptyState } from './EmptyState'
-import { useProjectStore } from '@/store/projectStore'
-import { useEffect } from 'react'
-import { Project } from '@/types/project'
+
 
 interface ProjectGridProps {
   initialProjects: Project[]

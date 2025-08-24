@@ -1,4 +1,7 @@
-import { setCloudflareEnvironment, CloudflareEnvironment } from './cloudflareContext'
+import {
+  setCloudflareEnvironment,
+  CloudflareEnvironment,
+} from './cloudflareContext'
 
 // Wrapper function to set Cloudflare environment context and then execute a function
 export async function withCloudflareContext<T>(
@@ -7,7 +10,7 @@ export async function withCloudflareContext<T>(
 ): Promise<T> {
   // Set the environment context
   setCloudflareEnvironment(env)
-  
+
   try {
     // Execute the function with the context set
     return await fn()
@@ -24,7 +27,7 @@ export function withCloudflareContextSync<T>(
 ): T {
   // Set the environment context
   setCloudflareEnvironment(env)
-  
+
   try {
     // Execute the function with the context set
     return fn()

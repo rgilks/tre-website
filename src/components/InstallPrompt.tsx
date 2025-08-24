@@ -1,8 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { showInstallPrompt, isInstallPromptAvailable, isAppInstalled } from '@/lib/pwa'
 import { XMarkIcon } from '@heroicons/react/24/outline'
+
+import {
+  showInstallPrompt,
+  isInstallPromptAvailable,
+  isAppInstalled,
+} from '@/lib/pwa'
 
 export function InstallPrompt() {
   const [showPrompt, setShowPrompt] = useState(false)
@@ -27,7 +32,10 @@ export function InstallPrompt() {
     window.addEventListener('pwa-install-available', handleInstallAvailable)
 
     return () => {
-      window.removeEventListener('pwa-install-available', handleInstallAvailable)
+      window.removeEventListener(
+        'pwa-install-available',
+        handleInstallAvailable
+      )
     }
   }, [isInstalled])
 
@@ -59,7 +67,8 @@ export function InstallPrompt() {
   if (dismissedTime) {
     const dismissedDate = new Date(parseInt(dismissedTime))
     const now = new Date()
-    const hoursSinceDismissed = (now.getTime() - dismissedDate.getTime()) / (1000 * 60 * 60)
+    const hoursSinceDismissed =
+      (now.getTime() - dismissedDate.getTime()) / (1000 * 60 * 60)
     if (hoursSinceDismissed < 24) {
       return null
     }
@@ -85,7 +94,7 @@ export function InstallPrompt() {
             <XMarkIcon className="w-4 h-4" />
           </button>
         </div>
-        
+
         <div className="flex space-x-2">
           <button
             onClick={handleInstall}

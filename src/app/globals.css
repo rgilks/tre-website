@@ -1,10 +1,10 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --background: #000000;
   --foreground: #ffffff;
-  --primary: #39FF14;
-  --secondary: #F5F5DC;
+  --primary: #39ff14;
+  --secondary: #f5f5dc;
 }
 
 body {
@@ -23,10 +23,10 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #39FF14;
+  background: #39ff14;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #2ECC71;
+  background: #2ecc71;
 }

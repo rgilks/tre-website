@@ -1,8 +1,10 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { TRELogo } from './TRELogo'
+
 import { getHeroAnimations } from '@/lib/animationUtils'
+
+import { TRELogo } from './TRELogo'
 
 export function HeroSection() {
   const animations = getHeroAnimations()

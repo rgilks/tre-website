@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { validateCronAuth } from './cronAuth'
 import { NextRequest } from 'next/server'
+
+import { validateCronAuth } from './cronAuth'
 
 // Mock NextRequest
 const createMockRequest = (authHeader?: string): NextRequest => {

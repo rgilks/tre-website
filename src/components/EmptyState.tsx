@@ -4,10 +4,10 @@ interface EmptyStateProps {
   className?: string
 }
 
-export function EmptyState({ 
-  title = 'No projects found', 
+export function EmptyState({
+  title = 'No projects found',
   message = 'Check back later for updates',
-  className = '' 
+  className = '',
 }: EmptyStateProps) {
   return (
     <div className={`text-center py-12 ${className}`}>

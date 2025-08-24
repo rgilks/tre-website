@@ -1,7 +1,8 @@
+import { Project } from '@/types/project'
+
 import { fetchGitHubProjects } from './github'
 import { createCacheService } from './cacheService'
 import { createImageCacheService } from './imageCache'
-import { Project } from '@/types/project'
 import { CloudflareEnvironment } from './cloudflareContext'
 
 function createServices(env?: CloudflareEnvironment) {
@@ -63,13 +64,16 @@ export async function getProjects(
       'Error with cache service, falling back to direct fetch:',
       error
     )
-    
+
     try {
       // Fallback to direct fetch without caching
       return await fetchGitHubProjects(undefined, createImageCacheService(env))
     } catch (directFetchError) {
-      console.error('GitHub API not available, using fallback projects:', directFetchError)
-      
+      console.error(
+        'GitHub API not available, using fallback projects:',
+        directFetchError
+      )
+
       // Return fallback projects for local development
       return getFallbackProjects()
     }

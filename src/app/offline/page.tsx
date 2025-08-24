@@ -9,15 +9,16 @@ export default function OfflinePage() {
         <div className="mb-8 flex justify-center">
           <TRELogo width={80} height={80} className="text-tre-green" />
         </div>
-        
+
         <h1 className="text-3xl font-bold text-tre-green font-mono mb-4">
           You&apos;re Offline
         </h1>
-        
+
         <p className="text-tre-white/80 mb-6 font-mono">
-          It looks like you&apos;ve lost your connection. Don&apos;t worry - you can still access previously visited pages.
+          It looks like you&apos;ve lost your connection. Don&apos;t worry - you
+          can still access previously visited pages.
         </p>
-        
+
         <div className="space-y-3">
           <button
             onClick={() => window.location.reload()}
@@ -25,7 +26,7 @@ export default function OfflinePage() {
           >
             Try Again
           </button>
-          
+
           <button
             onClick={() => window.history.back()}
             className="w-full border border-tre-green/50 text-tre-green font-mono py-3 px-6 rounded-lg hover:bg-tre-green/10 transition-colors duration-200"
@@ -33,7 +34,7 @@ export default function OfflinePage() {
             Go Back
           </button>
         </div>
-        
+
         <div className="mt-8 text-tre-white/60 text-sm font-mono">
           <p>Total Reality Engineering</p>
           <p>Always innovating, even offline</p>

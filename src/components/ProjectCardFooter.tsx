@@ -1,4 +1,5 @@
 import { CalendarIcon } from '@heroicons/react/24/outline'
+
 import { formatDate } from '@/lib/dateUtils'
 
 interface ProjectCardFooterProps {
@@ -17,10 +18,7 @@ export function ProjectCardFooter({
       <div className="flex items-center justify-end text-sm text-tre-white/60 mb-4">
         <div className="flex items-center space-x-1">
           <CalendarIcon className="w-4 h-4" />
-          <span
-            data-testid="project-updated"
-            suppressHydrationWarning
-          >
+          <span data-testid="project-updated" suppressHydrationWarning>
             {formatDate(updatedAt)}
           </span>
         </div>

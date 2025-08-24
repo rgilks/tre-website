@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+
 import { ProjectGrid } from '@/components/ProjectGrid'
 import { HeroSection } from '@/components/HeroSection'
 import { AboutSection } from '@/components/AboutSection'
@@ -21,11 +22,13 @@ export default async function HomePage() {
             Featured Projects
           </h2>
 
-          <Suspense fallback={
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-tre-green"></div>
-            </div>
-          }>
+          <Suspense
+            fallback={
+              <div className="flex justify-center items-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-tre-green"></div>
+              </div>
+            }
+          >
             <ProjectGrid initialProjects={projects} />
           </Suspense>
         </div>

@@ -112,7 +112,7 @@ export function createFallbackImageCacheService() {
 
     async clearAllScreenshots(): Promise<void> {
       // No-op in development
-    }
+    },
   }
 }
 
@@ -120,7 +120,7 @@ export function createFallbackImageCacheService() {
 export function createImageCacheService(env?: CloudflareEnvironment) {
   // Use provided environment or try to get from context
   const cloudflareEnv = env || getCloudflareEnvironment()
-  
+
   if (cloudflareEnv?.GITHUB_CACHE) {
     return createCloudflareImageCacheService(cloudflareEnv.GITHUB_CACHE)
   }

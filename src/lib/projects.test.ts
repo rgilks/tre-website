@@ -1,10 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+
+import { Project } from '@/types/project'
+
 import { refreshProjects } from './projects'
 import { createCacheService } from './cacheService'
 import { createImageCacheService } from './imageCache'
 import { fetchGitHubProjects } from './github'
 import { CloudflareEnvironment } from './cloudflareContext'
-import { Project } from '@/types/project'
 
 // Mock the dependencies
 vi.mock('./cacheService')
@@ -21,20 +23,20 @@ describe('refreshProjects', () => {
       get: vi.fn(),
       put: vi.fn(),
       delete: vi.fn(),
-      list: vi.fn()
-    } as unknown as KVNamespace
+      list: vi.fn(),
+    } as unknown as KVNamespace,
   }
 
   const mockCacheService = {
     clearCache: vi.fn(),
     getCachedProjects: vi.fn(),
-    setCachedProjects: vi.fn()
+    setCachedProjects: vi.fn(),
   }
 
   const mockImageCacheService = {
     clearAllScreenshots: vi.fn(),
     getCachedScreenshots: vi.fn(),
-    setCachedScreenshots: vi.fn()
+    setCachedScreenshots: vi.fn(),
   }
 
   const mockProjects: Project[] = [
@@ -47,7 +49,7 @@ describe('refreshProjects', () => {
       topics: ['test', 'example'],
       updatedAt: '2024-01-01T00:00:00Z',
       createdAt: '2024-01-01T00:00:00Z',
-      isCurrentlyWorking: false
+      isCurrentlyWorking: false,
     },
     {
       id: '2',
@@ -58,17 +60,21 @@ describe('refreshProjects', () => {
       topics: ['test', 'example'],
       updatedAt: '2024-01-01T00:00:00Z',
       createdAt: '2024-01-01T00:00:00Z',
-      isCurrentlyWorking: false
-    }
+      isCurrentlyWorking: false,
+    },
   ]
 
   beforeEach(() => {
     vi.clearAllMocks()
-    
-    mockCreateCacheService.mockReturnValue(mockCacheService as ReturnType<typeof createCacheService>)
-    mockCreateImageCacheService.mockReturnValue(mockImageCacheService as ReturnType<typeof createImageCacheService>)
+
+    mockCreateCacheService.mockReturnValue(
+      mockCacheService as ReturnType<typeof createCacheService>
+    )
+    mockCreateImageCacheService.mockReturnValue(
+      mockImageCacheService as ReturnType<typeof createImageCacheService>
+    )
     mockFetchGitHubProjects.mockResolvedValue(mockProjects)
-    
+
     mockCacheService.clearCache.mockResolvedValue(undefined)
     mockImageCacheService.clearAllScreenshots.mockResolvedValue(undefined)
   })
@@ -78,14 +84,17 @@ describe('refreshProjects', () => {
 
     expect(result).toEqual({
       success: true,
-      message: 'Successfully refreshed 2 projects'
+      message: 'Successfully refreshed 2 projects',
     })
 
     expect(mockCreateCacheService).toHaveBeenCalledWith(mockEnv)
     expect(mockCreateImageCacheService).toHaveBeenCalledWith(mockEnv)
     expect(mockCacheService.clearCache).toHaveBeenCalledOnce()
     expect(mockImageCacheService.clearAllScreenshots).toHaveBeenCalledOnce()
-    expect(mockFetchGitHubProjects).toHaveBeenCalledWith(mockCacheService, mockImageCacheService)
+    expect(mockFetchGitHubProjects).toHaveBeenCalledWith(
+      mockCacheService,
+      mockImageCacheService
+    )
   })
 
   it('should work without environment parameter', async () => {
@@ -104,7 +113,7 @@ describe('refreshProjects', () => {
 
     expect(result).toEqual({
       success: false,
-      message: 'Failed to refresh projects'
+      message: 'Failed to refresh projects',
     })
 
     expect(mockCacheService.clearCache).toHaveBeenCalledOnce()
@@ -120,7 +129,7 @@ describe('refreshProjects', () => {
 
     expect(result).toEqual({
       success: false,
-      message: 'Failed to refresh projects'
+      message: 'Failed to refresh projects',
     })
 
     expect(mockCacheService.clearCache).toHaveBeenCalledOnce()
@@ -136,12 +145,15 @@ describe('refreshProjects', () => {
 
     expect(result).toEqual({
       success: false,
-      message: 'Failed to refresh projects'
+      message: 'Failed to refresh projects',
     })
 
     expect(mockCacheService.clearCache).toHaveBeenCalledOnce()
     expect(mockImageCacheService.clearAllScreenshots).toHaveBeenCalledOnce()
-    expect(mockFetchGitHubProjects).toHaveBeenCalledWith(mockCacheService, mockImageCacheService)
+    expect(mockFetchGitHubProjects).toHaveBeenCalledWith(
+      mockCacheService,
+      mockImageCacheService
+    )
   })
 
   it('should handle empty projects array', async () => {
@@ -151,7 +163,7 @@ describe('refreshProjects', () => {
 
     expect(result).toEqual({
       success: true,
-      message: 'Successfully refreshed 0 projects'
+      message: 'Successfully refreshed 0 projects',
     })
   })
 })

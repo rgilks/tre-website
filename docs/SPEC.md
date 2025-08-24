@@ -7,12 +7,14 @@ Total Reality Engineering (TRE) is a personal contracting business showcasing in
 ## Architecture
 
 ### Core Principles
+
 - **Elegance and Simplicity**: Clean, maintainable code with minimal complexity and direct implementations
 - **Type Safety**: Strong TypeScript typing throughout the codebase
 - **Performance**: Efficient data fetching and caching strategies
 - **Maintainability**: Well-organized, testable code structure with focused responsibilities
 
 ### Technology Stack
+
 - **Frontend**: Next.js 15, React 19, TypeScript
 - **Styling**: Tailwind CSS 4
 - **State Management**: Zustand with Immer for immutable updates
@@ -25,29 +27,34 @@ Total Reality Engineering (TRE) is a personal contracting business showcasing in
 ### Core Modules
 
 #### 1. Domain Types (`src/types/`)
+
 - **`project.ts`**: Consolidated project interfaces including `Project`, `GitHubApiResponse`, and `ProjectFilters`
 - **Single source of truth** for all project-related data structures
 - **Eliminated redundant interfaces** for better maintainability
 
 #### 2. Data Layer (`src/lib/`)
+
 - **`github.ts`**: GitHub API integration with simplified, focused functions
 - **`projects.ts`**: High-level project management with caching and error handling
 - **`cacheService.ts`**: Flexible caching layer supporting both Cloudflare KV and fallback storage
 - **`imageCache.ts`**: Image caching and optimization services
 
 #### 3. State Management (`src/store/`)
+
 - **`projectStore.ts`**: Centralized project state with consolidated filtering logic
 - **Integrated filtering and sorting** in single `applyFilters` function
 - **Immer integration** for immutable state updates
 - **Simplified state management** with reduced complexity
 
 #### 4. UI Components (`src/components/`)
+
 - **`ProjectCard.tsx`**: Simplified project display with direct styling and inline logic
 - **`ProjectGrid.tsx`**: Streamlined grid layout with simplified state handling
 - **`HeroSection.tsx`**: Engaging hero section with focused animation utilities
 - **Component interfaces** defined locally where possible to reduce coupling
 
 #### 5. Utilities (`src/lib/`)
+
 - **`projectUtils.ts`**: Focused utility functions for essential project operations
 - **`animationUtils.ts`**: Streamlined animation configurations for hero section
 - **`dateUtils.ts`**: Date formatting utilities
@@ -55,17 +62,20 @@ Total Reality Engineering (TRE) is a personal contracting business showcasing in
 ## Key Features
 
 ### 1. Project Portfolio
+
 - **GitHub Integration**: Automatic project fetching from GitHub repositories
 - **Smart Caching**: Multi-layer caching for performance and reliability
 - **Screenshot Support**: Automatic project screenshot discovery and caching
 - **Topic Tagging**: Project categorization with visual topic display
 
 ### 2. Performance Optimizations
+
 - **Server-Side Rendering**: Initial project data fetched server-side
 - **Image Optimization**: Cloudflare Images integration for fast image delivery
 - **Progressive Enhancement**: Graceful degradation when services are unavailable
 
 ### 3. User Experience
+
 - **Responsive Design**: Mobile-first approach with Tailwind CSS
 - **Smooth Animations**: Framer Motion for engaging interactions
 - **Accessibility**: Proper ARIA labels and keyboard navigation support
@@ -74,6 +84,7 @@ Total Reality Engineering (TRE) is a personal contracting business showcasing in
 ## Data Flow
 
 ### 1. Project Fetching
+
 ```
 GitHub API → Cache Service → Image Cache → UI Components
      ↓              ↓           ↓           ↓
@@ -81,6 +92,7 @@ GitHub API → Cache Service → Image Cache → UI Components
 ```
 
 ### 2. State Management
+
 ```
 Server Data → Zustand Store → Filtered Data → Components
      ↓            ↓              ↓            ↓
@@ -88,6 +100,7 @@ Server Data → Zustand Store → Filtered Data → Components
 ```
 
 ### 3. Caching Strategy
+
 ```
 Primary Cache (Cloudflare KV) → Fallback Cache → Direct Fetch
       ↓              ↓              ↓
@@ -97,18 +110,21 @@ Primary Cache (Cloudflare KV) → Fallback Cache → Direct Fetch
 ## Code Quality Standards
 
 ### 1. TypeScript
+
 - **Strict Mode**: Enabled for maximum type safety
 - **Interface-First**: Prefer interfaces over types for object shapes
 - **No Any Types**: Use proper typing or `unknown` when necessary
 - **Local Interfaces**: Define component interfaces locally when possible
 
 ### 2. Testing
+
 - **Unit Tests**: Vitest for business logic testing
 - **Coverage Target**: 85% minimum coverage (currently achieved)
 - **Test Location**: Tests co-located with source code
 - **Mock Strategy**: Comprehensive mocking for external dependencies
 
 ### 3. Code Organization
+
 - **Single Responsibility**: Each function/module has one clear purpose
 - **Dependency Injection**: Services accept dependencies as parameters
 - **Error Handling**: Consistent error handling patterns throughout
@@ -118,16 +134,19 @@ Primary Cache (Cloudflare KV) → Fallback Cache → Direct Fetch
 ## Performance Considerations
 
 ### 1. Data Fetching
+
 - **Caching**: Multi-layer caching strategy for GitHub data
 - **Rate Limiting**: Respectful GitHub API usage
 - **Error Recovery**: Graceful fallbacks when services fail
 
 ### 2. Image Optimization
+
 - **Lazy Loading**: Screenshots loaded on demand
 - **CDN Integration**: Cloudflare Images for global distribution
 - **Format Optimization**: Automatic format selection for best performance
 
 ### 3. Bundle Optimization
+
 - **Tree Shaking**: Unused code eliminated from production builds
 - **Code Splitting**: Automatic route-based code splitting
 - **Asset Optimization**: Optimized images and fonts
@@ -135,11 +154,13 @@ Primary Cache (Cloudflare KV) → Fallback Cache → Direct Fetch
 ## Security
 
 ### 1. API Security
+
 - **Token Management**: Secure GitHub token handling
 - **Rate Limiting**: Protection against API abuse
 - **Input Validation**: Strict validation of all external data
 
 ### 2. Deployment Security
+
 - **Environment Variables**: Secure configuration management
 - **HTTPS Only**: All traffic encrypted in transit
 - **CSP Headers**: Content Security Policy implementation
@@ -147,11 +168,13 @@ Primary Cache (Cloudflare KV) → Fallback Cache → Direct Fetch
 ## Deployment
 
 ### 1. Cloudflare Workers
+
 - **Edge Computing**: Global distribution for fast access
 - **Open-Next**: Optimized Next.js deployment
 - **Environment Management**: Secure configuration handling
 
 ### 2. Build Process
+
 - **Type Checking**: TypeScript compilation validation
 - **Linting**: ESLint for code quality enforcement
 - **Testing**: Automated test execution before deployment
@@ -159,16 +182,19 @@ Primary Cache (Cloudflare KV) → Fallback Cache → Direct Fetch
 ## Recent Refactoring Achievements
 
 ### 1. Component Simplification
+
 - **Eliminated prop drilling**: Removed unnecessary `projectId` props from child components
 - **Direct styling**: Replaced utility function calls with inline styling logic
 - **Reduced complexity**: Simplified component interfaces and implementations
 
 ### 2. State Management Streamlining
+
 - **Consolidated filtering**: Combined filtering and sorting logic into single function
 - **Removed abstractions**: Eliminated unnecessary utility functions and interfaces
 - **Improved maintainability**: Cleaner, more focused state management code
 
 ### 3. Utility Function Optimization
+
 - **Focused utilities**: Kept only essential utility functions that are actually used
 - **Removed duplication**: Eliminated redundant code and interfaces
 - **Better test coverage**: Improved test quality and coverage
@@ -176,16 +202,19 @@ Primary Cache (Cloudflare KV) → Fallback Cache → Direct Fetch
 ## Future Enhancements
 
 ### 1. User Experience
+
 - **Advanced Filtering**: Search and filter projects by various criteria
 - **Project Analytics**: View project statistics and metrics
 - **Interactive Demos**: Live project demonstrations
 
 ### 2. Performance
+
 - **Incremental Static Regeneration**: Dynamic content updates
 - **Service Worker**: Offline functionality and caching
 - **GraphQL**: More efficient data fetching
 
 ### 3. Content Management
+
 - **CMS Integration**: Easy content updates
 - **Blog Section**: Technical articles and insights
 - **Project Showcases**: Detailed project walkthroughs
@@ -193,16 +222,19 @@ Primary Cache (Cloudflare KV) → Fallback Cache → Direct Fetch
 ## Maintenance
 
 ### 1. Regular Updates
+
 - **Dependencies**: Monthly dependency updates
 - **Security Patches**: Immediate security updates
 - **Performance Monitoring**: Regular performance audits
 
 ### 2. Code Quality
+
 - **Automated Testing**: CI/CD pipeline with test automation
 - **Code Reviews**: Peer review process for all changes
 - **Documentation**: Keeping documentation up to date
 
 ### 3. Monitoring
+
 - **Error Tracking**: Monitor and resolve production errors
 - **Performance Metrics**: Track Core Web Vitals
 - **User Analytics**: Understand user behavior and needs
