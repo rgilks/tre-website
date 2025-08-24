@@ -54,8 +54,10 @@ A modern, elegant portfolio website showcasing innovative software engineering p
 
 3. **Set up environment variables**
 
+   Create a `.env.local` file in the project root:
+
    ```bash
-   cp .env.example .env.local
+   touch .env.local
    ```
 
    Configure your GitHub token:
@@ -63,6 +65,29 @@ A modern, elegant portfolio website showcasing innovative software engineering p
    ```env
    GITHUB_TOKEN=your_github_personal_access_token
    GITHUB_USERNAME=your_github_username
+   ```
+
+   > **Note**: The `GITHUB_TOKEN` is required for production and recommended for development.
+   > Without it, the app will use fallback project data and you'll see warnings about API rate limits.
+   >
+   > To get a GitHub token:
+   >
+   > 1. Go to [GitHub Settings > Developer settings > Personal access tokens](https://github.com/settings/tokens)
+   > 2. Generate a new token with `public_repo` scope
+   > 3. Copy the token to your `.env.local` file
+
+   **Test your token** (optional but recommended):
+   ```bash
+   # You can test your token by running the app and checking the console
+   npm run dev
+   ```
+
+   Other optional variables:
+
+   ```env
+   CLOUDFLARE_ACCOUNT_ID=your_cloudflare_account_id
+   CLOUDFLARE_IMAGES_API_TOKEN=your_cloudflare_images_api_token
+   CRON_SECRET=your_random_secret_string
    ```
 
 4. **Run the development server**

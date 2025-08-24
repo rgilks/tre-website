@@ -11,6 +11,38 @@ function createServices(env?: CloudflareEnvironment) {
   }
 }
 
+// Fallback projects for when GitHub API is not available
+const getFallbackProjects = (): Project[] => [
+  {
+    id: '1',
+    name: 'tre-website',
+    fullName: 'rgilks/tre-website',
+    description: 'Personal portfolio website built with Next.js and TypeScript',
+    homepageUrl: 'https://tre.systems',
+    htmlUrl: 'https://github.com/rgilks/tre-website',
+    topics: ['nextjs', 'typescript', 'tailwindcss', 'portfolio'],
+    language: 'TypeScript',
+    updatedAt: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    screenshotUrl: undefined,
+    isCurrentlyWorking: true,
+  },
+  {
+    id: '2',
+    name: 'geno-1',
+    fullName: 'rgilks/geno-1',
+    description: 'Genetic algorithm implementation for optimization problems',
+    homepageUrl: undefined,
+    htmlUrl: 'https://github.com/rgilks/geno-1',
+    topics: ['genetic-algorithm', 'optimization', 'python'],
+    language: 'Python',
+    updatedAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+    createdAt: new Date(Date.now() - 2592000000).toISOString(), // 30 days ago
+    screenshotUrl: undefined,
+    isCurrentlyWorking: false,
+  },
+]
+
 export async function getProjects(
   env?: CloudflareEnvironment
 ): Promise<Project[]> {
@@ -31,8 +63,16 @@ export async function getProjects(
       'Error with cache service, falling back to direct fetch:',
       error
     )
-    // Fallback to direct fetch without caching
-    return fetchGitHubProjects(undefined, createImageCacheService(env))
+    
+    try {
+      // Fallback to direct fetch without caching
+      return await fetchGitHubProjects(undefined, createImageCacheService(env))
+    } catch (directFetchError) {
+      console.error('GitHub API not available, using fallback projects:', directFetchError)
+      
+      // Return fallback projects for local development
+      return getFallbackProjects()
+    }
   }
 }
 

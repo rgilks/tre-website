@@ -49,6 +49,25 @@ export async function fetchGitHubProjects(
     })
 
     if (!response.ok) {
+      if (response.status === 401) {
+        // Try to get more details about the 401 error
+        let errorDetails = ''
+        try {
+          const errorBody = await response.text()
+          errorDetails = ` - Response body: ${errorBody}`
+        } catch {
+          errorDetails = ' - Could not read response body'
+        }
+
+        throw new Error(
+          `GitHub API authentication failed. Please check your GITHUB_TOKEN environment variable. Status: ${response.status} ${response.statusText}${errorDetails}`
+        )
+      }
+      if (response.status === 403) {
+        throw new Error(
+          `GitHub API rate limit exceeded. Status: ${response.status} ${response.statusText}`
+        )
+      }
       throw new Error(
         `GitHub API error: ${response.status} ${response.statusText}`
       )
@@ -79,9 +98,12 @@ export async function fetchGitHubProjects(
   } catch (error) {
     console.error('Error fetching GitHub projects:', error)
 
+    // Preserve specific GitHub API error messages
     if (
       error instanceof Error &&
-      error.message.startsWith('GitHub API error:')
+      (error.message.includes('GitHub API authentication failed') ||
+        error.message.includes('GitHub API rate limit exceeded') ||
+        error.message.startsWith('GitHub API error:'))
     ) {
       throw error
     }
@@ -100,6 +122,11 @@ function getGitHubHeaders(): Record<string, string> {
   const token = globalThis.GITHUB_TOKEN || process.env.GITHUB_TOKEN
   if (token) {
     headers.Authorization = `token ${token}`
+  } else {
+    console.warn(
+      '⚠️  No GitHub token found. API requests will be limited to 60 per hour for unauthenticated requests. ' +
+        'Set GITHUB_TOKEN environment variable for higher limits. See .env.example for setup instructions.'
+    )
   }
 
   return headers

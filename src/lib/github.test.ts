@@ -14,6 +14,7 @@ interface MockResponse {
   status?: number
   statusText?: string
   json?: () => Promise<unknown>
+  text?: () => Promise<string>
   headers?: {
     get: (header: string) => string | null
   }
@@ -22,9 +23,9 @@ interface MockResponse {
 describe('GitHub API', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    // Reset global variables
-    globalThis.GITHUB_TOKEN = undefined
-    globalThis.GITHUB_USERNAME = undefined
+    // Set up test environment variables
+    globalThis.GITHUB_TOKEN = 'test-token'
+    globalThis.GITHUB_USERNAME = 'rgilks'
   })
 
   describe('fetchGitHubProjects', () => {
@@ -144,12 +145,28 @@ describe('GitHub API', () => {
         ok: false,
         status: 403,
         statusText: 'Forbidden',
+        text: vi.fn().mockResolvedValue('Rate limit exceeded'),
       }
 
       vi.mocked(fetch).mockResolvedValue(mockResponse as Response)
 
       await expect(fetchGitHubProjects()).rejects.toThrow(
-        'GitHub API error: 403 Forbidden'
+        'GitHub API rate limit exceeded. Status: 403 Forbidden'
+      )
+    })
+
+    it('should handle GitHub API authentication errors', async () => {
+      const mockResponse: MockResponse = {
+        ok: false,
+        status: 401,
+        statusText: 'Unauthorized',
+        text: vi.fn().mockResolvedValue('Unauthorized'),
+      }
+
+      vi.mocked(fetch).mockResolvedValue(mockResponse as Response)
+
+      await expect(fetchGitHubProjects()).rejects.toThrow(
+        'GitHub API authentication failed. Please check your GITHUB_TOKEN environment variable. Status: 401 Unauthorized'
       )
     })
 
