@@ -1,5 +1,5 @@
 name = "tre-website"
-main = ".open-next/worker.js"
+main = "worker.js"
 compatibility_date = "2025-06-14"
 compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 

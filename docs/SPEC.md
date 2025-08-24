@@ -22,6 +22,25 @@ Total Reality Engineering (TRE) is a personal contracting business showcasing in
 - **Deployment**: Open-Next for Cloudflare Workers
 - **Animation**: Framer Motion for smooth interactions
 
+### Cloudflare Workers Configuration
+
+#### KV Binding Management
+
+The application uses Cloudflare KV for caching GitHub data and project screenshots. A custom `worker.js` file ensures proper exposure of KV bindings to Next.js functions:
+
+- **Custom Worker**: `worker.js` exposes `env.GITHUB_CACHE` to `globalThis.GITHUB_CACHE`
+- **Environment Access**: Next.js functions access KV bindings through the global scope
+- **Fallback Handling**: Graceful degradation to in-memory caching when KV is unavailable
+
+#### Cron Job System
+
+Automated data refresh via Cloudflare Workers cron triggers:
+
+- **Schedule**: Every 6 hours (0, 6, 12, 18 UTC)
+- **Endpoint**: `/api/cron` with Bearer token authentication
+- **Function**: `refreshProjects()` clears cache and fetches fresh data
+- **Error Handling**: Comprehensive error handling with fallback strategies
+
 ## Project Structure
 
 ### Core Modules

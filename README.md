@@ -177,6 +177,32 @@ npm run deploy:cf
 - Set up Cloudflare KV for caching
 - Configure Cloudflare Images for optimization
 
+### Troubleshooting
+
+#### KV Binding Issues
+
+If you see "GITHUB_CACHE KV binding not available" warnings in the logs:
+
+1. **Verify KV Namespace**: Ensure the KV namespace is properly configured in `wrangler.toml`
+2. **Check Worker Configuration**: The custom `worker.js` file exposes KV bindings to the global scope
+3. **Environment Variables**: Verify all required secrets are set via `wrangler secret put`
+
+#### Cron Job Issues
+
+The cron job runs every 6 hours to refresh GitHub data. If it's not working:
+
+1. **Check Authentication**: Verify `CRON_SECRET` is set correctly
+2. **Check Logs**: Use `wrangler tail` to monitor worker logs
+3. **Manual Testing**: Test the `/api/cron` endpoint with proper authorization
+
+```bash
+# Check worker logs
+wrangler tail --format=pretty
+
+# Test cron endpoint (replace with your actual CRON_SECRET)
+curl -H "Authorization: Bearer your_cron_secret" https://your-domain.com/api/cron
+```
+
 ## 📚 Documentation
 
 - **[SPEC.md](docs/SPEC.md)**: Detailed project specification and architecture

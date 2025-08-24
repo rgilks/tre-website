@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { refreshProjects } from '@/lib/projects'
 import { validateCronAuth } from '@/lib/cronAuth'
 
-// Extend globalThis to include Cloudflare environment variables
 declare global {
   var CRON_SECRET: string | undefined
+  var GITHUB_CACHE: KVNamespace | undefined
 }
 
 export async function GET(request: NextRequest) {
@@ -22,7 +22,11 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const result = await refreshProjects()
+    const env = {
+      GITHUB_CACHE: globalThis.GITHUB_CACHE,
+    }
+
+    const result = await refreshProjects(env)
     return NextResponse.json(result)
   } catch (error) {
     console.error('Error in cron job:', error)
