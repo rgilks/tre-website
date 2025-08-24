@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { GitHubCacheService } from './githubCache'
+import { createGitHubCacheService } from './githubCache'
 import { Project } from '@/types/project'
 
 // Mock KV namespace interface
@@ -16,12 +16,12 @@ const mockKV: MockKV = {
 }
 
 describe('GitHubCacheService', () => {
-  let cacheService: GitHubCacheService
+  let cacheService: ReturnType<typeof createGitHubCacheService>
   let mockProjects: Project[]
 
   beforeEach(() => {
     vi.clearAllMocks()
-    cacheService = new GitHubCacheService(mockKV as unknown as KVNamespace)
+    cacheService = createGitHubCacheService(mockKV as unknown as KVNamespace)
 
     mockProjects = [
       {

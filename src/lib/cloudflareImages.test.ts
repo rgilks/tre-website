@@ -1,13 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import {
+  createCloudflareImagesService,
+  type CloudflareImageService,
+} from './cloudflareImages'
 
 // Mock fetch before importing the module
 const mockFetch = vi.fn()
-
-// Import after mocking
-import {
-  CloudflareImagesService,
-  createCloudflareImagesService
-} from './cloudflareImages'
 
 declare global {
   var CLOUDFLARE_ACCOUNT_ID: string | undefined
@@ -24,7 +22,7 @@ afterEach(() => {
 })
 
 describe('CloudflareImagesService', () => {
-  let service: CloudflareImagesService
+  let service: CloudflareImageService
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -35,7 +33,7 @@ describe('CloudflareImagesService', () => {
     vi.stubEnv('CLOUDFLARE_ACCOUNT_ID', '')
     vi.stubEnv('CLOUDFLARE_IMAGES_API_TOKEN', '')
 
-    service = new CloudflareImagesService()
+    service = createCloudflareImagesService()
   })
 
   afterEach(() => {
@@ -46,7 +44,7 @@ describe('CloudflareImagesService', () => {
 
   describe('constructor', () => {
     it('should use global variables when available', () => {
-      const serviceWithGlobals = new CloudflareImagesService()
+      const serviceWithGlobals = createCloudflareImagesService()
       expect(serviceWithGlobals.isConfigured()).toBe(true)
     })
 
@@ -57,7 +55,7 @@ describe('CloudflareImagesService', () => {
       vi.stubEnv('CLOUDFLARE_ACCOUNT_ID', 'env-account-id')
       vi.stubEnv('CLOUDFLARE_IMAGES_API_TOKEN', 'env-api-token')
 
-      const serviceWithEnv = new CloudflareImagesService()
+      const serviceWithEnv = createCloudflareImagesService()
       expect(serviceWithEnv.isConfigured()).toBe(true)
     })
 
@@ -68,7 +66,7 @@ describe('CloudflareImagesService', () => {
       vi.stubEnv('CLOUDFLARE_ACCOUNT_ID', '')
       vi.stubEnv('CLOUDFLARE_IMAGES_API_TOKEN', '')
 
-      const serviceWithoutCreds = new CloudflareImagesService()
+      const serviceWithoutCreds = createCloudflareImagesService()
       expect(serviceWithoutCreds.isConfigured()).toBe(false)
     })
   })
@@ -78,7 +76,7 @@ describe('CloudflareImagesService', () => {
       globalThis.CLOUDFLARE_IMAGES_API_TOKEN = undefined
       vi.stubEnv('CLOUDFLARE_IMAGES_API_TOKEN', '')
 
-      const serviceWithoutCreds = new CloudflareImagesService()
+      const serviceWithoutCreds = createCloudflareImagesService()
       const result = await serviceWithoutCreds.uploadImageFromUrl('test-project', 'https://example.com/image.jpg')
 
       expect(result).toBeNull()
@@ -224,7 +222,7 @@ describe('CloudflareImagesService', () => {
       globalThis.CLOUDFLARE_IMAGES_API_TOKEN = undefined
       vi.stubEnv('CLOUDFLARE_IMAGES_API_TOKEN', '')
 
-      const serviceWithoutCreds = new CloudflareImagesService()
+      const serviceWithoutCreds = createCloudflareImagesService()
       const result = await serviceWithoutCreds.deleteImage('image-123')
 
       expect(result).toBe(false)
@@ -275,7 +273,7 @@ describe('CloudflareImagesService', () => {
       globalThis.CLOUDFLARE_ACCOUNT_ID = undefined
       vi.stubEnv('CLOUDFLARE_ACCOUNT_ID', '')
 
-      const serviceWithoutAccountId = new CloudflareImagesService()
+      const serviceWithoutAccountId = createCloudflareImagesService()
       expect(serviceWithoutAccountId.isConfigured()).toBe(false)
     })
 
@@ -283,7 +281,7 @@ describe('CloudflareImagesService', () => {
       globalThis.CLOUDFLARE_IMAGES_API_TOKEN = undefined
       vi.stubEnv('CLOUDFLARE_IMAGES_API_TOKEN', '')
 
-      const serviceWithoutToken = new CloudflareImagesService()
+      const serviceWithoutToken = createCloudflareImagesService()
       expect(serviceWithoutToken.isConfigured()).toBe(false)
     })
 
@@ -293,7 +291,7 @@ describe('CloudflareImagesService', () => {
       vi.stubEnv('CLOUDFLARE_ACCOUNT_ID', '')
       vi.stubEnv('CLOUDFLARE_IMAGES_API_TOKEN', '')
 
-      const serviceWithoutCreds = new CloudflareImagesService()
+      const serviceWithoutCreds = createCloudflareImagesService()
       expect(serviceWithoutCreds.isConfigured()).toBe(false)
     })
   })
@@ -308,7 +306,11 @@ describe('CloudflareImagesService', () => {
   describe('createCloudflareImagesService', () => {
     it('should create a new service instance', () => {
       const newService = createCloudflareImagesService()
-      expect(newService).toBeInstanceOf(CloudflareImagesService)
+      expect(newService).toHaveProperty('uploadImageFromUrl')
+      expect(newService).toHaveProperty('getImageUrl')
+      expect(newService).toHaveProperty('deleteImage')
+      expect(newService).toHaveProperty('isConfigured')
+      expect(newService).toHaveProperty('getImageVariants')
     })
   })
 

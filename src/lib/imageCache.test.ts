@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import {
-  CloudflareImageCacheService,
-  FallbackImageCacheService,
+  createCloudflareImageCacheService,
+  createFallbackImageCacheService,
   ScreenshotCache,
 } from './imageCache'
 
@@ -17,11 +17,11 @@ const mockKV = {
 } as unknown as KVNamespace
 
 describe('CloudflareImageCacheService', () => {
-  let cacheService: CloudflareImageCacheService
+  let cacheService: ReturnType<typeof createCloudflareImageCacheService>
 
   beforeEach(() => {
     vi.clearAllMocks()
-    cacheService = new CloudflareImageCacheService(mockKV)
+    cacheService = createCloudflareImageCacheService(mockKV)
   })
 
   afterEach(() => {
@@ -145,10 +145,10 @@ describe('CloudflareImageCacheService', () => {
 })
 
 describe('FallbackImageCacheService', () => {
-  let cacheService: FallbackImageCacheService
+  let cacheService: ReturnType<typeof createFallbackImageCacheService>
 
   beforeEach(() => {
-    cacheService = new FallbackImageCacheService()
+    cacheService = createFallbackImageCacheService()
   })
 
   it('should always return null for getCachedScreenshots', async () => {

@@ -1,8 +1,8 @@
-import { GitHubApiResponse, Project } from '@/types/project'
-import { CacheService } from './cacheService'
+import { Project } from '@/types/project'
+import { type CacheService } from './cacheService'
 import {
-  CloudflareImageCacheService,
-  FallbackImageCacheService,
+  createCloudflareImageCacheService,
+  createFallbackImageCacheService,
 } from './imageCache'
 
 const GITHUB_API_BASE = 'https://api.github.com'
@@ -13,6 +13,31 @@ declare global {
   var GITHUB_TOKEN: string | undefined
   var GITHUB_USERNAME: string | undefined
 }
+
+// GitHub API response type
+interface GitHubApiResponse {
+  id: number
+  name: string
+  full_name: string
+  description: string | null
+  homepage: string | null
+  html_url: string
+  topics: string[]
+  language: string | null
+  updated_at: string
+  created_at: string
+  private: boolean
+  stargazers_count: number
+  forks_count: number
+}
+
+// Type aliases for the cache services
+type CloudflareImageCacheService = ReturnType<
+  typeof createCloudflareImageCacheService
+>
+type FallbackImageCacheService = ReturnType<
+  typeof createFallbackImageCacheService
+>
 
 export async function fetchGitHubProjects(
   cacheService?: CacheService,

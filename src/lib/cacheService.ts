@@ -34,23 +34,21 @@ export function createCacheService(env?: CloudflareEnvironment): CacheService {
 }
 
 // Simple fallback cache service for development
-class FallbackCacheService implements CacheService {
-  async getCachedProjects(): Promise<Project[] | null> {
-    // In development without KV, just return null to force fresh fetch
-    return null
-  }
-
-  async setCachedProjects(): Promise<void> {
-    // No-op in development
-  }
-
-  async clearCache(): Promise<void> {
-    // No-op in development
-  }
-}
-
 function createFallbackCacheService(): CacheService {
-  return new FallbackCacheService()
+  return {
+    async getCachedProjects(): Promise<Project[] | null> {
+      // In development without KV, just return null to force fresh fetch
+      return null
+    },
+
+    async setCachedProjects(): Promise<void> {
+      // No-op in development
+    },
+
+    async clearCache(): Promise<void> {
+      // No-op in development
+    }
+  }
 }
 
 // Factory function for KV-based cache service (used in Cloudflare Workers)

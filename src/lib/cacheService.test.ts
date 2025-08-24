@@ -1,12 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { 
-  createCacheService, 
-  createKVCacheService, 
-  initializeCacheService
-} from './cacheService'
-import { createGitHubCacheService, type GitHubCacheService } from './githubCache'
+import { Project } from '@/types/project'
+import { createCacheService, createKVCacheService, initializeCacheService } from './cacheService'
+import { createGitHubCacheService } from './githubCache'
 import { getCloudflareEnvironment, setCloudflareEnvironment, type CloudflareEnvironment } from './cloudflareContext'
-import { type Project } from '@/types/project'
 
 // Mock the dependencies
 vi.mock('./githubCache')
@@ -19,7 +15,7 @@ const mockSetCloudflareEnvironment = vi.mocked(setCloudflareEnvironment)
 describe('CacheService', () => {
   let mockKV: KVNamespace
   let mockEnv: CloudflareEnvironment
-  let mockGitHubCacheService: GitHubCacheService
+  let mockGitHubCacheService: ReturnType<typeof createGitHubCacheService>
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -40,7 +36,7 @@ describe('CacheService', () => {
       clearCache: vi.fn(),
       kv: mockKV,
       isCacheValid: vi.fn(),
-    } as unknown as GitHubCacheService
+    } as unknown as ReturnType<typeof createGitHubCacheService>
     
     // Reset the global environment
     mockGetCloudflareEnvironment.mockReturnValue(undefined)
