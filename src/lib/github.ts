@@ -7,6 +7,12 @@ import {
 
 const GITHUB_API_BASE = 'https://api.github.com'
 const GITHUB_USERNAME = process.env.GITHUB_USERNAME || 'rgilks'
+const SCREENSHOT_PATHS = [
+  `docs/screenshot.png`,
+  `public/screenshot.png`,
+] as const
+const CACHE_DURATION = 3600 // 1 hour in seconds
+const MAX_SCREENSHOT_PROJECTS = 10
 
 // Extend globalThis to include Cloudflare environment variables
 declare global {
@@ -39,7 +45,7 @@ export async function fetchGitHubProjects(
 
     const response = await fetch(url, {
       headers,
-      next: { revalidate: 3600 }, // Cache for 1 hour
+      next: { revalidate: CACHE_DURATION },
     })
 
     if (!response.ok) {
@@ -53,7 +59,10 @@ export async function fetchGitHubProjects(
 
     // Fetch screenshots if requested
     if (fetchScreenshots && imageCacheService) {
-      await fetchProjectScreenshots(projects.slice(0, 10), imageCacheService)
+      await fetchProjectScreenshots(
+        projects.slice(0, MAX_SCREENSHOT_PROJECTS),
+        imageCacheService
+      )
     }
 
     // Mark the most recently updated project as "currently working on"
@@ -123,26 +132,7 @@ async function fetchProjectScreenshots(
   await Promise.all(
     projects.map(async project => {
       try {
-        // Try to get cached screenshots first
-        let screenshots =
-          (await imageCacheService.getCachedScreenshots(project.name)) || []
-
-        // If no cached screenshots, fetch from GitHub
-        if (screenshots.length === 0) {
-          screenshots = await fetchProjectScreenshotsFromGitHub(project.name)
-
-          // Cache the screenshots for future use
-          if (screenshots.length > 0) {
-            await imageCacheService.setCachedScreenshots(
-              project.name,
-              screenshots
-            )
-          }
-        }
-
-        if (screenshots.length > 0) {
-          project.screenshotUrl = screenshots[0]
-        }
+        await fetchAndCacheScreenshots(project, imageCacheService)
       } catch (error) {
         console.warn(`Could not fetch screenshot for ${project.name}:`, error)
       }
@@ -150,15 +140,37 @@ async function fetchProjectScreenshots(
   )
 }
 
+async function fetchAndCacheScreenshots(
+  project: Project,
+  imageCacheService: ImageCacheService
+): Promise<void> {
+  // Try to get cached screenshots first
+  let screenshots =
+    (await imageCacheService.getCachedScreenshots(project.name)) || []
+
+  // If no cached screenshots, fetch from GitHub
+  if (screenshots.length === 0) {
+    screenshots = await fetchProjectScreenshotsFromGitHub(project.name)
+
+    // Cache the screenshots for future use
+    if (screenshots.length > 0) {
+      await imageCacheService.setCachedScreenshots(project.name, screenshots)
+    }
+  }
+
+  if (screenshots.length > 0) {
+    project.screenshotUrl = screenshots[0]
+  }
+}
+
 export async function fetchProjectScreenshotsFromGitHub(
   projectName: string
 ): Promise<string[]> {
   try {
     const headers = getGitHubHeaders()
-    const screenshotPaths = [`docs/screenshot.png`, `public/screenshot.png`]
 
     // Check paths in parallel for better performance
-    const screenshotPromises = screenshotPaths.map(async path => {
+    const screenshotPromises = SCREENSHOT_PATHS.map(async path => {
       try {
         const response = await fetch(
           `https://api.github.com/repos/${GITHUB_USERNAME}/${projectName}/contents/${path}`,
