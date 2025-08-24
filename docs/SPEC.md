@@ -48,6 +48,11 @@ _(unchanged from previous spec except for PWA and project detail additions)_
 - PWA manifest + service worker.
 - New project detail route with iframe overlay and YouTube video support.
 
+**Required Configuration Files:**
+- `next.config.js` - Minimal Next.js configuration (required by OpenNext)
+- `open-next.config.ts` - OpenNext Cloudflare configuration
+- `wrangler.toml` - Cloudflare Workers deployment configuration
+
 ---
 
 ## Pages & Components (Additions)

@@ -15,7 +15,7 @@
 - [x] **Configure Vitest** for unit testing
 - [x] **Set up Prettier** for code formatting
 - [x] **Configure PostCSS** with Tailwind and Autoprefixer
-- [x] **Remove unnecessary configuration files** - deleted open-next.config.ts and next.config.mjs
+- [x] **Create minimal OpenNext configuration** - open-next.config.ts and next.config.js required for builds
 - [x] **Clean up project structure** - removed unused files and consolidated documentation
 
 ### Core Components
