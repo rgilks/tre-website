@@ -1,4 +1,4 @@
-import { Project } from '@/types/project'
+import { Project, GitHubApiResponse } from '@/types/project'
 import { type CacheService } from './cacheService'
 import {
   createCloudflareImageCacheService,
@@ -14,34 +14,15 @@ declare global {
   var GITHUB_USERNAME: string | undefined
 }
 
-// GitHub API response type
-interface GitHubApiResponse {
-  id: number
-  name: string
-  full_name: string
-  description: string | null
-  homepage: string | null
-  html_url: string
-  topics: string[]
-  language: string | null
-  updated_at: string
-  created_at: string
-  private: boolean
-  stargazers_count: number
-  forks_count: number
-}
-
-// Type aliases for the cache services
-type CloudflareImageCacheService = ReturnType<
-  typeof createCloudflareImageCacheService
->
-type FallbackImageCacheService = ReturnType<
-  typeof createFallbackImageCacheService
+// Type alias for the cache services
+type ImageCacheService = ReturnType<
+  | typeof createCloudflareImageCacheService
+  | typeof createFallbackImageCacheService
 >
 
 export async function fetchGitHubProjects(
   cacheService?: CacheService,
-  imageCacheService?: CloudflareImageCacheService | FallbackImageCacheService,
+  imageCacheService?: ImageCacheService,
   fetchScreenshots: boolean = false
 ): Promise<Project[]> {
   // Try to get cached data first
@@ -53,19 +34,9 @@ export async function fetchGitHubProjects(
   }
 
   try {
-    const headers: Record<string, string> = {
-      Accept: 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28',
-      'User-Agent': 'tre-website',
-    }
-
-    // Add token if available
-    const token = globalThis.GITHUB_TOKEN || process.env.GITHUB_TOKEN
-    if (token) {
-      headers.Authorization = `token ${token}`
-    }
-
+    const headers = getGitHubHeaders()
     const url = `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`
+
     const response = await fetch(url, {
       headers,
       next: { revalidate: 3600 }, // Cache for 1 hour
@@ -78,61 +49,11 @@ export async function fetchGitHubProjects(
     }
 
     const repos: GitHubApiResponse[] = await response.json()
+    const projects = transformGitHubReposToProjects(repos)
 
-    // Filter for public repos and transform to our domain model
-    const projects = repos
-      .filter(repo => !repo.private)
-      .map(repo => ({
-        id: repo.id.toString(),
-        name: repo.name,
-        fullName: repo.full_name,
-        description: repo.description || 'No description available',
-        homepageUrl: repo.homepage || undefined,
-        htmlUrl: repo.html_url,
-        topics: repo.topics || [],
-        language: repo.language || undefined,
-        updatedAt: repo.updated_at,
-        createdAt: repo.created_at,
-        screenshotUrl: undefined, // Will be populated below if fetchScreenshots is true
-        isCurrentlyWorking: false, // Will be determined by logic
-      }))
-
-    // Fetch screenshots for projects only if requested
+    // Fetch screenshots if requested
     if (fetchScreenshots && imageCacheService) {
-      const projectsToFetchScreenshots = projects.slice(0, 10) // Limit to first 10 for performance
-
-      for (const project of projectsToFetchScreenshots) {
-        try {
-          let screenshots: string[] = []
-
-          // Try to get cached screenshots first
-          const cachedScreenshots =
-            await imageCacheService.getCachedScreenshots(project.name)
-          if (cachedScreenshots) {
-            screenshots = cachedScreenshots
-          }
-
-          // If no cached screenshots, fetch from GitHub
-          if (screenshots.length === 0) {
-            screenshots = await fetchProjectScreenshots(project.name)
-
-            // Cache the screenshots for future use
-            if (screenshots.length > 0) {
-              await imageCacheService.setCachedScreenshots(
-                project.name,
-                screenshots
-              )
-            }
-          }
-
-          if (screenshots.length > 0) {
-            ;(project as Project).screenshotUrl = screenshots[0] // Use first screenshot found
-          }
-        } catch (error) {
-          console.warn(`Could not fetch screenshot for ${project.name}:`, error)
-          // Continue with other projects - screenshots are optional
-        }
-      }
+      await fetchProjectScreenshots(projects.slice(0, 10), imageCacheService)
     }
 
     // Mark the most recently updated project as "currently working on"
@@ -149,7 +70,6 @@ export async function fetchGitHubProjects(
   } catch (error) {
     console.error('Error fetching GitHub projects:', error)
 
-    // If it's already a GitHub API error, re-throw it
     if (
       error instanceof Error &&
       error.message.startsWith('GitHub API error:')
@@ -157,27 +77,87 @@ export async function fetchGitHubProjects(
       throw error
     }
 
-    // For other errors, throw a generic message
     throw new Error('Failed to fetch projects from GitHub')
   }
 }
 
-export async function fetchProjectScreenshots(
+function getGitHubHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {
+    Accept: 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+    'User-Agent': 'tre-website',
+  }
+
+  const token = globalThis.GITHUB_TOKEN || process.env.GITHUB_TOKEN
+  if (token) {
+    headers.Authorization = `token ${token}`
+  }
+
+  return headers
+}
+
+function transformGitHubReposToProjects(repos: GitHubApiResponse[]): Project[] {
+  return repos
+    .filter(repo => !repo.private)
+    .map(repo => ({
+      id: repo.id.toString(),
+      name: repo.name,
+      fullName: repo.full_name,
+      description: repo.description || 'No description available',
+      homepageUrl: repo.homepage || undefined,
+      htmlUrl: repo.html_url,
+      topics: repo.topics || [],
+      language: repo.language || undefined,
+      updatedAt: repo.updated_at,
+      createdAt: repo.created_at,
+      screenshotUrl: undefined,
+      isCurrentlyWorking: false,
+    }))
+}
+
+async function fetchProjectScreenshots(
+  projects: Project[],
+  imageCacheService: ImageCacheService
+): Promise<void> {
+  for (const project of projects) {
+    try {
+      let screenshots: string[] = []
+
+      // Try to get cached screenshots first
+      const cachedScreenshots = await imageCacheService.getCachedScreenshots(
+        project.name
+      )
+      if (cachedScreenshots) {
+        screenshots = cachedScreenshots
+      }
+
+      // If no cached screenshots, fetch from GitHub
+      if (screenshots.length === 0) {
+        screenshots = await fetchProjectScreenshotsFromGitHub(project.name)
+
+        // Cache the screenshots for future use
+        if (screenshots.length > 0) {
+          await imageCacheService.setCachedScreenshots(
+            project.name,
+            screenshots
+          )
+        }
+      }
+
+      if (screenshots.length > 0) {
+        project.screenshotUrl = screenshots[0]
+      }
+    } catch (error) {
+      console.warn(`Could not fetch screenshot for ${project.name}:`, error)
+    }
+  }
+}
+
+export async function fetchProjectScreenshotsFromGitHub(
   projectName: string
 ): Promise<string[]> {
   try {
-    const headers: Record<string, string> = {
-      Accept: 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28',
-      'User-Agent': 'tre-website',
-    }
-
-    const token = globalThis.GITHUB_TOKEN || process.env.GITHUB_TOKEN
-    if (token) {
-      headers.Authorization = `token ${token}`
-    }
-
-    // Check for screenshots in docs/ directory first (more common)
+    const headers = getGitHubHeaders()
     const screenshotPaths = [`docs/screenshot.png`, `public/screenshot.png`]
     const screenshots: string[] = []
 
@@ -188,12 +168,9 @@ export async function fetchProjectScreenshots(
           { headers }
         )
 
-        if (!response.ok) {
-          continue
-        }
+        if (!response.ok) continue
 
         const data = (await response.json()) as { download_url?: string }
-
         if (data.download_url) {
           screenshots.push(data.download_url)
         }

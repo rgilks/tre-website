@@ -4,19 +4,25 @@ import { motion } from 'framer-motion'
 import { ProjectCardProps } from '@/types/project'
 import { CalendarIcon } from '@heroicons/react/24/outline'
 import { formatDate } from '@/lib/dateUtils'
-import { 
-  getVisibleTopics, 
-  getProjectCardBorderClass, 
-  getProjectButtonClass, 
-  getProjectBackgroundStyle 
+import {
+  getVisibleTopics,
+  getProjectCardBorderClass,
+  getProjectButtonClass,
+  getProjectBackgroundStyle,
 } from '@/lib/projectUtils'
-import { getQuickFadeInAnimation, getHoverAnimation } from '@/lib/animationUtils'
+import {
+  getQuickFadeInAnimation,
+  getHoverAnimation,
+} from '@/lib/animationUtils'
 
-export function ProjectCard({ project, isHighlighted = false }: ProjectCardProps) {
-  const { visibleTopics, overflowCount, hasOverflow } = getVisibleTopics(project.topics)
+export function ProjectCard({
+  project,
+  isHighlighted = false,
+}: ProjectCardProps) {
+  const { visibleTopics, overflowCount, hasOverflow } = getVisibleTopics(
+    project.topics
+  )
   const borderClass = getProjectCardBorderClass(isHighlighted)
-  const websiteButtonClass = getProjectButtonClass(!!project.homepageUrl)
-  const githubButtonClass = getProjectButtonClass(!project.homepageUrl)
   const backgroundStyle = getProjectBackgroundStyle(project.screenshotUrl)
 
   return (
@@ -24,16 +30,10 @@ export function ProjectCard({ project, isHighlighted = false }: ProjectCardProps
       data-testid={`project-card-${project.id}`}
       {...getQuickFadeInAnimation()}
       {...getHoverAnimation()}
-      className={`
-        relative border rounded-lg p-6 cursor-pointer transition-all duration-200 overflow-hidden
-        ${borderClass}
-      `}
+      className={`relative border rounded-lg p-6 cursor-pointer transition-all duration-200 overflow-hidden ${borderClass}`}
     >
       {/* Screenshot background */}
-      <div
-        className="absolute inset-0 -z-10"
-        style={backgroundStyle}
-      />
+      <div className="absolute inset-0 -z-10" style={backgroundStyle} />
 
       {/* Content overlay */}
       <div className="relative z-10">
@@ -88,7 +88,7 @@ export function ProjectCard({ project, isHighlighted = false }: ProjectCardProps
             <a
               data-testid={`project-website-${project.id}`}
               href={`/project/${project.name}`}
-              className={`px-4 py-2 border border-tre-green text-tre-green font-bold font-mono rounded text-center hover:bg-tre-green hover:text-tre-black transition-all duration-200 ${websiteButtonClass}`}
+              className={`px-4 py-2 border border-tre-green text-tre-green font-bold font-mono rounded text-center hover:bg-tre-green hover:text-tre-black transition-all duration-200 ${getProjectButtonClass(true)}`}
               onClick={e => e.stopPropagation()}
             >
               Website
@@ -99,7 +99,7 @@ export function ProjectCard({ project, isHighlighted = false }: ProjectCardProps
             href={project.htmlUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className={`px-4 py-2 border border-tre-green text-tre-green font-bold font-mono rounded text-center hover:bg-tre-green hover:text-tre-black transition-all duration-200 ${githubButtonClass}`}
+            className={`px-4 py-2 border border-tre-green text-tre-green font-bold font-mono rounded text-center hover:bg-tre-green hover:text-tre-black transition-all duration-200 ${getProjectButtonClass(!!project.homepageUrl)}`}
             onClick={e => e.stopPropagation()}
           >
             GitHub

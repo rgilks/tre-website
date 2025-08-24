@@ -1,252 +1,186 @@
-# TRE Website Specification
+# Project Specification
 
-## Project Overview
+## Overview
 
-**Total Reality Engineering (TRE)** is a portfolio website showcasing innovative engineering projects. The site features a modern, terminal-inspired design with a focus on performance, accessibility, and progressive web app capabilities.
+Total Reality Engineering (TRE) is a personal contracting business showcasing innovative software engineering projects. The website demonstrates technical excellence through a portfolio of cutting-edge projects built with modern web technologies.
 
-## Technical Architecture
+## Architecture
 
-### Core Technologies
-- **Framework**: Next.js 15 with App Router
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS with custom animations
+### Core Principles
+- **Elegance and Simplicity**: Clean, maintainable code with minimal complexity
+- **Type Safety**: Strong TypeScript typing throughout the codebase
+- **Performance**: Efficient data fetching and caching strategies
+- **Maintainability**: Well-organized, testable code structure
+
+### Technology Stack
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Styling**: Tailwind CSS 4
 - **State Management**: Zustand with Immer for immutable updates
-- **Testing**: Vitest for unit tests, Playwright for e2e testing
-- **Deployment**: Cloudflare Workers with OpenNext
-- **Caching**: Cloudflare KV with 6-hour TTL and cron-based refresh
+- **Testing**: Vitest for unit tests, Playwright for E2E tests
+- **Deployment**: Open-Next for Cloudflare Workers
+- **Animation**: Framer Motion for smooth interactions
 
-### Project Structure
+## Project Structure
+
+### Core Modules
+
+#### 1. Domain Types (`src/types/`)
+- **`project.ts`**: Consolidated project interfaces including `Project`, `GitHubApiResponse`, and related types
+- **Single source of truth** for all project-related data structures
+
+#### 2. Data Layer (`src/lib/`)
+- **`github.ts`**: GitHub API integration with simplified, focused functions
+- **`projects.ts`**: High-level project management with caching and error handling
+- **`cacheService.ts`**: Flexible caching layer supporting both Cloudflare KV and fallback storage
+- **`imageCache.ts`**: Image caching and optimization services
+
+#### 3. State Management (`src/store/`)
+- **`projectStore.ts`**: Centralized project state with clean filtering logic
+- **Extracted `applyFilters` function** for maintainable filtering operations
+- **Immer integration** for immutable state updates
+
+#### 4. UI Components (`src/components/`)
+- **`ProjectCard.tsx`**: Simplified project display with clean utility function usage
+- **`ProjectGrid.tsx`**: Streamlined grid layout with direct highlighting logic
+- **`HeroSection.tsx`**: Engaging hero section with staggered animations
+
+#### 5. Utilities (`src/lib/`)
+- **`projectUtils.ts`**: Focused utility functions for project operations
+- **`animationUtils.ts`**: Streamlined animation configurations
+- **`dateUtils.ts`**: Date formatting utilities
+
+## Key Features
+
+### 1. Project Portfolio
+- **GitHub Integration**: Automatic project fetching from GitHub repositories
+- **Smart Caching**: Multi-layer caching for performance and reliability
+- **Screenshot Support**: Automatic project screenshot discovery and caching
+- **Topic Tagging**: Project categorization with visual topic display
+
+### 2. Performance Optimizations
+- **Server-Side Rendering**: Initial project data fetched server-side
+- **Image Optimization**: Cloudflare Images integration for fast image delivery
+- **Progressive Enhancement**: Graceful degradation when services are unavailable
+
+### 3. User Experience
+- **Responsive Design**: Mobile-first approach with Tailwind CSS
+- **Smooth Animations**: Framer Motion for engaging interactions
+- **Accessibility**: Proper ARIA labels and keyboard navigation support
+- **PWA Support**: Progressive Web App capabilities
+
+## Data Flow
+
+### 1. Project Fetching
 ```
-src/
-├── app/                 # Next.js App Router pages
-├── components/          # React components
-├── lib/                # Business logic and utilities
-├── store/              # Zustand state management
-├── types/              # TypeScript type definitions
-└── test/               # Test utilities and fixtures
-```
-
-## Core Features
-
-### 1. Project Showcase
-- **Dynamic Project Grid**: Responsive card layout with screenshots
-- **Project Details**: Individual project pages with iframe embeds
-- **Search & Filtering**: Language-based filtering and search functionality
-- **Screenshot Integration**: Automatic screenshot loading from GitHub repositories
-
-### 2. Progressive Web App (PWA)
-- **Service Worker**: Offline caching and background sync
-- **Install Prompt**: Smart install banner with user preference tracking
-- **Offline Support**: Graceful degradation and offline page
-- **App-like Experience**: Full-screen mode and native app integration
-
-### 3. Video Integration
-- **YouTube Embeds**: Responsive video player with 16:9 aspect ratio
-- **Project Videos**: Integration with project detail pages
-- **Accessibility**: ARIA labels and keyboard controls
-
-### 4. Performance & Caching
-- **Cloudflare KV**: Distributed caching with automatic refresh
-- **Cron Triggers**: 6-hour automated data refresh
-- **Image Optimization**: Cloudflare Images integration
-- **Lazy Loading**: Progressive content loading
-
-## Design System
-
-### Color Palette
-- **Background**: #000000 (Black)
-- **Primary**: #39FF14 (Terminal Green)
-- **Secondary**: #F5F5DC (Beige)
-- **Accent**: #FFFFFF (White)
-- **Supporting**: #E8E8D0 (Dark Beige), #2ECC71 (Dark Green)
-
-### Typography
-- **Headings**: Modern, tech-inspired fonts
-- **Body**: Readable, clean fonts
-- **Terminal Elements**: Monospace fonts where appropriate
-
-### Layout Principles
-- **Responsive Design**: Mobile-first approach
-- **Grid System**: CSS Grid for project layouts
-- **Spacing**: Consistent 8px base unit system
-- **Animations**: Subtle micro-interactions and transitions
-
-## Testing Strategy
-
-### Current Test Coverage: **64.95%** (Improved from 42.15%)
-
-#### High Coverage Modules (80%+)
-- ✅ **cacheService.ts** - 100% (was 29.41%)
-- ✅ **cloudflareImages.ts** - 95.78% (was 0%)
-- ✅ **github.ts** - 95.54% (was 0.72%)
-- ✅ **pwa.ts** - 94.11% (was 28.3%)
-- ✅ **workerWrapper.ts** - 100% (was 0%)
-
-#### Medium Coverage Modules (60-79%)
-- ✅ **imageCache.ts** - 74.25% (was 0%)
-- ✅ **projectStore.ts** - 72.63% (was 0%)
-- ✅ **projects.ts** - 56.09% (was 0%)
-
-#### Low Coverage Modules (<60%)
-- ❌ **githubCache.ts** - 6.34% (needs test configuration fix)
-- ❌ **cloudflareContext.ts** - 40% (needs test configuration fix)
-
-### Current Test Status
-- **Test Files Working**: 8 out of 15 (vs 0 before)
-- **Tests Passing**: 112 out of 127 (vs 0 before)
-- **Major Infrastructure**: ✅ Fixed (vitest, TypeScript, linting)
-
-### Testing Approach
-- **Unit Tests**: Business logic and utility functions
-- **Integration Tests**: API interactions and data flow
-- **E2E Tests**: User workflows and component interactions
-- **Mock Strategy**: Improved mock setup and management
-
-### Test Quality Standards
-- **Coverage Thresholds**: 80% for functions, lines, statements; 70% for branches
-- **Mock Management**: Comprehensive mocking of external dependencies
-- **Error Handling**: Testing of edge cases and error scenarios
-- **Type Safety**: Full TypeScript support in test environment
-
-## Data Architecture
-
-### GitHub Integration
-- **Repository Fetching**: Automatic project discovery from GitHub
-- **Screenshot Handling**: Large file support and caching
-- **Authentication**: Token-based API access with fallback handling
-- **Rate Limiting**: Respectful API usage with caching
-
-### Caching Strategy
-- **Primary Cache**: Cloudflare KV with 6-hour TTL
-- **Fallback Cache**: In-memory cache for development
-- **Cache Invalidation**: Automatic refresh via cron triggers
-- **Error Handling**: Graceful degradation when cache unavailable
-
-### Data Models
-```typescript
-interface Project {
-  name: string
-  description: string
-  language: string
-  stars: number
-  forks: number
-  screenshotUrl?: string
-  youtubeUrl?: string
-  websiteUrl?: string
-  lastUpdated: string
-}
+GitHub API → Cache Service → Image Cache → UI Components
+     ↓              ↓           ↓           ↓
+  Raw Data → Cached Data → Screenshots → Display
 ```
 
-## Performance Targets
+### 2. State Management
+```
+Server Data → Zustand Store → Filtered Data → Components
+     ↓            ↓              ↓            ↓
+  Initial → Global State → Filtered State → Rendered
+```
 
-### Lighthouse Scores
-- **Performance**: 90+
-- **Accessibility**: 90+
-- **Best Practices**: 90+
-- **SEO**: 90+
+### 3. Caching Strategy
+```
+Primary Cache (Cloudflare KV) → Fallback Cache → Direct Fetch
+      ↓              ↓              ↓
+   Fast Access → Reliable Access → Fresh Data
+```
 
-### Core Web Vitals
-- **First Contentful Paint**: < 1.5s
-- **Largest Contentful Paint**: < 2.5s
-- **Cumulative Layout Shift**: < 0.1
-- **First Input Delay**: < 100ms
+## Code Quality Standards
 
-### Optimization Strategies
-- **Code Splitting**: Route-based and component-based splitting
-- **Image Optimization**: WebP format with responsive sizing
-- **Bundle Analysis**: Regular bundle size monitoring
-- **Caching Headers**: Aggressive caching for static assets
+### 1. TypeScript
+- **Strict Mode**: Enabled for maximum type safety
+- **Interface-First**: Prefer interfaces over types for object shapes
+- **No Any Types**: Use proper typing or `unknown` when necessary
 
-## Security & Privacy
+### 2. Testing
+- **Unit Tests**: Vitest for business logic testing
+- **Coverage Target**: 80% minimum coverage
+- **Test Location**: Tests co-located with source code
+- **Mock Strategy**: Comprehensive mocking for external dependencies
 
-### Security Measures
-- **Content Security Policy**: Strict CSP headers
-- **XSS Protection**: Input sanitization and output encoding
-- **HTTPS Enforcement**: Secure connections only
-- **API Security**: Token-based authentication with minimal permissions
+### 3. Code Organization
+- **Single Responsibility**: Each function/module has one clear purpose
+- **Dependency Injection**: Services accept dependencies as parameters
+- **Error Handling**: Consistent error handling patterns throughout
+- **Documentation**: Clear JSDoc comments for public APIs
 
-### Privacy Considerations
-- **No Analytics**: No user tracking or analytics
-- **Minimal Data Collection**: Only necessary functional data
-- **GDPR Compliance**: Privacy-first approach
-- **Cookie Policy**: Minimal cookie usage
+## Performance Considerations
 
-## Deployment & Infrastructure
+### 1. Data Fetching
+- **Caching**: Multi-layer caching strategy for GitHub data
+- **Rate Limiting**: Respectful GitHub API usage
+- **Error Recovery**: Graceful fallbacks when services fail
 
-### Cloudflare Workers
-- **Edge Computing**: Global deployment for low latency
-- **KV Storage**: Distributed key-value storage
-- **Image Processing**: On-demand image optimization
-- **Cron Triggers**: Automated background tasks
+### 2. Image Optimization
+- **Lazy Loading**: Screenshots loaded on demand
+- **CDN Integration**: Cloudflare Images for global distribution
+- **Format Optimization**: Automatic format selection for best performance
 
-### Build Pipeline
-- **OpenNext**: Next.js to Cloudflare Workers compilation
-- **GitHub Actions**: Automated testing and deployment
-- **Environment Management**: Secure environment variable handling
-- **Rollback Strategy**: Quick deployment rollbacks
+### 3. Bundle Optimization
+- **Tree Shaking**: Unused code eliminated from production builds
+- **Code Splitting**: Automatic route-based code splitting
+- **Asset Optimization**: Optimized images and fonts
 
-### Monitoring & Observability
-- **Error Tracking**: Comprehensive error logging
-- **Performance Monitoring**: Real-time performance metrics
-- **Health Checks**: Automated system health verification
-- **Alerting**: Proactive issue notification
+## Security
 
-## Browser Support
+### 1. API Security
+- **Token Management**: Secure GitHub token handling
+- **Rate Limiting**: Protection against API abuse
+- **Input Validation**: Strict validation of all external data
 
-### Modern Browsers
-- **Chrome**: 90+
-- **Firefox**: 88+
-- **Safari**: 14+
-- **Edge**: 90+
+### 2. Deployment Security
+- **Environment Variables**: Secure configuration management
+- **HTTPS Only**: All traffic encrypted in transit
+- **CSP Headers**: Content Security Policy implementation
 
-### Mobile Support
-- **iOS Safari**: 14+
-- **Chrome Mobile**: 90+
-- **Samsung Internet**: 15+
+## Deployment
 
-### Progressive Enhancement
-- **Core Functionality**: Works without JavaScript
-- **Enhanced Experience**: Full features with modern browsers
-- **Graceful Degradation**: Fallbacks for older browsers
+### 1. Cloudflare Workers
+- **Edge Computing**: Global distribution for fast access
+- **Open-Next**: Optimized Next.js deployment
+- **Environment Management**: Secure configuration handling
 
-## Accessibility Standards
-
-### WCAG 2.1 AA Compliance
-- **Keyboard Navigation**: Full keyboard accessibility
-- **Screen Reader Support**: Proper ARIA labels and landmarks
-- **Color Contrast**: High contrast ratios
-- **Focus Management**: Clear focus indicators
-
-### Inclusive Design
-- **Responsive Design**: Works across all device sizes
-- **Touch Friendly**: Appropriate touch targets
-- **Voice Control**: Voice navigation support
-- **Cognitive Accessibility**: Clear, simple interfaces
+### 2. Build Process
+- **Type Checking**: TypeScript compilation validation
+- **Linting**: ESLint for code quality enforcement
+- **Testing**: Automated test execution before deployment
 
 ## Future Enhancements
 
-### Planned Features
-- **Advanced Search**: Full-text search with filters
-- **Project Analytics**: View counts and engagement metrics
-- **Social Sharing**: Easy project sharing
-- **Dark/Light Themes**: User preference support
+### 1. User Experience
+- **Advanced Filtering**: Search and filter projects by various criteria
+- **Project Analytics**: View project statistics and metrics
+- **Interactive Demos**: Live project demonstrations
 
-### Technical Improvements
-- **GraphQL API**: More efficient data fetching
-- **Real-time Updates**: WebSocket integration
-- **Advanced Caching**: Redis integration for complex queries
-- **CDN Optimization**: Multi-region content delivery
+### 2. Performance
+- **Incremental Static Regeneration**: Dynamic content updates
+- **Service Worker**: Offline functionality and caching
+- **GraphQL**: More efficient data fetching
 
-## Maintenance & Updates
+### 3. Content Management
+- **CMS Integration**: Easy content updates
+- **Blog Section**: Technical articles and insights
+- **Project Showcases**: Detailed project walkthroughs
 
-### Regular Tasks
-- **Dependency Updates**: Monthly security updates
-- **Performance Monitoring**: Weekly performance reviews
-- **Security Audits**: Quarterly security assessments
-- **Content Updates**: Regular project additions
+## Maintenance
 
-### Quality Assurance
-- **Automated Testing**: CI/CD pipeline testing
-- **Code Reviews**: Peer review process
-- **Performance Budgets**: Maintained performance targets
-- **Accessibility Audits**: Regular accessibility testing
+### 1. Regular Updates
+- **Dependencies**: Monthly dependency updates
+- **Security Patches**: Immediate security updates
+- **Performance Monitoring**: Regular performance audits
+
+### 2. Code Quality
+- **Automated Testing**: CI/CD pipeline with test automation
+- **Code Reviews**: Peer review process for all changes
+- **Documentation**: Keeping documentation up to date
+
+### 3. Monitoring
+- **Error Tracking**: Monitor and resolve production errors
+- **Performance Metrics**: Track Core Web Vitals
+- **User Analytics**: Understand user behavior and needs

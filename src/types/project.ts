@@ -14,6 +14,23 @@ export interface Project {
   isCurrentlyWorking: boolean
 }
 
+// GitHub API response type - consolidated here to avoid duplication
+export interface GitHubApiResponse {
+  id: number
+  name: string
+  full_name: string
+  description: string | null
+  homepage: string | null
+  html_url: string
+  topics: string[]
+  language: string | null
+  updated_at: string
+  created_at: string
+  private: boolean
+  stargazers_count: number
+  forks_count: number
+}
+
 export interface ProjectCardProps {
   project: Project
   isHighlighted?: boolean
@@ -27,20 +44,6 @@ export interface ProjectGridProps {
 
 export interface ProjectDetailProps {
   project: Project
-}
-
-export interface GitHubApiResponse {
-  id: number
-  name: string
-  full_name: string
-  description: string | null
-  homepage: string | null
-  html_url: string
-  topics: string[]
-  language: string | null
-  updated_at: string
-  created_at: string
-  private: boolean
 }
 
 export interface ProjectFilters {

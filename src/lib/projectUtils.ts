@@ -3,15 +3,6 @@
  */
 
 /**
- * Determines if a project should be highlighted based on its position
- * @param index - Project index in the list
- * @returns Whether the project should be highlighted
- */
-export function shouldHighlightProject(index: number): boolean {
-  return index === 0
-}
-
-/**
  * Limits the number of topics displayed for a project
  * @param topics - Array of project topics
  * @param maxVisible - Maximum number of topics to show

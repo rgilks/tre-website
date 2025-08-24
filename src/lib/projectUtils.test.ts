@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest'
 import { 
-  shouldHighlightProject, 
   getVisibleTopics, 
   getProjectCardBorderClass, 
   getProjectButtonClass, 
@@ -8,62 +7,59 @@ import {
 } from './projectUtils'
 
 describe('projectUtils', () => {
-  describe('shouldHighlightProject', () => {
-    it('should highlight the first project (index 0)', () => {
-      expect(shouldHighlightProject(0)).toBe(true)
-    })
-
-    it('should not highlight other projects', () => {
-      expect(shouldHighlightProject(1)).toBe(false)
-      expect(shouldHighlightProject(5)).toBe(false)
-      expect(shouldHighlightProject(10)).toBe(false)
-    })
-  })
-
   describe('getVisibleTopics', () => {
-    it('should return visible topics and overflow count', () => {
-      const topics = ['React', 'TypeScript', 'Next.js', 'Tailwind', 'Framer Motion']
-      const result = getVisibleTopics(topics, 3)
+    it('should return all topics when under max limit', () => {
+      const topics = ['react', 'typescript', 'nextjs']
+      const result = getVisibleTopics(topics, 5)
       
-      expect(result.visibleTopics).toEqual(['React', 'TypeScript', 'Next.js'])
-      expect(result.overflowCount).toBe(2)
-      expect(result.hasOverflow).toBe(true)
-    })
-
-    it('should handle topics with no overflow', () => {
-      const topics = ['React', 'TypeScript']
-      const result = getVisibleTopics(topics, 3)
-      
-      expect(result.visibleTopics).toEqual(['React', 'TypeScript'])
+      expect(result.visibleTopics).toEqual(['react', 'typescript', 'nextjs'])
       expect(result.overflowCount).toBe(0)
       expect(result.hasOverflow).toBe(false)
     })
 
+    it('should limit topics to maxVisible', () => {
+      const topics = ['react', 'typescript', 'nextjs', 'tailwind', 'framer-motion']
+      const result = getVisibleTopics(topics, 3)
+      
+      expect(result.visibleTopics).toEqual(['react', 'typescript', 'nextjs'])
+      expect(result.overflowCount).toBe(2)
+      expect(result.hasOverflow).toBe(true)
+    })
+
+    it('should use default maxVisible of 3', () => {
+      const topics = ['react', 'typescript', 'nextjs', 'tailwind']
+      const result = getVisibleTopics(topics)
+      
+      expect(result.visibleTopics).toEqual(['react', 'typescript', 'nextjs'])
+      expect(result.overflowCount).toBe(1)
+      expect(result.hasOverflow).toBe(true)
+    })
+
     it('should handle empty topics array', () => {
-      const result = getVisibleTopics([], 3)
+      const result = getVisibleTopics([], 5)
       
       expect(result.visibleTopics).toEqual([])
       expect(result.overflowCount).toBe(0)
       expect(result.hasOverflow).toBe(false)
     })
 
-    it('should use default maxVisible of 3', () => {
-      const topics = ['React', 'TypeScript', 'Next.js', 'Tailwind']
-      const result = getVisibleTopics(topics)
+    it('should handle single topic', () => {
+      const topics = ['react']
+      const result = getVisibleTopics(topics, 3)
       
-      expect(result.visibleTopics).toEqual(['React', 'TypeScript', 'Next.js'])
-      expect(result.overflowCount).toBe(1)
-      expect(result.hasOverflow).toBe(true)
+      expect(result.visibleTopics).toEqual(['react'])
+      expect(result.overflowCount).toBe(0)
+      expect(result.hasOverflow).toBe(false)
     })
   })
 
   describe('getProjectCardBorderClass', () => {
-    it('should return highlighted border class', () => {
+    it('should return highlighted border class when isHighlighted is true', () => {
       const result = getProjectCardBorderClass(true)
       expect(result).toBe('border-tre-green shadow-lg shadow-tre-green/25')
     })
 
-    it('should return normal border class', () => {
+    it('should return default border class when isHighlighted is false', () => {
       const result = getProjectCardBorderClass(false)
       expect(result).toBe('border-tre-green/20 hover:border-tre-green/40')
     })
@@ -82,29 +78,53 @@ describe('projectUtils', () => {
   })
 
   describe('getProjectBackgroundStyle', () => {
-    it('should return background style for screenshot', () => {
+    it('should return background image style when screenshot URL is provided', () => {
       const screenshotUrl = 'https://example.com/screenshot.png'
       const result = getProjectBackgroundStyle(screenshotUrl)
       
-      expect(result.backgroundImage).toBe(`url(${screenshotUrl})`)
-      expect(result.backgroundSize).toBe('cover')
-      expect(result.backgroundPosition).toBe('center')
-      expect(result.filter).toBe('blur(20px) brightness(0.3)')
-      expect(result.transform).toBe('scale(1.1)')
+      expect(result).toEqual({
+        backgroundImage: `url(${screenshotUrl})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        filter: 'blur(20px) brightness(0.3)',
+        transform: 'scale(1.1)'
+      })
     })
 
-    it('should return fallback style when no screenshot', () => {
+    it('should return fallback style when screenshot URL is null', () => {
       const result = getProjectBackgroundStyle(null)
       
-      expect(result.backgroundImage).toBe('none')
-      expect(result.backgroundColor).toBe('rgba(0, 0, 0, 0.5)')
+      expect(result).toEqual({
+        backgroundImage: 'none',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)'
+      })
     })
 
-    it('should handle empty string screenshot URL', () => {
+    it('should return fallback style when screenshot URL is undefined', () => {
+      const result = getProjectBackgroundStyle(undefined)
+      
+      expect(result).toEqual({
+        backgroundImage: 'none',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)'
+      })
+    })
+
+    it('should return fallback style when screenshot URL is empty string', () => {
       const result = getProjectBackgroundStyle('')
       
-      expect(result.backgroundImage).toBe('none')
-      expect(result.backgroundColor).toBe('rgba(0, 0, 0, 0.5)')
+      expect(result).toEqual({
+        backgroundImage: 'none',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)'
+      })
+    })
+
+    it('should return fallback style when screenshot URL is whitespace only', () => {
+      const result = getProjectBackgroundStyle('   ')
+      
+      expect(result).toEqual({
+        backgroundImage: 'none',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)'
+      })
     })
   })
 })

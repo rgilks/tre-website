@@ -9,19 +9,6 @@ export interface AnimationConfig {
 }
 
 /**
- * Standard fade-in-up animation configuration
- * @param delay - Delay before animation starts (in seconds)
- * @returns Animation configuration object
- */
-export function getFadeInUpAnimation(delay: number = 0): AnimationConfig {
-  return {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.8, delay, ease: 'easeOut' }
-  }
-}
-
-/**
  * Quick fade-in animation for interactive elements
  * @returns Animation configuration object
  */
@@ -56,5 +43,9 @@ export function getHeroAnimationDelays(): number[] {
  * @returns Array of animation configurations
  */
 export function getHeroAnimations(): AnimationConfig[] {
-  return getHeroAnimationDelays().map(delay => getFadeInUpAnimation(delay))
+  return getHeroAnimationDelays().map(delay => ({
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.8, delay, ease: 'easeOut' }
+  }))
 }

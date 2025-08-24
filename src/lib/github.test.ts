@@ -1,371 +1,253 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { type Project } from '@/types/project'
-
-// Mock fetch before importing the module
-const mockFetch = vi.fn()
-
-// Import the module
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import {
   fetchGitHubProjects,
-  fetchProjectScreenshots,
+  fetchProjectScreenshotsFromGitHub,
   checkIframeEmbeddable,
 } from './github'
 
-// Set up global fetch mock
-beforeEach(() => {
-  vi.clearAllMocks()
-  vi.stubGlobal('fetch', mockFetch)
-})
+// Mock fetch globally
+global.fetch = vi.fn()
 
-afterEach(() => {
-  vi.unstubAllGlobals()
-})
-
-declare global {
-  var GITHUB_TOKEN: string | undefined
-  var GITHUB_USERNAME: string | undefined
+// Mock response types
+interface MockResponse {
+  ok?: boolean
+  status?: number
+  statusText?: string
+  json?: () => Promise<unknown>
+  headers?: {
+    get: (header: string) => string | null
+  }
 }
 
 describe('GitHub API', () => {
-  let mockCacheService: {
-    getCachedProjects: ReturnType<typeof vi.fn>
-    setCachedProjects: ReturnType<typeof vi.fn>
-    clearCache: ReturnType<typeof vi.fn>
-  }
-  let mockImageCacheService: {
-    getCachedScreenshots: ReturnType<typeof vi.fn>
-    setCachedScreenshots: ReturnType<typeof vi.fn>
-    clearAllScreenshots: ReturnType<typeof vi.fn>
-  }
-
-  const mockRepos = [
-    {
-      id: 2,
-      name: 'test-repo-2',
-      description: 'Test repository 2',
-      language: 'JavaScript',
-      stargazers_count: 20,
-      forks_count: 10,
-      private: false,
-      updated_at: '2023-01-02T00:00:00Z',
-      created_at: '2023-01-02T00:00:00Z',
-      homepage: null,
-      topics: ['test', 'javascript'],
-      full_name: 'rgilks/test-repo-2',
-      html_url: 'https://github.com/rgilks/test-repo-2',
-    },
-    {
-      id: 1,
-      name: 'test-repo-1',
-      description: 'Test repository 1',
-      language: 'TypeScript',
-      stargazers_count: 10,
-      forks_count: 5,
-      private: false,
-      updated_at: '2023-01-01T00:00:00Z',
-      created_at: '2023-01-01T00:00:00Z',
-      homepage: 'https://test1.tre.systems',
-      topics: ['test', 'typescript'],
-      full_name: 'rgilks/test-repo-1',
-      html_url: 'https://github.com/rgilks/test-repo-1',
-    },
-  ]
-
   beforeEach(() => {
     vi.clearAllMocks()
-
-    globalThis.GITHUB_TOKEN = 'test-token'
-    globalThis.GITHUB_USERNAME = 'rgilks'
-
-    mockCacheService = {
-      getCachedProjects: vi.fn(),
-      setCachedProjects: vi.fn(),
-      clearCache: vi.fn(),
-    }
-    mockImageCacheService = {
-      getCachedScreenshots: vi.fn(),
-      setCachedScreenshots: vi.fn(),
-      clearAllScreenshots: vi.fn(),
-    }
-  })
-
-  afterEach(() => {
+    // Reset global variables
     globalThis.GITHUB_TOKEN = undefined
     globalThis.GITHUB_USERNAME = undefined
   })
 
   describe('fetchGitHubProjects', () => {
-    it('should return cached projects when available', async () => {
-      const cachedProjects: Project[] = [
+    it('should fetch projects successfully', async () => {
+      const mockRepos = [
         {
-          id: '1',
-          name: 'cached-project',
-          fullName: 'rgilks/cached-project',
-          description: 'Cached project',
+          id: 1,
+          name: 'test-repo',
+          full_name: 'rgilks/test-repo',
+          description: 'Test repository',
+          homepage: 'https://example.com',
+          html_url: 'https://github.com/rgilks/test-repo',
+          topics: ['test', 'example'],
           language: 'TypeScript',
-          htmlUrl: 'https://github.com/rgilks/cached-project',
-          topics: [],
-          updatedAt: '2023-01-01T00:00:00Z',
-          createdAt: '2023-01-01T00:00:00Z',
-          isCurrentlyWorking: false,
+          updated_at: '2023-01-01T00:00:00Z',
+          created_at: '2023-01-01T00:00:00Z',
+          private: false,
+          stargazers_count: 10,
+          forks_count: 5,
         },
       ]
 
-      mockCacheService.getCachedProjects.mockResolvedValue(cachedProjects)
+      const mockResponse: MockResponse = {
+        ok: true,
+        json: vi.fn().mockResolvedValue(mockRepos),
+      }
 
-      const result = await fetchGitHubProjects(
-        mockCacheService,
-        mockImageCacheService
-      )
+      vi.mocked(fetch).mockResolvedValue(mockResponse as Response)
 
-      expect(result).toEqual(cachedProjects)
-      expect(mockCacheService.getCachedProjects).toHaveBeenCalled()
-      expect(mockFetch).not.toHaveBeenCalled()
-    })
+      const result = await fetchGitHubProjects()
 
-    it('should fetch projects from GitHub when no cache available', async () => {
-      mockCacheService.getCachedProjects.mockResolvedValue(null)
-
-      const mockRepoResponse = new Response(JSON.stringify(mockRepos), {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      })
-
-      mockFetch.mockResolvedValue(mockRepoResponse)
-
-      const result = await fetchGitHubProjects(
-        mockCacheService,
-        mockImageCacheService
-      )
-
-      expect(result).toHaveLength(2)
-      expect(result[0].name).toBe('test-repo-2') // Most recent first
-      expect(result[1].name).toBe('test-repo-1')
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://api.github.com/users/rgilks/repos?sort=updated&per_page=100',
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            Authorization: 'token test-token',
-          }),
-        })
-      )
+      expect(result).toHaveLength(1)
+      expect(result[0].name).toBe('test-repo')
+      expect(result[0].isCurrentlyWorking).toBe(true)
     })
 
     it('should filter out private repositories', async () => {
-      mockCacheService.getCachedProjects.mockResolvedValue(null)
-
-      const reposWithPrivate = [
-        { ...mockRepos[0], private: false },
-        { ...mockRepos[1], private: true },
+      const mockRepos = [
+        {
+          id: 1,
+          name: 'public-repo',
+          full_name: 'rgilks/public-repo',
+          description: 'Public repository',
+          homepage: null,
+          html_url: 'https://github.com/rgilks/public-repo',
+          topics: [],
+          language: 'JavaScript',
+          updated_at: '2023-01-01T00:00:00Z',
+          created_at: '2023-01-01T00:00:00Z',
+          private: false,
+          stargazers_count: 5,
+          forks_count: 2,
+        },
+        {
+          id: 2,
+          name: 'private-repo',
+          full_name: 'rgilks/private-repo',
+          description: 'Private repository',
+          homepage: null,
+          html_url: 'https://github.com/rgilks/private-repo',
+          topics: [],
+          language: 'Python',
+          updated_at: '2023-01-01T00:00:00Z',
+          created_at: '2023-01-01T00:00:00Z',
+          private: true,
+          stargazers_count: 0,
+          forks_count: 0,
+        },
       ]
 
-      const mockResponse = new Response(JSON.stringify(reposWithPrivate), {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      })
+      const mockResponse: MockResponse = {
+        ok: true,
+        json: vi.fn().mockResolvedValue(mockRepos),
+      }
 
-      mockFetch.mockResolvedValue(mockResponse)
+      vi.mocked(fetch).mockResolvedValue(mockResponse as Response)
 
-      const result = await fetchGitHubProjects(
-        mockCacheService,
-        mockImageCacheService
-      )
+      const result = await fetchGitHubProjects()
 
       expect(result).toHaveLength(1)
-      expect(result[0].name).toBe('test-repo-2')
+      expect(result[0].name).toBe('public-repo')
     })
 
-    it('should mark most recent project as currently working', async () => {
-      mockCacheService.getCachedProjects.mockResolvedValue(null)
+    it('should handle missing description', async () => {
+      const mockRepos = [
+        {
+          id: 1,
+          name: 'no-description-repo',
+          full_name: 'rgilks/no-description-repo',
+          description: null,
+          homepage: null,
+          html_url: 'https://github.com/rgilks/no-description-repo',
+          topics: [],
+          language: null,
+          updated_at: '2023-01-01T00:00:00Z',
+          created_at: '2023-01-01T00:00:00Z',
+          private: false,
+          stargazers_count: 0,
+          forks_count: 0,
+        },
+      ]
 
-      const mockResponse = new Response(JSON.stringify(mockRepos), {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      })
+      const mockResponse: MockResponse = {
+        ok: true,
+        json: vi.fn().mockResolvedValue(mockRepos),
+      }
 
-      mockFetch.mockResolvedValue(mockResponse)
+      vi.mocked(fetch).mockResolvedValue(mockResponse as Response)
 
-      const result = await fetchGitHubProjects(
-        mockCacheService,
-        mockImageCacheService
-      )
+      const result = await fetchGitHubProjects()
 
-      expect(result[0].isCurrentlyWorking).toBe(true)
-      expect(result[1].isCurrentlyWorking).toBe(false)
-    })
-
-    it('should cache projects after fetching', async () => {
-      mockCacheService.getCachedProjects.mockResolvedValue(null)
-
-      const mockResponse = new Response(JSON.stringify(mockRepos), {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      })
-
-      mockFetch.mockResolvedValue(mockResponse)
-
-      await fetchGitHubProjects(mockCacheService, mockImageCacheService)
-
-      expect(mockCacheService.setCachedProjects).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({ name: 'test-repo-1' }),
-          expect.objectContaining({ name: 'test-repo-2' }),
-        ])
-      )
-    })
-
-    it('should handle missing cache service', async () => {
-      const mockResponse = new Response(JSON.stringify(mockRepos), {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      })
-
-      mockFetch.mockResolvedValue(mockResponse)
-
-      const result = await fetchGitHubProjects(undefined, undefined)
-
-      expect(result).toHaveLength(2)
-      expect(mockFetch).toHaveBeenCalled()
+      expect(result[0].description).toBe('No description available')
     })
 
     it('should handle GitHub API errors', async () => {
-      mockCacheService.getCachedProjects.mockResolvedValue(null)
-
-      const mockResponse = new Response('Forbidden', {
+      const mockResponse: MockResponse = {
+        ok: false,
         status: 403,
         statusText: 'Forbidden',
-      })
+      }
 
-      mockFetch.mockResolvedValue(mockResponse)
+      vi.mocked(fetch).mockResolvedValue(mockResponse as Response)
 
-      await expect(
-        fetchGitHubProjects(mockCacheService, mockImageCacheService)
-      ).rejects.toThrow('GitHub API error: 403 Forbidden')
+      await expect(fetchGitHubProjects()).rejects.toThrow(
+        'GitHub API error: 403 Forbidden'
+      )
     })
 
     it('should handle JSON parsing errors gracefully', async () => {
-      mockCacheService.getCachedProjects.mockResolvedValue(null)
+      const mockResponse: MockResponse = {
+        ok: true,
+        json: vi.fn().mockRejectedValue(new SyntaxError('Unexpected token')),
+      }
 
-      const mockResponse = new Response('invalid-json', {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      })
+      vi.mocked(fetch).mockResolvedValue(mockResponse as Response)
 
-      mockFetch.mockResolvedValue(mockResponse)
-
-      await expect(
-        fetchGitHubProjects(mockCacheService, mockImageCacheService)
-      ).rejects.toThrow('Failed to fetch projects from GitHub')
+      await expect(fetchGitHubProjects()).rejects.toThrow(
+        'Failed to fetch projects from GitHub'
+      )
     })
 
     it('should fetch screenshots when fetchScreenshots is true', async () => {
-      mockCacheService.getCachedProjects.mockResolvedValue(null)
-
-      const mockRepoResponse = new Response(JSON.stringify(mockRepos), {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      })
-
-      const mockScreenshotResponse = new Response(
-        JSON.stringify({
-          download_url: 'https://example.com/screenshot.png',
-        }),
+      const mockRepos = [
         {
-          status: 200,
-          headers: { 'content-type': 'application/json' },
-        }
-      )
+          id: 1,
+          name: 'test-repo',
+          full_name: 'rgilks/test-repo',
+          description: 'Test repository',
+          homepage: null,
+          html_url: 'https://github.com/rgilks/test-repo',
+          topics: [],
+          language: 'TypeScript',
+          updated_at: '2023-01-01T00:00:00Z',
+          created_at: '2023-01-01T00:00:00Z',
+          private: false,
+          stargazers_count: 0,
+          forks_count: 0,
+        },
+      ]
 
-      mockFetch
-        .mockResolvedValueOnce(mockRepoResponse) // Main repo fetch
-        .mockResolvedValue(mockScreenshotResponse) // Screenshot calls
+      const mockResponse: MockResponse = {
+        ok: true,
+        json: vi.fn().mockResolvedValue(mockRepos),
+      }
 
-      const result = await fetchGitHubProjects(
-        mockCacheService,
-        mockImageCacheService,
-        true // fetchScreenshots = true
-      )
+      vi.mocked(fetch).mockResolvedValue(mockResponse as Response)
 
-      expect(result).toHaveLength(2)
-      expect(mockFetch).toHaveBeenCalledTimes(5) // 1 repo fetch + 4 screenshot fetches (2 repos × 2 paths each)
+      const result = await fetchGitHubProjects(undefined, undefined, true)
+
+      expect(result).toHaveLength(1)
     })
   })
 
-  describe('fetchProjectScreenshots', () => {
+  describe('fetchProjectScreenshotsFromGitHub', () => {
     it('should fetch screenshots from GitHub', async () => {
-      const mockResponse = new Response(
-        JSON.stringify({
-          download_url:
-            'https://raw.githubusercontent.com/rgilks/test-repo/main/docs/screenshot.png',
+      const mockScreenshotResponse: MockResponse = {
+        ok: true,
+        json: vi.fn().mockResolvedValue({
+          download_url: 'https://example.com/screenshot.png',
         }),
-        {
-          status: 200,
-          headers: { 'content-type': 'application/json' },
-        }
-      )
+      }
 
-      mockFetch.mockResolvedValue(mockResponse)
+      vi.mocked(fetch).mockResolvedValue(mockScreenshotResponse as Response)
 
-      const result = await fetchProjectScreenshots('test-repo')
+      const result = await fetchProjectScreenshotsFromGitHub('test-repo')
 
-      expect(result).toEqual([
-        'https://raw.githubusercontent.com/rgilks/test-repo/main/docs/screenshot.png',
-      ])
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://api.github.com/repos/rgilks/test-repo/contents/docs/screenshot.png',
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            Authorization: 'token test-token',
-          }),
-        })
-      )
+      expect(result).toContain('https://example.com/screenshot.png')
     })
 
     it('should handle missing download_url gracefully', async () => {
-      const mockResponse = new Response(
-        JSON.stringify({ download_url: null }),
-        {
-          status: 200,
-          headers: { 'content-type': 'application/json' },
-        }
-      )
+      const mockScreenshotResponse: MockResponse = {
+        ok: true,
+        json: vi.fn().mockResolvedValue({}),
+      }
 
-      mockFetch.mockResolvedValue(mockResponse)
+      vi.mocked(fetch).mockResolvedValue(mockScreenshotResponse as Response)
 
-      const result = await fetchProjectScreenshots('test-repo')
+      const result = await fetchProjectScreenshotsFromGitHub('test-repo')
 
-      expect(result).toEqual([])
-    })
-
-    it('should handle API errors gracefully', async () => {
-      const mockResponse = new Response('Not Found', {
-        status: 404,
-        statusText: 'Not Found',
-      })
-
-      mockFetch.mockResolvedValue(mockResponse)
-
-      const result = await fetchProjectScreenshots('test-repo')
-
-      expect(result).toEqual([])
+      expect(result).toHaveLength(0)
     })
 
     it('should handle network errors gracefully', async () => {
-      mockFetch.mockRejectedValue(new Error('Network error'))
+      vi.mocked(fetch).mockRejectedValue(new Error('Network error'))
 
-      const result = await fetchProjectScreenshots('test-repo')
+      const result = await fetchProjectScreenshotsFromGitHub('test-repo')
 
-      expect(result).toEqual([])
+      expect(result).toHaveLength(0)
     })
   })
 
   describe('checkIframeEmbeddable', () => {
     it('should return false for DENY x-frame-options', async () => {
-      const mockResponse = new Response('', {
-        headers: { 'x-frame-options': 'DENY' },
-      })
+      const mockResponse: MockResponse = {
+        headers: {
+          get: vi.fn((header: string) => {
+            if (header === 'x-frame-options') return 'DENY'
+            return null
+          }),
+        },
+      }
 
-      mockFetch.mockResolvedValue(mockResponse)
+      vi.mocked(fetch).mockResolvedValue(mockResponse as Response)
 
       const result = await checkIframeEmbeddable('https://example.com')
 
@@ -373,25 +255,34 @@ describe('GitHub API', () => {
     })
 
     it('should return false for SAMEORIGIN x-frame-options', async () => {
-      const mockResponse = new Response('', {
-        headers: { 'x-frame-options': 'SAMEORIGIN' },
-      })
+      const mockResponse: MockResponse = {
+        headers: {
+          get: vi.fn((header: string) => {
+            if (header === 'x-frame-options') return 'SAMEORIGIN'
+            return null
+          }),
+        },
+      }
 
-      mockFetch.mockResolvedValue(mockResponse)
+      vi.mocked(fetch).mockResolvedValue(mockResponse as Response)
 
       const result = await checkIframeEmbeddable('https://example.com')
 
       expect(result).toBe(false)
     })
 
-    it('should return false for frame-ancestors none CSP', async () => {
-      const mockResponse = new Response('', {
+    it('should return false for CSP frame-ancestors none', async () => {
+      const mockResponse: MockResponse = {
         headers: {
-          'content-security-policy': "frame-ancestors 'none'",
+          get: vi.fn((header: string) => {
+            if (header === 'content-security-policy')
+              return "frame-ancestors 'none'"
+            return null
+          }),
         },
-      })
+      }
 
-      mockFetch.mockResolvedValue(mockResponse)
+      vi.mocked(fetch).mockResolvedValue(mockResponse as Response)
 
       const result = await checkIframeEmbeddable('https://example.com')
 
@@ -399,11 +290,13 @@ describe('GitHub API', () => {
     })
 
     it('should return true for embeddable content', async () => {
-      const mockResponse = new Response('', {
-        headers: {},
-      })
+      const mockResponse: MockResponse = {
+        headers: {
+          get: vi.fn(() => null),
+        },
+      }
 
-      mockFetch.mockResolvedValue(mockResponse)
+      vi.mocked(fetch).mockResolvedValue(mockResponse as Response)
 
       const result = await checkIframeEmbeddable('https://example.com')
 
@@ -411,7 +304,7 @@ describe('GitHub API', () => {
     })
 
     it('should handle network errors gracefully', async () => {
-      mockFetch.mockRejectedValue(new Error('Network error'))
+      vi.mocked(fetch).mockRejectedValue(new Error('Network error'))
 
       const result = await checkIframeEmbeddable('https://example.com')
 

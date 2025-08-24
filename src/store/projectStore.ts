@@ -34,12 +34,48 @@ const initialState: ProjectState = {
   },
 }
 
+// Simplified filtering logic
+function applyFilters(projects: Project[], filters: ProjectFilters): Project[] {
+  let filtered = projects
+
+  // Apply search filter
+  if (filters.search) {
+    const searchLower = filters.search.toLowerCase()
+    filtered = filtered.filter(project =>
+      project.name.toLowerCase().includes(searchLower) ||
+      project.description.toLowerCase().includes(searchLower) ||
+      project.topics.some(topic => topic.toLowerCase().includes(searchLower))
+    )
+  }
+
+  // Apply language filter
+  if (filters.language) {
+    filtered = filtered.filter(project => project.language === filters.language)
+  }
+
+  // Apply topic filter
+  if (filters.topic) {
+    filtered = filtered.filter(project => project.topics.includes(filters.topic!))
+  }
+
+  // Apply sorting
+  if (filters.sortBy) {
+    filtered.sort((a, b) => {
+      const aValue = new Date(filters.sortBy === 'created' ? a.createdAt : a.updatedAt).getTime()
+      const bValue = new Date(filters.sortBy === 'created' ? b.createdAt : b.updatedAt).getTime()
+      return filters.sortOrder === 'asc' ? aValue - bValue : bValue - aValue
+    })
+  }
+
+  return filtered
+}
+
 export const useProjectStore = create<ProjectState & ProjectActions>()(
-  immer((set) => ({
+  immer(set => ({
     ...initialState,
 
-    setProjects: (projects) =>
-      set((state) => {
+    setProjects: projects =>
+      set(state => {
         state.projects = projects
         state.filteredProjects = projects
         // Auto-set highlighted project to most recently updated
@@ -51,82 +87,30 @@ export const useProjectStore = create<ProjectState & ProjectActions>()(
         }
       }),
 
-    setHighlightedProject: (project) =>
-      set((state) => {
+    setHighlightedProject: project =>
+      set(state => {
         state.highlightedProject = project
       }),
 
-    setLoading: (loading) =>
-      set((state) => {
+    setLoading: loading =>
+      set(state => {
         state.isLoading = loading
       }),
 
-    setError: (error) =>
-      set((state) => {
+    setError: error =>
+      set(state => {
         state.error = error
       }),
 
-    updateFilters: (newFilters) =>
-      set((state) => {
+    updateFilters: newFilters =>
+      set(state => {
         state.filters = { ...state.filters, ...newFilters }
-        
-        // Apply filters to projects
-        let filtered = state.projects
-
-        if (state.filters.search) {
-          const searchLower = state.filters.search.toLowerCase()
-          filtered = filtered.filter(
-            (project) =>
-              project.name.toLowerCase().includes(searchLower) ||
-              project.description.toLowerCase().includes(searchLower) ||
-              project.topics.some((topic) => topic.toLowerCase().includes(searchLower))
-          )
-        }
-
-        if (state.filters.language) {
-          filtered = filtered.filter((project) => project.language === state.filters.language)
-        }
-
-        if (state.filters.topic) {
-          filtered = filtered.filter((project) =>
-            project.topics.includes(state.filters.topic!)
-          )
-        }
-
-        // Apply sorting
-        if (state.filters.sortBy) {
-          filtered.sort((a, b) => {
-            let aValue: string | number
-            let bValue: string | number
-
-            switch (state.filters.sortBy) {
-              case 'created':
-                aValue = new Date(a.createdAt).getTime()
-                bValue = new Date(b.createdAt).getTime()
-                break
-              default: // 'updated'
-                aValue = new Date(a.updatedAt).getTime()
-                bValue = new Date(b.updatedAt).getTime()
-                break
-            }
-
-            if (state.filters.sortOrder === 'asc') {
-              return aValue > bValue ? 1 : -1
-            }
-            return aValue < bValue ? 1 : -1
-          })
-        }
-
-        state.filteredProjects = filtered
+        state.filteredProjects = applyFilters(state.projects, state.filters)
       }),
 
     clearFilters: () =>
-      set((state) => {
-        state.filters = {
-          search: '',
-          language: '',
-          topic: '',
-        }
+      set(state => {
+        state.filters = { search: '', language: '', topic: '' }
         state.filteredProjects = state.projects
       }),
 

@@ -4,20 +4,14 @@ import { ProjectCard } from './ProjectCard'
 import { useProjectStore } from '@/store/projectStore'
 import { useEffect } from 'react'
 import { Project } from '@/types/project'
-import { shouldHighlightProject } from '@/lib/projectUtils'
 
 interface ProjectGridProps {
   initialProjects: Project[]
 }
 
 export function ProjectGrid({ initialProjects }: ProjectGridProps) {
-  const {
-    projects,
-    filteredProjects,
-    isLoading,
-    error,
-    setProjects,
-  } = useProjectStore()
+  const { projects, filteredProjects, isLoading, error, setProjects } =
+    useProjectStore()
 
   useEffect(() => {
     // Use initial projects from server-side rendering
@@ -79,7 +73,7 @@ export function ProjectGrid({ initialProjects }: ProjectGridProps) {
         <ProjectCard
           key={project.id}
           project={project}
-          isHighlighted={shouldHighlightProject(index)}
+          isHighlighted={index === 0}
         />
       ))}
     </div>
