@@ -100,14 +100,6 @@ export const useProjectStore = create<ProjectState & ProjectActions>()(
             let bValue: string | number
 
             switch (state.filters.sortBy) {
-              case 'stars':
-                aValue = a.stargazersCount
-                bValue = b.stargazersCount
-                break
-              case 'forks':
-                aValue = a.forksCount
-                bValue = b.forksCount
-                break
               case 'created':
                 aValue = new Date(a.createdAt).getTime()
                 bValue = new Date(b.createdAt).getTime()

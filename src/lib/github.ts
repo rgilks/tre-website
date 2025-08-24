@@ -200,8 +200,7 @@ export async function fetchGitHubProjects(
         htmlUrl: repo.html_url,
         topics: repo.topics || [],
         language: repo.language || undefined,
-        stargazersCount: repo.stargazers_count,
-        forksCount: repo.forks_count,
+
         updatedAt: repo.updated_at,
         createdAt: repo.created_at,
         screenshotUrl: undefined, // Will be populated below

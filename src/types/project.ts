@@ -8,8 +8,6 @@ export interface Project {
   htmlUrl: string
   topics: string[]
   language?: string
-  stargazersCount: number
-  forksCount: number
   updatedAt: string
   createdAt: string
   screenshotUrl?: string
@@ -40,8 +38,6 @@ export interface GitHubApiResponse {
   html_url: string
   topics: string[]
   language: string | null
-  stargazers_count: number
-  forks_count: number
   updated_at: string
   created_at: string
   private: boolean
@@ -51,6 +47,6 @@ export interface ProjectFilters {
   search: string
   language: string
   topic: string
-  sortBy?: 'stars' | 'forks' | 'created' | 'updated'
+  sortBy?: 'created' | 'updated'
   sortOrder?: 'asc' | 'desc'
 }

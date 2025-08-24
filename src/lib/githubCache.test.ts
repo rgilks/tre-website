@@ -33,8 +33,6 @@ describe('GitHubCacheService', () => {
         htmlUrl: 'https://github.com/rgilks/test-project',
         topics: ['test', 'demo'],
         language: 'TypeScript',
-        stargazersCount: 10,
-        forksCount: 2,
         updatedAt: '2024-01-01T00:00:00Z',
         createdAt: '2024-01-01T00:00:00Z',
         screenshotUrl: 'https://example.com/screenshot.png',
