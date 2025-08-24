@@ -1,6 +1,9 @@
 import { GitHubApiResponse, Project } from '@/types/project'
 import { CacheService } from './cacheService'
-import { CloudflareImageCacheService, FallbackImageCacheService } from './imageCache'
+import {
+  CloudflareImageCacheService,
+  FallbackImageCacheService,
+} from './imageCache'
 
 const GITHUB_API_BASE = 'https://api.github.com'
 const GITHUB_USERNAME = process.env.GITHUB_USERNAME || 'rgilks'
@@ -9,6 +12,63 @@ const GITHUB_USERNAME = process.env.GITHUB_USERNAME || 'rgilks'
 declare global {
   var GITHUB_TOKEN: string | undefined
   var GITHUB_USERNAME: string | undefined
+}
+
+/**
+ * Validates a GitHub token and provides helpful error messages
+ */
+async function validateGitHubToken(token: string): Promise<{ valid: boolean; error?: string; suggestions?: string[] }> {
+  try {
+    const response = await fetch(`${GITHUB_API_BASE}/user`, {
+      headers: {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+        'User-Agent': 'tre-website'
+      }
+    })
+
+    if (response.status === 401) {
+      return {
+        valid: false,
+        error: 'Token is invalid or expired',
+        suggestions: [
+          'Generate a new token at https://github.com/settings/tokens',
+          'Ensure the token has the correct permissions (public_repo, read:user)',
+          'Check that the token hasn\'t been revoked',
+          'Update your .env.local file and restart the dev server'
+        ]
+      }
+    }
+
+    if (response.status === 403) {
+      return {
+        valid: false,
+        error: 'Token lacks required permissions',
+        suggestions: [
+          'Ensure the token has public_repo scope',
+          'Check if the token has been restricted to specific repositories',
+          'Verify the token hasn\'t expired'
+        ]
+      }
+    }
+
+    if (response.ok) {
+      return { valid: true }
+    }
+
+    return {
+      valid: false,
+      error: `Unexpected response: ${response.status} ${response.statusText}`,
+      suggestions: ['Check GitHub API status at https://www.githubstatus.com/']
+    }
+  } catch {
+    return {
+      valid: false,
+      error: 'Network error during token validation',
+      suggestions: ['Check your internet connection', 'Verify GitHub API is accessible']
+    }
+  }
 }
 
 export async function fetchGitHubProjects(
@@ -36,6 +96,24 @@ export async function fetchGitHubProjects(
     const authHeaders: Record<string, string> = { ...baseHeaders }
     if (token) {
       authHeaders.Authorization = `token ${token}`
+      
+      // Validate token first to provide better error messages
+      console.log('🔍 Validating GitHub token...')
+      const tokenValidation = await validateGitHubToken(token)
+      if (!tokenValidation.valid) {
+        console.error(`🚨 GitHub Token Validation Failed: ${tokenValidation.error}`)
+        if (tokenValidation.suggestions) {
+          console.error('💡 Suggestions:')
+          tokenValidation.suggestions.forEach(suggestion => {
+            console.error(`   • ${suggestion}`)
+          })
+        }
+        console.error('⚠️  Continuing with unauthenticated request (limited to 60 requests/hour)')
+        // Remove token from headers and continue without authentication
+        delete authHeaders.Authorization
+      } else {
+        console.log('✅ GitHub token validation successful')
+      }
     }
 
     const url = `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`
@@ -46,45 +124,65 @@ export async function fetchGitHubProjects(
       next: { revalidate: 3600 }, // Cache for 1 hour
     })
 
-    // If token was provided but is invalid/expired (401), try Bearer scheme (for some environments),
-    // then retry unauthenticated for resiliency
+    // Debug logging to understand what's happening
+    console.log(
+      `GitHub API response status: ${response.status}, ok: ${response.ok}, token provided: ${!!token}`
+    )
+    console.log(
+      `Response headers:`,
+      Object.fromEntries(response.headers.entries())
+    )
+    console.log(`Response type:`, response.type)
+    console.log(`Response url:`, response.url)
+
+    // If the first request failed with 401 and we have a token, it means the token is invalid
     if (!response.ok && response.status === 401 && token) {
-      // Retry with Bearer scheme
-      const bearerHeaders: Record<string, string> = {
-        ...baseHeaders,
-        Authorization: `Bearer ${token}`,
-      }
-      let bearerResponse: Response | undefined
-      try {
-        bearerResponse = await fetch(url, {
-          headers: bearerHeaders,
-          next: { revalidate: 3600 },
-        })
-      } catch {
-        // ignore network errors and proceed to unauthenticated fallback
-      }
-      if (bearerResponse && bearerResponse.ok) {
-        response = bearerResponse
-      } else {
-        console.error(
-          'GitHub API returned 401 with provided token. Falling back to unauthenticated request. Ensure GITHUB_TOKEN is valid/authorized.'
-        )
-        // Bearer token failed, continue with unauthenticated fallback
-        response = await fetch(url, {
-          headers: baseHeaders,
-          next: { revalidate: 3600 },
-        })
-      }
+      console.error(
+        '🚨 GITHUB TOKEN EXPIRED OR INVALID: The provided GitHub token has expired or is invalid.'
+      )
+      console.error(
+        '💡 SOLUTION: Please update your GITHUB_TOKEN in .env.local or Cloudflare secrets.'
+      )
+      console.error(
+        '📝 STEPS: 1) Generate new token at https://github.com/settings/tokens 2) Update .env.local 3) Restart dev server'
+      )
+      console.error(
+        '⚠️  FALLING BACK: Using unauthenticated request (limited to 60 requests/hour)'
+      )
+      
+      // Token is invalid, try without authentication
+      response = await fetch(url, {
+        headers: baseHeaders,
+        next: { revalidate: 3600 },
+      })
+    } else if (response.ok && token) {
+      console.log('✅ GitHub API request succeeded with token')
+    } else if (!response.ok) {
+      console.log(`❌ GitHub API request failed with status: ${response.status}`)
     }
 
     if (!response.ok) {
       if (response.status === 403) {
-        console.warn(
-          'GitHub API rate limit reached. Consider adding a GITHUB_TOKEN to your .env.local file.'
-        )
+        const errorMessage = token 
+          ? '🚨 GitHub API rate limit reached even with token. This is unusual - check if token has correct permissions.'
+          : '🚨 GitHub API rate limit reached (60 requests/hour). Add a GITHUB_TOKEN to .env.local for 5000 requests/hour.'
+        
+        console.warn(errorMessage)
+        console.warn('💡 Add GITHUB_TOKEN to .env.local for higher rate limits')
+      } else if (response.status === 401) {
+        console.error('🚨 GitHub API authentication failed. Check your GITHUB_TOKEN.')
+      } else if (response.status === 404) {
+        console.error('🚨 GitHub user not found. Check GITHUB_USERNAME in .env.local')
       }
+      
       throw new Error(
-        `GitHub API error: ${response.status} ${response.statusText}`
+        `GitHub API error: ${response.status} ${response.statusText}${
+          response.status === 401 && token 
+            ? ' - Token expired or invalid. Please update GITHUB_TOKEN in .env.local'
+            : response.status === 403 && !token
+            ? ' - Rate limited. Add GITHUB_TOKEN to .env.local for higher limits'
+            : ''
+        }`
       )
     }
 

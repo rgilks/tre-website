@@ -1,5 +1,6 @@
 import { Project } from '@/types/project'
 import { createGitHubCacheService } from './githubCache'
+import { getCloudflareEnvironment, CloudflareEnvironment } from './cloudflareContext'
 
 export interface CacheService {
   getCachedProjects(): Promise<Project[] | null>
@@ -7,38 +8,13 @@ export interface CacheService {
   clearCache(): Promise<void>
 }
 
-// Extend globalThis to include our KV binding for Cloudflare environments
-declare global {
-  var GITHUB_CACHE: KVNamespace | undefined
-}
-
 // Factory function to create appropriate cache service based on environment
-export function createCacheService(): CacheService {
-  // Check if we're in a Cloudflare Workers environment with KV binding
-  // Try multiple ways to detect the KV binding
-  let kv: KVNamespace | undefined
-
-  // Method 1: Check globalThis (most common in Cloudflare Workers)
-  if (
-    typeof globalThis.GITHUB_CACHE !== 'undefined' &&
-    typeof globalThis.GITHUB_CACHE.get === 'function'
-  ) {
-    kv = globalThis.GITHUB_CACHE
-  }
-
-  // Method 2: Check if we're in a Cloudflare Workers environment by other indicators
-  if (
-    !kv &&
-    typeof globalThis !== 'undefined' &&
-    '__CLOUDFLARE_WORKER__' in globalThis
-  ) {
-    console.warn(
-      'Detected Cloudflare Worker but GITHUB_CACHE not accessible on globalThis'
-    )
-  }
-
-  if (kv) {
-    return createGitHubCacheService(kv)
+export function createCacheService(env?: CloudflareEnvironment): CacheService {
+  // Use provided environment or try to get from context
+  const cloudflareEnv = env || getCloudflareEnvironment()
+  
+  if (cloudflareEnv?.GITHUB_CACHE) {
+    return createGitHubCacheService(cloudflareEnv.GITHUB_CACHE)
   }
 
   // Fallback for development or when KV is not available

@@ -13,16 +13,14 @@
     "test:coverage": "vitest --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "check": "npm run lint && npm run type-check && vitest --run",
+    "check": "npm run lint && npm run type-check && vitest --coverage --run",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "nuke": "rm -rf .next .open-next .wrangler node_modules package-lock.json && npm install && npm run dev",
+    "nuke": "rm -rf .next .open-next .wrangler node_modules package-lock.json .cache && npm install && npm run dev",
     "deps": "npx npm-check-updates",
     "deps:update": "npx npm-check-updates -u && npm run nuke",
-    "build:cf": "npx @opennextjs/cloudflare@latest build",
-    "deploy:cf": "wrangler deploy --minify",
-    "pwa:test": "lighthouse http://localhost:3000 --view --output=html --output-path=./lighthouse-report.html",
-    "pwa:audit": "lighthouse http://localhost:3000 --only-categories=pwa --output=json --output-path=./lighthouse-pwa.json"
+    "build:cf": "rm -rf .cache && npx @opennextjs/cloudflare@latest build",
+    "deploy:cf": "wrangler deploy --minify"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -42,6 +40,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^5.0.1",
+    "@vitest/coverage-v8": "^3.2.4",
     "autoprefixer": "^10.4.21",
     "eslint": "^9",
     "eslint-config-next": "15.5.0",

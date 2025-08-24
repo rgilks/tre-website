@@ -4,19 +4,23 @@ The official website for Total Reality Engineering, showcasing innovative projec
 
 ## Features
 
-- **Modern PWA**: Progressive Web App with offline support and install prompts
-- **Project Showcase**: Dynamic GitHub integration displaying public repositories
-- **Responsive Design**: Mobile-first design with Tailwind CSS
+- **Modern PWA**: Progressive Web App with offline support, install prompts, and service worker caching
+- **Project Showcase**: Dynamic GitHub integration displaying public repositories with screenshots
+- **Project Detail Views**: Individual project pages with iframe embeds and YouTube video support
+- **Responsive Design**: Mobile-first design with Tailwind CSS and smooth animations
 - **Cloudflare Integration**: Built with Next.js and deployed on Cloudflare Workers
-- **Smart Caching**: KV-based caching for GitHub data and project screenshots
+- **Smart Caching**: KV-based caching for GitHub data and project screenshots with 6-hour TTL
+- **YouTube Integration**: Responsive video embeds with 16:9 aspect ratio across devices
 
 ## Tech Stack
 
-- **Frontend**: Next.js 14, React 18, TypeScript
-- **Styling**: Tailwind CSS with custom TRE theme
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Styling**: Tailwind CSS 4 with custom TRE theme and Framer Motion animations
+- **State Management**: Zustand with Immer for immutable updates
 - **Deployment**: Cloudflare Workers via OpenNext
 - **Caching**: Cloudflare KV for production, local file system for development
 - **Testing**: Vitest for unit tests, Playwright for E2E tests
+- **PWA**: Service worker with offline caching and install prompts
 
 ## Development Setup
 
@@ -107,8 +111,8 @@ CRON_SECRET=your_random_secret_string
 
 4. **Deploy to Cloudflare**:
    ```bash
-   npm run build
-   npm run deploy
+   npm run build:cf
+   npm run deploy:cf
    ```
 
 ### KV Namespace
@@ -136,10 +140,17 @@ The application automatically detects whether it's running in:
 
 ### Services
 
-- **GitHub Service**: Fetches repository data and screenshots
+- **GitHub Service**: Fetches repository data and screenshots with large file handling
 - **Cache Service**: Manages data caching with environment-appropriate backend
 - **Image Cache Service**: Handles screenshot URL caching
 - **Cloudflare Images**: Optional image optimization service
+
+### PWA Features
+
+- **Service Worker**: Cache-first for static assets, stale-while-revalidate for navigation
+- **Offline Support**: Graceful degradation with offline page fallback
+- **Install Prompts**: Smart install banner with dismissal tracking
+- **Manifest**: Enhanced with categories, shortcuts, and multiple icon sizes
 
 ## Testing
 
@@ -149,6 +160,14 @@ Run unit tests with Vitest:
 
 ```bash
 npm test
+```
+
+### E2E Tests
+
+Run Playwright tests:
+
+```bash
+npm run test:e2e
 ```
 
 ### Type Checking
@@ -173,6 +192,62 @@ Run all checks (lint, type-check, tests):
 
 ```bash
 npm run check
+```
+
+## Troubleshooting
+
+### GitHub Token Issues
+
+If you encounter authentication errors, the application will provide detailed error messages in the console:
+
+#### Common Issues:
+
+1. **Token Expired or Invalid (401 Error)**
+   - Generate a new token at [GitHub Settings > Tokens](https://github.com/settings/tokens)
+   - Ensure the token has `public_repo` and `read:user` permissions
+   - Update your `.env.local` file and restart the dev server
+
+2. **Rate Limiting (403 Error)**
+   - Without a token: Limited to 60 requests/hour
+   - With a valid token: 5000 requests/hour
+   - Add `GITHUB_TOKEN` to `.env.local` for higher limits
+
+3. **Token Validation**
+   - The app automatically validates tokens on startup
+   - Invalid tokens are detected early with helpful suggestions
+   - Falls back to unauthenticated requests if needed
+
+#### Token Setup Steps:
+
+1. Go to [GitHub Settings > Developer Settings > Personal Access Tokens](https://github.com/settings/tokens)
+2. Click "Generate new token (classic)"
+3. Give it a descriptive name (e.g., "TRE Website Development")
+4. Select scopes: `public_repo` and `read:user`
+5. Copy the token and add to `.env.local`:
+   ```env
+   GITHUB_TOKEN=ghp_your_token_here
+   ```
+6. Restart your development server
+
+### Environment Variable Issues
+
+- Ensure `.env.local` has no leading spaces
+- Restart the dev server after changing environment variables
+- Check that all required variables are set
+
+### Build Issues
+
+If you encounter build errors:
+
+```bash
+# Clean and reinstall dependencies
+npm run nuke
+
+# Check for type errors
+npm run type-check
+
+# Verify all tests pass
+npm test
 ```
 
 ## Contributing

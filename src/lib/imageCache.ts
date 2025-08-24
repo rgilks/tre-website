@@ -1,3 +1,5 @@
+import { getCloudflareEnvironment, CloudflareEnvironment } from './cloudflareContext'
+
 const SCREENSHOT_CACHE_TTL = 24 * 60 * 60 // 24 hours for screenshot URLs
 
 export interface ScreenshotCache {
@@ -106,34 +108,14 @@ export class FallbackImageCacheService {
 }
 
 // Factory function to create appropriate image cache service based on environment
-export function createImageCacheService():
+export function createImageCacheService(env?: CloudflareEnvironment):
   | CloudflareImageCacheService
   | FallbackImageCacheService {
-  // Check if we're in a Cloudflare Workers environment with KV binding
-  // Try multiple ways to detect the KV binding
-  let kv: KVNamespace | undefined
-
-  // Method 1: Check globalThis (most common in Cloudflare Workers)
-  if (
-    typeof globalThis.GITHUB_CACHE !== 'undefined' &&
-    typeof globalThis.GITHUB_CACHE.get === 'function'
-  ) {
-    kv = globalThis.GITHUB_CACHE
-  }
-
-  // Method 2: Check if we're in a Cloudflare Workers environment by other indicators
-  if (
-    !kv &&
-    typeof globalThis !== 'undefined' &&
-    '__CLOUDFLARE_WORKER__' in globalThis
-  ) {
-    console.warn(
-      'Detected Cloudflare Worker but GITHUB_CACHE not accessible on globalThis'
-    )
-  }
-
-  if (kv) {
-    return new CloudflareImageCacheService(kv)
+  // Use provided environment or try to get from context
+  const cloudflareEnv = env || getCloudflareEnvironment()
+  
+  if (cloudflareEnv?.GITHUB_CACHE) {
+    return new CloudflareImageCacheService(cloudflareEnv.GITHUB_CACHE)
   }
 
   // Fallback for development or when KV is not available

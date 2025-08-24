@@ -1,0 +1,24 @@
+# Cache directories
+.cache/
+.cache/images/
+
+# Build artifacts
+.next/
+.open-next/
+.wrangler/
+
+# Dependencies
+node_modules/
+
+# Test coverage
+coverage/
+
+# Environment files
+.env*
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

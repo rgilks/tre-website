@@ -84,10 +84,13 @@ public/
 5. ✅ If `youtubeUrl` exists, display embedded YouTube video prominently.
 6. ✅ If homepageUrl exists, load in iframe (all subdomains of tre.systems).
 7. ✅ Overlay TRE logo links back to `/`.
-8. ⏳ PWA passes Lighthouse checks: installable, offline home + cached thumbnails.
+8. ✅ PWA passes Lighthouse checks: installable, offline home + cached thumbnails.
 9. ✅ KV caching, cron refresh, images via CF Resizing.
 10. ✅ Brand: black, terminal green, white accents.
 11. ⏳ Deployed at [https://tre.systems](https://tre.systems).
+12. ✅ Enhanced error handling with clear token expiration messages and fallback authentication.
+13. ✅ Proactive GitHub token validation with helpful troubleshooting guidance.
+14. ✅ Clean project structure with unnecessary configuration files removed.
 
 ---
 
@@ -152,6 +155,32 @@ public/
 **Install Prompt (optional)**
 
 - Detect `beforeinstallprompt`; show a small, dismissible bottom‑right install chip in TRE green when eligible (respect `PWA_INSTALL_PROMPT_DISABLED` flag).
+
+---
+
+## 24) Error Handling & User Experience
+
+**Goals**
+
+- Clear, actionable error messages for common issues.
+- Graceful fallback when GitHub API authentication fails.
+- Proactive token validation with helpful troubleshooting steps.
+
+**Implementation**
+
+- **Token Validation**: Automatically validates GitHub tokens on startup with detailed error messages.
+- **Fallback Authentication**: Gracefully falls back to unauthenticated requests when tokens expire.
+- **User-Friendly Messages**: Clear console output with emojis and step-by-step solutions.
+- **Troubleshooting Guide**: Comprehensive README section for common issues and solutions.
+- **Rate Limit Handling**: Clear distinction between authenticated (5000 req/hour) and unauthenticated (60 req/hour) limits.
+
+**Error Scenarios Handled**
+
+- GitHub token expiration or invalidation
+- Rate limiting with clear guidance
+- Network connectivity issues
+- Authentication failures with fallback options
+- Cron job authentication issues
 
 ---
 
