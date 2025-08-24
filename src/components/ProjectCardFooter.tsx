@@ -1,19 +1,16 @@
 import { CalendarIcon } from '@heroicons/react/24/outline'
 import { formatDate } from '@/lib/dateUtils'
-import { getProjectButtonClass } from '@/lib/projectUtils'
 
 interface ProjectCardFooterProps {
-  projectId: string
   updatedAt: string
   homepageUrl?: string
   htmlUrl: string
 }
 
-export function ProjectCardFooter({ 
-  projectId, 
-  updatedAt, 
-  homepageUrl, 
-  htmlUrl 
+export function ProjectCardFooter({
+  updatedAt,
+  homepageUrl,
+  htmlUrl,
 }: ProjectCardFooterProps) {
   return (
     <>
@@ -21,7 +18,7 @@ export function ProjectCardFooter({
         <div className="flex items-center space-x-1">
           <CalendarIcon className="w-4 h-4" />
           <span
-            data-testid={`project-updated-${projectId}`}
+            data-testid="project-updated"
             suppressHydrationWarning
           >
             {formatDate(updatedAt)}
@@ -32,20 +29,22 @@ export function ProjectCardFooter({
       <div className="flex space-x-2">
         {homepageUrl && (
           <a
-            data-testid={`project-website-${projectId}`}
-            href={`/project/${projectId}`}
-            className={`px-4 py-2 border border-tre-green text-tre-green font-bold font-mono rounded text-center hover:bg-tre-green hover:text-tre-black transition-all duration-200 ${getProjectButtonClass(true)}`}
+            data-testid="project-website"
+            href={homepageUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-4 py-2 border border-tre-green text-tre-green font-bold font-mono rounded text-center hover:bg-tre-green hover:text-tre-black transition-all duration-200 flex-1"
             onClick={e => e.stopPropagation()}
           >
             Website
           </a>
         )}
         <a
-          data-testid={`project-github-${projectId}`}
+          data-testid="project-github"
           href={htmlUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className={`px-4 py-2 border border-tre-green text-tre-green font-bold font-mono rounded text-center hover:bg-tre-green hover:text-tre-black transition-all duration-200 ${getProjectButtonClass(!!homepageUrl)}`}
+          className={`px-4 py-2 border border-tre-green text-tre-green font-bold font-mono rounded text-center hover:bg-tre-green hover:text-tre-black transition-all duration-200 ${homepageUrl ? 'flex-1' : 'w-full'}`}
           onClick={e => e.stopPropagation()}
         >
           GitHub

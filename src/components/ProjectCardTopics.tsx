@@ -1,11 +1,10 @@
 import { getVisibleTopics } from '@/lib/projectUtils'
 
 interface ProjectCardTopicsProps {
-  projectId: string
   topics: string[]
 }
 
-export function ProjectCardTopics({ projectId, topics }: ProjectCardTopicsProps) {
+export function ProjectCardTopics({ topics }: ProjectCardTopicsProps) {
   const { visibleTopics, overflowCount, hasOverflow } = getVisibleTopics(topics)
 
   return (
@@ -14,7 +13,7 @@ export function ProjectCardTopics({ projectId, topics }: ProjectCardTopicsProps)
         {visibleTopics.map(topic => (
           <span
             key={topic}
-            data-testid={`project-topic-${projectId}-${topic}`}
+            data-testid="project-topic"
             className="px-2 py-1 bg-tre-green/20 text-tre-green text-xs rounded font-mono"
           >
             {topic}

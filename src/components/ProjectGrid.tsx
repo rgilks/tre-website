@@ -17,25 +17,17 @@ export function ProjectGrid({ initialProjects }: ProjectGridProps) {
     useProjectStore()
 
   useEffect(() => {
-    // Use initial projects from server-side rendering
     if (projects.length === 0 && initialProjects.length > 0) {
       setProjects(initialProjects)
     }
   }, [projects.length, initialProjects, setProjects])
 
-  if (isLoading) {
-    return <LoadingSkeleton />
-  }
-
-  if (error) {
+  if (isLoading) return <LoadingSkeleton />
+  if (error)
     return (
       <ErrorMessage error={error} onRetry={() => window.location.reload()} />
     )
-  }
-
-  if (filteredProjects.length === 0) {
-    return <EmptyState />
-  }
+  if (filteredProjects.length === 0) return <EmptyState />
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

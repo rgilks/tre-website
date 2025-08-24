@@ -13,6 +13,7 @@ Always try and improve the type checking.
 Try and avoid duplication between types.
 Use immer in TypeScript where possible to avoid mutation.
 Use Zustand to manage state in React.
+Avoid prop drilling, use Zustand.
 Use Server Actions for server side logic and not API routes.
 Try to keep the state machine simple, consolidated and easy to understand.
 Don't add a logging facility, the console is fine.

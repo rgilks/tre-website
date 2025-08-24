@@ -34,43 +34,39 @@ const initialState: ProjectState = {
   },
 }
 
-// Sorting logic extracted for better readability
-function sortProjects(projects: Project[], sortBy?: string, sortOrder?: string): Project[] {
-  if (!sortBy) return projects
-
-  return [...projects].sort((a, b) => {
-    const aValue = new Date(sortBy === 'created' ? a.createdAt : a.updatedAt).getTime()
-    const bValue = new Date(sortBy === 'created' ? b.createdAt : b.updatedAt).getTime()
-    return sortOrder === 'asc' ? aValue - bValue : bValue - aValue
-  })
-}
-
-// Simplified filtering logic with better functional approach
 function applyFilters(projects: Project[], filters: ProjectFilters): Project[] {
   let filtered = projects
 
-  // Apply search filter
   if (filters.search) {
     const searchLower = filters.search.toLowerCase()
-    filtered = filtered.filter(project =>
-      project.name.toLowerCase().includes(searchLower) ||
-      project.description.toLowerCase().includes(searchLower) ||
-      project.topics.some(topic => topic.toLowerCase().includes(searchLower))
+    filtered = filtered.filter(
+      project =>
+        project.name.toLowerCase().includes(searchLower) ||
+        project.description.toLowerCase().includes(searchLower) ||
+        project.topics.some(topic => topic.toLowerCase().includes(searchLower))
     )
   }
 
-  // Apply language filter
   if (filters.language) {
     filtered = filtered.filter(project => project.language === filters.language)
   }
 
-  // Apply topic filter
   if (filters.topic) {
-    filtered = filtered.filter(project => project.topics.includes(filters.topic!))
+    filtered = filtered.filter(project =>
+      project.topics.includes(filters.topic!)
+    )
   }
 
-  // Apply sorting
-  return sortProjects(filtered, filters.sortBy, filters.sortOrder)
+  if (filters.sortBy) {
+    const sortKey = filters.sortBy === 'created' ? 'createdAt' : 'updatedAt'
+    filtered = [...filtered].sort((a, b) => {
+      const aValue = new Date(a[sortKey]).getTime()
+      const bValue = new Date(b[sortKey]).getTime()
+      return filters.sortOrder === 'asc' ? aValue - bValue : bValue - aValue
+    })
+  }
+
+  return filtered
 }
 
 export const useProjectStore = create<ProjectState & ProjectActions>()(
@@ -83,7 +79,10 @@ export const useProjectStore = create<ProjectState & ProjectActions>()(
         state.filteredProjects = projects
         // Auto-set highlighted project to most recently updated
         if (projects.length > 0) {
-          const sorted = sortProjects(projects, 'updated', 'desc')
+          const sorted = [...projects].sort(
+            (a, b) =>
+              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          )
           state.highlightedProject = sorted[0]
         }
       }),

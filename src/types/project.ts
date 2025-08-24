@@ -14,7 +14,7 @@ export interface Project {
   isCurrentlyWorking: boolean
 }
 
-// GitHub API response type - consolidated here to avoid duplication
+// GitHub API response type
 export interface GitHubApiResponse {
   id: number
   name: string
@@ -29,21 +29,6 @@ export interface GitHubApiResponse {
   private: boolean
   stargazers_count: number
   forks_count: number
-}
-
-export interface ProjectCardProps {
-  project: Project
-  isHighlighted?: boolean
-}
-
-export interface ProjectGridProps {
-  projects?: Project[]
-  isLoading?: boolean
-  error?: string | null
-}
-
-export interface ProjectDetailProps {
-  project: Project
 }
 
 export interface ProjectFilters {
