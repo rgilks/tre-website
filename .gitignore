@@ -43,7 +43,3 @@ next-env.d.ts
 
 # open-next
 .open-next
-
-# local cache
-.cache
-.cache/images
