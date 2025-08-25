@@ -52,7 +52,7 @@ export function MobileMenu() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-black/80 z-40"
+              className="fixed inset-0 bg-black/95 z-40"
               onClick={toggleMenu}
             />
             
@@ -62,16 +62,16 @@ export function MobileMenu() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed right-0 top-0 h-full w-64 bg-tre-black border-l border-tre-green/20 z-50"
+              className="fixed right-0 top-0 h-full w-64 bg-black border-l border-tre-green/20 z-50 shadow-2xl"
             >
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-8">
+              <div className="p-6 bg-black/95 backdrop-blur-sm">
+                <div className="flex justify-between items-center mb-8 pb-4 border-b border-tre-green/20">
                   <h2 className="text-xl font-bold text-tre-green font-mono">
                     Menu
                   </h2>
                   <button
                     onClick={toggleMenu}
-                    className="p-2 text-tre-white hover:text-tre-green transition-colors duration-200"
+                    className="p-2 text-tre-white hover:text-tre-green transition-colors duration-200 rounded-lg hover:bg-tre-green/10"
                     aria-label="Close mobile menu"
                   >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -86,7 +86,7 @@ export function MobileMenu() {
                       key={item.href}
                       href={item.href}
                       onClick={toggleMenu}
-                      className="block py-3 px-4 text-tre-white hover:text-tre-green hover:bg-tre-green/10 rounded-lg transition-all duration-200 font-mono text-lg"
+                      className="block py-4 px-4 text-tre-white hover:text-tre-green hover:bg-tre-green/20 rounded-lg transition-all duration-200 font-mono text-lg font-semibold border border-tre-green/10 hover:border-tre-green/30"
                       data-testid={`mobile-menu-${item.label.toLowerCase()}`}
                     >
                       {item.label}
