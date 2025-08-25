@@ -116,6 +116,12 @@ npm run test:ui
 
 # Run E2E tests
 npm run test:e2e
+
+# Run E2E tests with UI
+npm run test:e2e:ui
+
+# Install Playwright browsers (first time setup)
+npm run test:e2e:install
 ```
 
 ### Test Coverage

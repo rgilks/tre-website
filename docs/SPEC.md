@@ -18,7 +18,7 @@ Total Reality Engineering (TRE) is a personal contracting business showcasing in
 - **Frontend**: Next.js 15, React 19, TypeScript
 - **Styling**: Tailwind CSS 4
 - **State Management**: Zustand with Immer for immutable updates
-- **Testing**: Vitest for unit tests, Playwright for E2E tests
+- **Testing**: Vitest for unit tests, Playwright for E2E tests with automated CI/CD
 - **Deployment**: Open-Next for Cloudflare Workers
 - **Animation**: Framer Motion for smooth interactions
 
@@ -204,6 +204,13 @@ Primary Cache (Cloudflare KV) → Fallback Cache → Direct Fetch
 - **Type Checking**: TypeScript compilation validation
 - **Linting**: ESLint for code quality enforcement
 - **Testing**: Automated test execution before deployment
+
+### 3. Testing Strategy
+
+- **Unit Tests**: Vitest for component and utility function testing
+- **E2E Tests**: Playwright for cross-browser user journey validation
+- **CI/CD Integration**: Automated testing on pull requests and deployments
+- **Test Coverage**: Comprehensive coverage reporting for quality assurance
 
 ## Recent Refactoring Achievements
 
