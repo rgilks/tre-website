@@ -22,9 +22,7 @@ export function HeroSection() {
           suppressHydrationWarning
         >
           <TRELogo
-            width={600}
-            height={600}
-            className="mx-auto mb-6 animate-glow"
+            className="mx-auto mb-6 animate-glow w-full max-w-[600px] h-auto"
           />
         </motion.div>
 

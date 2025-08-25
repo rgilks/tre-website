@@ -79,10 +79,8 @@ export function ProjectViewer({ project }: ProjectViewerProps) {
         >
           <div className="relative">
             <TRELogo
-              width={60}
-              height={60}
               animated={false}
-              className="transition-transform duration-200 group-hover:scale-110"
+              className="transition-transform duration-200 group-hover:scale-110 w-15 h-15"
             />
             {/* Green glow effect on hover */}
             <div className="absolute inset-0 bg-tre-green/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200" />

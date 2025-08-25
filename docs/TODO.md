@@ -2,6 +2,17 @@
 
 ## Completed ✅
 
+### Mobile Optimization and iPhone Compatibility (2025-01-27)
+
+- **Fixed iPhone status bar**: Changed theme color from green to black in viewport metadata and manifest
+- **Responsive logo scaling**: Made TRELogo component fully responsive with proper SVG viewBox and CSS scaling
+- **Mobile viewport handling**: Added iPhone-specific CSS optimizations and viewport meta tags
+- **Logo component refactoring**: Simplified TRELogo by removing unused width/height props and using CSS classes for sizing
+- **Status bar styling**: Updated apple-mobile-web-app-status-bar-style to use solid black instead of translucent
+- **CSS improvements**: Added mobile-specific media queries and iPhone viewport optimizations
+- **Component updates**: Updated all TRELogo usages throughout the application to use CSS-based sizing
+- **Maintained functionality**: All tests pass and the application builds successfully with improved mobile experience
+
 ### Playwright E2E Testing Setup (2025-01-27)
 
 - **Playwright Configuration**: Created comprehensive Playwright configuration with multi-browser support (Chrome, Firefox, Safari)

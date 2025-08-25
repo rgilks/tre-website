@@ -7,7 +7,7 @@ export default function OfflinePage() {
     <div className="min-h-screen bg-tre-black text-tre-white flex items-center justify-center">
       <div className="text-center max-w-md mx-auto px-4">
         <div className="mb-8 flex justify-center">
-          <TRELogo width={80} height={80} className="text-tre-green" />
+          <TRELogo className="text-tre-green w-20 h-20" />
         </div>
 
         <h1 className="text-3xl font-bold text-tre-green font-mono mb-4">

@@ -4,15 +4,11 @@ import React from 'react'
 import { motion } from 'framer-motion'
 
 interface TRELogoProps {
-  width?: number
-  height?: number
   className?: string
   animated?: boolean
 }
 
 export const TRELogo: React.FC<TRELogoProps> = ({
-  width = 400,
-  height = 400,
   className,
 }) => {
   const containerVariants = {
@@ -58,14 +54,13 @@ export const TRELogo: React.FC<TRELogoProps> = ({
   return (
     <motion.svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox={`0 0 ${width} ${height}`}
-      width={width}
-      height={height}
+      viewBox="0 0 512 512"
       className={className}
       variants={containerVariants}
       initial="hidden"
       animate="visible"
       suppressHydrationWarning
+      preserveAspectRatio="xMidYMid meet"
     >
       {/* background; remove if you want transparent */}
       <motion.rect
@@ -75,8 +70,8 @@ export const TRELogo: React.FC<TRELogoProps> = ({
         variants={elementVariants}
       />
 
-      {/* Scale original 512x512 artwork to fit provided width/height */}
-      <g transform={`scale(${width / 512} ${height / 512})`}>
+      {/* Original 512x512 artwork - no scaling needed */}
+      <g>
         {/* Green rounded bar (rotated rounded-rect)
         Center at (262, 295) so we can rotate around its center */}
         <motion.rect

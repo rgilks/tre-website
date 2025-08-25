@@ -30,3 +30,38 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #2ecc71;
 }
+
+/* Ensure proper mobile viewport handling */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari specific styles */
+  body {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Ensure SVG logos scale properly on mobile */
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* iPhone-specific optimizations */
+@media screen and (max-width: 768px) {
+  /* Ensure proper scaling on mobile devices */
+  .w-full {
+    width: 100% !important;
+  }
+  
+  .max-w-\[600px\] {
+    max-width: 90vw !important;
+  }
+  
+  /* Optimize for iPhone viewport */
+  @supports (-webkit-touch-callout: none) {
+    .min-h-screen {
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+    }
+  }
+}

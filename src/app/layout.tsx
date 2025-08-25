@@ -38,7 +38,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#19C15E',
+  themeColor: '#000000',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -56,7 +56,7 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta
           name="apple-mobile-web-app-status-bar-style"
-          content="black-translucent"
+          content="black"
         />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="icon" href="/favicon.ico" />
@@ -70,7 +70,7 @@ export default function RootLayout({
             <header className="border-b border-tre-green/20 bg-tre-black/95 backdrop-blur-sm sticky top-0 z-50">
               <div className="container mx-auto px-4 py-4 flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <TRELogo width={40} height={40} className="animate-fade-in" />
+                  <TRELogo className="animate-fade-in w-10 h-10" />
                   <h1 className="text-2xl font-bold text-tre-green font-mono">
                     Total Reality Engineering
                   </h1>
