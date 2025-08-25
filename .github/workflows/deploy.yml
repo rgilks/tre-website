@@ -1,4 +1,4 @@
-name: Deploy to Cloudflare Workers (OpenNext)
+name: Test and Deploy to Cloudflare Workers
 
 on:
   push:
@@ -17,6 +17,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Setup and Testing Phase
       - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
@@ -29,6 +30,16 @@ jobs:
       - name: Run checks (lint, types, unit tests)
         run: npm run check
 
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Build application
+        run: npm run build
+
+      - name: Run Playwright E2E tests
+        run: npm run test:e2e
+
+      # Build and Deploy Phase
       - name: Build with OpenNext (Cloudflare)
         run: npm run build:cf
 

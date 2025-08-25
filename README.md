@@ -122,6 +122,8 @@ npm run test:e2e:ui
 
 # Install Playwright browsers (first time setup)
 npm run test:e2e:install
+
+> **Note**: E2E tests are automatically run in CI/CD pipeline. The build will fail if any tests fail.
 ```
 
 ### Test Coverage
