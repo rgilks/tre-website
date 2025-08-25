@@ -1,0 +1,10 @@
+#!/bin/sh
+# Fail fast
+set -e
+
+echo "[pre-push] Running slow checks..."
+
+npm run test:e2e
+
+echo "[pre-push] OK"
+

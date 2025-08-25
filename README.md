@@ -100,6 +100,20 @@ A modern, elegant portfolio website showcasing innovative software engineering p
 5. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
 
+6. **Set up Git hooks (recommended)**
+
+   The project includes Git hooks that automatically run quality checks:
+
+   ```bash
+   npm run setup
+   ```
+
+   This configures:
+   - **Pre-commit hook**: Runs `npm run check` to ensure code quality before each commit
+   - **Pre-push hook**: Runs E2E tests to prevent broken code from being pushed
+
+   > **Note**: The hooks will fail if tests don't pass, ensuring code quality is maintained.
+
 ## 🧪 Testing
 
 ### Run Tests

@@ -2,6 +2,15 @@
 
 ## Completed ✅
 
+### Git Hooks Integration (2025-01-27)
+
+- **Pre-commit hook**: Automatically runs `npm run check` before each commit to ensure code quality
+- **Pre-push hook**: Runs E2E tests before pushing to prevent broken code from being deployed
+- **Setup script**: Added `npm run setup` command to configure hooks and set appropriate permissions
+- **Documentation updates**: Added comprehensive git hooks documentation to README.md and SPEC.md
+- **Quality enforcement**: Hooks fail if tests don't pass, ensuring high code quality standards
+- **Maintained simplicity**: Simple shell scripts that integrate seamlessly with existing development workflow
+
 ### Environment Variable Naming Convention Update (2025-01-27)
 
 - **GitHub token standardization**: Updated environment variable name from `GITHUB_TOKEN` to `TOKEN_GITHUB` for consistency

@@ -159,6 +159,13 @@ Primary Cache (Cloudflare KV) → Fallback Cache → Direct Fetch
 - **Documentation**: Clear JSDoc comments for public APIs
 - **Eliminated Abstractions**: Removed unnecessary utility functions and abstractions
 
+### 4. Git Hooks
+
+- **Pre-commit Hook**: Automatically runs `npm run check` before each commit
+- **Pre-push Hook**: Runs E2E tests before pushing to prevent broken code deployment
+- **Quality Enforcement**: Hooks fail if tests don't pass, ensuring code quality
+- **Setup Command**: `npm run setup` configures hooks and sets appropriate permissions
+
 ## Performance Considerations
 
 ### 1. Data Fetching
