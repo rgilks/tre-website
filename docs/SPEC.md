@@ -98,7 +98,14 @@ Automated data refresh via Cloudflare Workers cron triggers:
 - **Responsive Design**: Mobile-first approach with Tailwind CSS
 - **Smooth Animations**: Framer Motion for engaging interactions
 - **Accessibility**: Proper ARIA labels and keyboard navigation support
-- **PWA Support**: Progressive Web App capabilities
+- **PWA Support**: Progressive Web App capabilities with app shortcuts
+
+### 4. Branding and Assets
+
+- **SVG Favicon**: Modern, scalable favicon with black background and TRE branding
+- **Progressive Enhancement**: SVG favicon for modern browsers with ICO fallback for legacy support
+- **Theme Consistency**: Unified color scheme (#19C15E) across favicon, manifest, and UI elements
+- **App Shortcuts**: Quick navigation to Projects, About, and Contact sections from PWA menu
 
 ## Data Flow
 

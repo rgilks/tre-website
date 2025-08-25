@@ -38,7 +38,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#39FF14',
+  themeColor: '#19C15E',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -58,8 +58,9 @@ export default function RootLayout({
           name="apple-mobile-web-app-status-bar-style"
           content="black-translucent"
         />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/apple-icon.png" />
+        <link rel="apple-touch-icon" href="/logo192.png" />
       </head>
       <body
         className={`${inter.className} bg-tre-black text-tre-white antialiased`}

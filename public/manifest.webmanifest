@@ -1,12 +1,12 @@
 {
   "name": "Total Reality Engineering",
   "short_name": "TRE",
-  "description": "Portfolio showcasing innovative GitHub projects",
+  "description": "Portfolio of work by Total Reality Engineering.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#000000",
-  "theme_color": "#39FF14",
+  "theme_color": "#19C15E",
   "orientation": "portrait-primary",
   "categories": ["productivity", "utilities", "portfolio"],
   "lang": "en",
@@ -37,6 +37,30 @@
       "short_name": "Projects",
       "description": "View all projects",
       "url": "/#projects",
+      "icons": [
+        {
+          "src": "/logo192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "About",
+      "short_name": "About",
+      "description": "Learn more about Total Reality Engineering",
+      "url": "/#about",
+      "icons": [
+        {
+          "src": "/logo192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Contact",
+      "short_name": "Contact",
+      "description": "Get in touch",
+      "url": "/#contact",
       "icons": [
         {
           "src": "/logo192.png",
