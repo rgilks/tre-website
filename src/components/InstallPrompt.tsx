@@ -76,7 +76,7 @@ export function InstallPrompt() {
 
   return (
     <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-80 z-50">
-      <div className="bg-tre-black border border-tre-green/30 rounded-lg p-4 shadow-lg backdrop-blur-sm">
+      <div className="bg-black/90 border border-tre-green/30 rounded-lg p-4 shadow-lg backdrop-blur-sm">
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1">
             <h3 className="text-tre-green font-mono font-semibold text-sm mb-1">

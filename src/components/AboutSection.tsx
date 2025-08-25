@@ -7,7 +7,7 @@ export function AboutSection() {
         </h2>
         <div className="max-w-4xl mx-auto space-y-6">
           <p className="text-xl text-tre-white/80 leading-relaxed">
-            We build innovative solutions that bridge the gap between
+            I build innovative solutions that bridge the gap between
             imagination and reality. Our portfolio showcases cutting-edge
             projects that demonstrate technical excellence and creative
             problem-solving.

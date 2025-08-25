@@ -62,15 +62,18 @@ export default function RootLayout({
       >
         <PWAProvider>
           <div className="min-h-screen flex flex-col">
-            <header className="border-b border-tre-green/20 bg-tre-black/95 backdrop-blur-sm sticky top-0 z-50">
+            <header className="border-b border-tre-green/20 bg-black/90 backdrop-blur-sm sticky top-0 z-50">
               <div className="container mx-auto px-4 py-4 flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <TRELogo className="animate-fade-in w-8 h-8 sm:w-10 sm:h-10" />
-                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-tre-green font-mono">
+                  <TRELogo
+                    animated={false}
+                    className="animate-fade-in w-10 h-10"
+                  />
+                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-tre-green font-mono whitespace-nowrap">
                     Total Reality Engineering
                   </h1>
                 </div>
-                                <nav className="hidden lg:flex items-center space-x-6">
+                <nav className="hidden lg:flex items-center space-x-6">
                   <a
                     href="#projects"
                     className="text-tre-white hover:text-tre-green transition-colors duration-200 font-mono"

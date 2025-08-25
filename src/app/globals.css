@@ -13,6 +13,16 @@ body {
   font-family: 'Inter', system-ui, sans-serif;
 }
 
+/* Ensure header has semi-transparent background */
+header {
+  background-color: rgba(0, 0, 0, 0.9) !important;
+}
+
+/* Ensure TRE green borders work properly */
+.border-tre-green {
+  border-color: #39FF14 !important;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

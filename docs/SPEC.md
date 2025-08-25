@@ -99,7 +99,8 @@ Automated data refresh via Cloudflare Workers cron triggers:
 - **Mobile Optimizations**: iPhone-specific viewport handling and status bar styling
 - **Mobile Navigation**: Hamburger menu for mobile devices with smooth animations
 - **Touch-Friendly**: Optimized touch targets and mobile-specific interactions
-- **Logo Scaling**: Responsive SVG logo that scales appropriately on all devices
+- **Logo Scaling**: Responsive SVG logo with viewport-constrained sizing to prevent overflow on small screens
+- **Logo Animation Control**: Configurable animation support with non-animated header logo for instant loading
 - **Smooth Animations**: Framer Motion for engaging interactions
 - **Accessibility**: Proper ARIA labels and keyboard navigation support
 - **PWA Support**: Progressive Web App capabilities with app shortcuts

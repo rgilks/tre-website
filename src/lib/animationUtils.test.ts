@@ -6,7 +6,7 @@ describe('AnimationUtils', () => {
   describe('getHeroAnimationDelays', () => {
     it('should return array of delay values', () => {
       const delays = getHeroAnimationDelays()
-      expect(delays).toEqual([0, 0.2, 0.4])
+      expect(delays).toEqual([0, 0.3, 0.6])
     })
 
     it('should return array with correct length', () => {
@@ -40,7 +40,7 @@ describe('AnimationUtils', () => {
     it('should have correct initial values', () => {
       const animations = getHeroAnimations()
       animations.forEach(animation => {
-        expect(animation.initial).toEqual({ opacity: 0, y: 20 })
+        expect(animation.initial).toEqual({ opacity: 0, y: 30 })
       })
     })
 
@@ -63,7 +63,7 @@ describe('AnimationUtils', () => {
     it('should have correct duration', () => {
       const animations = getHeroAnimations()
       animations.forEach(animation => {
-        expect(animation.transition.duration).toBe(0.8)
+        expect(animation.transition.duration).toBe(1)
       })
     })
 
@@ -76,7 +76,7 @@ describe('AnimationUtils', () => {
 
     it('should have correct delay values', () => {
       const animations = getHeroAnimations()
-      const expectedDelays = [0, 0.2, 0.4]
+      const expectedDelays = [0, 0.3, 0.6]
       animations.forEach((animation, index) => {
         expect(animation.transition.delay).toBe(expectedDelays[index])
       })

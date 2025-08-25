@@ -10,7 +10,7 @@ export function ContactSection() {
           Get In Touch
         </h2>
         <p className="text-xl text-tre-white/80 max-w-2xl mx-auto mb-8">
-          Ready to bring your ideas to life? Let&apos;s discuss how we can help
+          Ready to bring your ideas to life? Let&apos;s discuss how I can help
           you achieve your engineering goals.
         </p>
         <div className="flex justify-center space-x-6">
