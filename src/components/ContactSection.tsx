@@ -18,17 +18,23 @@ export function ContactSection() {
             href="https://github.com/rgilks"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-8 py-3 border-2 border-tre-green text-tre-green font-bold font-mono rounded-lg hover:bg-tre-green hover:text-tre-black hover:shadow-lg hover:shadow-tre-green/30 hover:scale-105 transition-all duration-300 animate-slide-up"
+            className="relative px-8 py-3 border-2 border-tre-green text-tre-green font-bold font-mono rounded-lg overflow-hidden group transition-all duration-300 hover:scale-105 active:scale-95"
           >
-            GitHub
+            <div className="absolute inset-0 bg-tre-green transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out origin-left" />
+            <span className="relative z-10 group-hover:text-tre-black transition-colors duration-300">
+              GitHub
+            </span>
           </a>
           <a
             href="https://www.linkedin.com/in/rob-gilks-39bb03/"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-8 py-3 border-2 border-tre-green text-tre-green font-bold font-mono rounded-lg hover:bg-tre-green hover:text-tre-black hover:shadow-lg hover:shadow-tre-green/30 hover:scale-105 transition-all duration-300 animate-slide-up"
+            className="relative px-8 py-3 border-2 border-tre-green text-tre-green font-bold font-mono rounded-lg overflow-hidden group transition-all duration-300 hover:scale-105 active:scale-95"
           >
-            LinkedIn
+            <div className="absolute inset-0 bg-tre-green transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out origin-left" />
+            <span className="relative z-10 group-hover:text-tre-black transition-colors duration-300">
+              LinkedIn
+            </span>
           </a>
         </div>
       </div>

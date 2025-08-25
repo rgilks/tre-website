@@ -31,10 +31,13 @@ export function ProjectCardFooter({
             href={homepageUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-4 py-2 border border-tre-green text-tre-green font-bold font-mono rounded text-center hover:bg-tre-green hover:text-tre-black transition-all duration-200 flex-1"
+            className="relative px-4 py-2 border border-tre-green text-tre-green font-bold font-mono rounded text-center overflow-hidden group transition-all duration-300 hover:scale-105 active:scale-95 flex-1"
             onClick={e => e.stopPropagation()}
           >
-            Website
+            <div className="absolute inset-0 bg-tre-green transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out origin-left" />
+            <span className="relative z-10 group-hover:text-tre-black transition-colors duration-300">
+              Website
+            </span>
           </a>
         )}
         <a
@@ -42,10 +45,13 @@ export function ProjectCardFooter({
           href={htmlUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className={`px-4 py-2 border border-tre-green text-tre-green font-bold font-mono rounded text-center hover:bg-tre-green hover:text-tre-black transition-all duration-200 ${homepageUrl ? 'flex-1' : 'w-full'}`}
+          className={`relative px-4 py-2 border border-tre-green text-tre-green font-bold font-mono rounded text-center overflow-hidden group transition-all duration-300 hover:scale-105 active:scale-95 ${homepageUrl ? 'flex-1' : 'w-full'}`}
           onClick={e => e.stopPropagation()}
         >
-          GitHub
+          <div className="absolute inset-0 bg-tre-green transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out origin-left" />
+          <span className="relative z-10 group-hover:text-tre-black transition-colors duration-300">
+            GitHub
+          </span>
         </a>
       </div>
     </>

@@ -2,6 +2,18 @@
 
 ## Completed ✅
 
+### Button Hover Effects and Project Card Improvements (2025-01-27)
+
+- **Enhanced ContactSection buttons**: Added cool green background expansion hover effects using pure CSS animations instead of Framer Motion
+- **Improved ProjectCardFooter buttons**: Applied same hover effects to Website and GitHub buttons in project cards for consistency
+- **Removed Framer Motion dependency**: Fixed Next.js 15 compatibility issues by replacing Framer Motion with CSS-based animations
+- **Enhanced project card hover effects**: Added subtle green glow, border color changes, and background tint effects on hover
+- **Removed clickable behavior**: Project cards are no longer clickable as a whole, improving user experience
+- **Updated E2E tests**: Modified Playwright tests to reflect that project cards are no longer clickable
+- **Maintained button functionality**: Website and GitHub buttons remain fully functional with enhanced visual feedback
+- **Improved visual consistency**: All buttons now have consistent, elegant hover effects throughout the application
+- **Fixed compatibility issues**: Resolved Next.js 15 module resolution problems by using pure CSS solutions
+
 ### Logo Sizing and Header Improvements (2025-01-27)
 
 - **Responsive logo sizing**: Updated HeroSection logo to use viewport-constrained sizing (`max-w-[min(600px,90vw)]` and `max-h-[min(600px,80vh)]`) to prevent overflow on small screens

@@ -24,14 +24,18 @@ test.describe('Home Page', () => {
     await expect(projectCards.first()).toBeVisible();
   });
 
-  test('should navigate to project details', async ({ page }) => {
+  test('should have clickable buttons in project cards', async ({ page }) => {
     await page.goto('/');
     
-    // Click on the first project card
+    // Check that project cards have clickable buttons
     const firstProjectCard = page.getByTestId('project-card').first();
-    await firstProjectCard.click();
+    await expect(firstProjectCard).toBeVisible();
     
-    // Should navigate to project page
-    await expect(page).toHaveURL(/\/project\/.+/);
+    // Check for GitHub button (should always be present)
+    const githubButton = page.getByTestId('project-github').first();
+    await expect(githubButton).toBeVisible();
+    
+    // Check that buttons are clickable
+    await expect(githubButton).toHaveAttribute('href');
   });
 });
