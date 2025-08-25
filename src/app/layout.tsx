@@ -4,7 +4,6 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { TRELogo } from '@/components/TRELogo'
 import { PWAProvider } from '@/components/PWAProvider'
-import { MobileMenu } from '@/components/MobileMenu'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -71,7 +70,7 @@ export default function RootLayout({
                     Total Reality Engineering
                   </h1>
                 </div>
-                <nav className="hidden md:flex items-center space-x-6">
+                                <nav className="hidden lg:flex items-center space-x-6">
                   <a
                     href="#projects"
                     className="text-tre-white hover:text-tre-green transition-colors duration-200 font-mono"
@@ -91,8 +90,6 @@ export default function RootLayout({
                     Contact
                   </a>
                 </nav>
-
-                <MobileMenu />
               </div>
             </header>
 
