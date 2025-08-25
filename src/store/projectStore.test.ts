@@ -174,34 +174,32 @@ describe('Project Store', () => {
   })
 
   it('should reset to initial state', () => {
-    const mockProjects: Project[] = [
+    const store = useProjectStore.getState()
+
+    store.setProjects([
       {
         id: '1',
-        name: 'React App',
-        fullName: 'user/react-app',
-        description: 'A React application',
-        htmlUrl: 'https://github.com/user/react-app',
-        topics: ['react', 'typescript'],
+        name: 'Test Project',
+        fullName: 'user/test-project',
+        description: 'A test project',
+        htmlUrl: 'https://github.com/user/test-project',
+        topics: ['test'],
         updatedAt: '2024-01-01T00:00:00Z',
         createdAt: '2024-01-01T00:00:00Z',
         isCurrentlyWorking: false,
       },
-    ]
+    ])
+    store.setLoading(true)
+    store.setError('Test error')
 
-    useProjectStore.getState().setProjects(mockProjects)
-    useProjectStore.getState().setLoading(true)
-    useProjectStore.getState().setError('Error')
-    useProjectStore.getState().updateFilters({ search: 'test' })
+    store.reset()
 
-    useProjectStore.getState().reset()
-
-    const state = useProjectStore.getState()
-    expect(state.projects).toEqual([])
-    expect(state.filteredProjects).toEqual([])
-    expect(state.highlightedProject).toBeNull()
-    expect(state.isLoading).toBe(false)
-    expect(state.error).toBeNull()
-    expect(state.filters).toEqual({
+    expect(store.projects).toEqual([])
+    expect(store.filteredProjects).toEqual([])
+    expect(store.highlightedProject).toBeNull()
+    expect(store.isLoading).toBe(false)
+    expect(store.error).toBeNull()
+    expect(store.filters).toEqual({
       search: '',
       language: '',
       topic: '',

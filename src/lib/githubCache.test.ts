@@ -75,8 +75,9 @@ describe('GitHubCacheService', () => {
     })
 
     it('should handle JSON parsing errors gracefully', async () => {
-      mockKV.get.mockResolvedValueOnce('invalid-json')
-      mockKV.get.mockResolvedValueOnce(Math.floor(Date.now() / 1000).toString())
+      mockKV.get
+        .mockResolvedValueOnce('invalid-json')
+        .mockResolvedValueOnce('1234567890')
 
       const result = await cacheService.getCachedProjects()
 

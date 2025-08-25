@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 import { Project } from '@/types/project'
 
-import { refreshProjects } from './projects'
+import { getProjects, refreshProjects } from './projects'
 import { createCacheService } from './cacheService'
 import { createImageCacheService } from './imageCache'
 import { fetchGitHubProjects } from './github'
@@ -17,7 +17,7 @@ const mockCreateCacheService = vi.mocked(createCacheService)
 const mockCreateImageCacheService = vi.mocked(createImageCacheService)
 const mockFetchGitHubProjects = vi.mocked(fetchGitHubProjects)
 
-describe('refreshProjects', () => {
+describe('projects', () => {
   const mockEnv: CloudflareEnvironment = {
     GITHUB_CACHE: {
       get: vi.fn(),
@@ -79,91 +79,185 @@ describe('refreshProjects', () => {
     mockImageCacheService.clearAllScreenshots.mockResolvedValue(undefined)
   })
 
-  it('should successfully refresh projects and clear caches', async () => {
-    const result = await refreshProjects(mockEnv)
+  describe('getProjects', () => {
+    it('should return cached projects when available', async () => {
+      mockCacheService.getCachedProjects.mockResolvedValue(mockProjects)
 
-    expect(result).toEqual({
-      success: true,
-      message: 'Successfully refreshed 2 projects',
+      const result = await getProjects(mockEnv)
+
+      expect(result).toEqual(mockProjects)
+      expect(mockCreateCacheService).toHaveBeenCalledWith(mockEnv)
+      expect(mockCreateImageCacheService).toHaveBeenCalledWith(mockEnv)
+      expect(mockCacheService.getCachedProjects).toHaveBeenCalledOnce()
+      expect(mockFetchGitHubProjects).not.toHaveBeenCalled()
     })
 
-    expect(mockCreateCacheService).toHaveBeenCalledWith(mockEnv)
-    expect(mockCreateImageCacheService).toHaveBeenCalledWith(mockEnv)
-    expect(mockCacheService.clearCache).toHaveBeenCalledOnce()
-    expect(mockImageCacheService.clearAllScreenshots).toHaveBeenCalledOnce()
-    expect(mockFetchGitHubProjects).toHaveBeenCalledWith(
-      mockCacheService,
-      mockImageCacheService
-    )
-  })
+    it('should fetch fresh projects when cache is empty', async () => {
+      mockCacheService.getCachedProjects.mockResolvedValue(null)
 
-  it('should work without environment parameter', async () => {
-    const result = await refreshProjects()
+      const result = await getProjects(mockEnv)
 
-    expect(result.success).toBe(true)
-    expect(mockCreateCacheService).toHaveBeenCalledWith(undefined)
-    expect(mockCreateImageCacheService).toHaveBeenCalledWith(undefined)
-  })
-
-  it('should handle cache clearing errors gracefully', async () => {
-    const cacheError = new Error('Cache clear failed')
-    mockCacheService.clearCache.mockRejectedValue(cacheError)
-
-    const result = await refreshProjects(mockEnv)
-
-    expect(result).toEqual({
-      success: false,
-      message: 'Failed to refresh projects',
+      expect(result).toEqual(mockProjects)
+      expect(mockCacheService.getCachedProjects).toHaveBeenCalledOnce()
+      expect(mockFetchGitHubProjects).toHaveBeenCalledWith(
+        mockCacheService,
+        mockImageCacheService
+      )
     })
 
-    expect(mockCacheService.clearCache).toHaveBeenCalledOnce()
-    expect(mockImageCacheService.clearAllScreenshots).not.toHaveBeenCalled()
-    expect(mockFetchGitHubProjects).not.toHaveBeenCalled()
-  })
+    it('should work without environment parameter', async () => {
+      mockCacheService.getCachedProjects.mockResolvedValue(null)
 
-  it('should handle image cache clearing errors gracefully', async () => {
-    const imageError = new Error('Image cache clear failed')
-    mockImageCacheService.clearAllScreenshots.mockRejectedValue(imageError)
+      const result = await getProjects()
 
-    const result = await refreshProjects(mockEnv)
-
-    expect(result).toEqual({
-      success: false,
-      message: 'Failed to refresh projects',
+      expect(result).toEqual(mockProjects)
+      expect(mockCreateCacheService).toHaveBeenCalledWith(undefined)
+      expect(mockCreateImageCacheService).toHaveBeenCalledWith(undefined)
     })
 
-    expect(mockCacheService.clearCache).toHaveBeenCalledOnce()
-    expect(mockImageCacheService.clearAllScreenshots).toHaveBeenCalledOnce()
-    expect(mockFetchGitHubProjects).not.toHaveBeenCalled()
-  })
+    it('should handle cache service errors and fallback to direct fetch', async () => {
+      const cacheError = new Error('Cache service failed')
+      mockCacheService.getCachedProjects.mockRejectedValue(cacheError)
 
-  it('should handle fetch errors gracefully', async () => {
-    const fetchError = new Error('GitHub fetch failed')
-    mockFetchGitHubProjects.mockRejectedValue(fetchError)
+      const result = await getProjects(mockEnv)
 
-    const result = await refreshProjects(mockEnv)
-
-    expect(result).toEqual({
-      success: false,
-      message: 'Failed to refresh projects',
+      expect(result).toEqual(mockProjects)
+      expect(mockCacheService.getCachedProjects).toHaveBeenCalledOnce()
+      expect(mockFetchGitHubProjects).toHaveBeenCalledWith(
+        undefined,
+        expect.any(Object)
+      )
     })
 
-    expect(mockCacheService.clearCache).toHaveBeenCalledOnce()
-    expect(mockImageCacheService.clearAllScreenshots).toHaveBeenCalledOnce()
-    expect(mockFetchGitHubProjects).toHaveBeenCalledWith(
-      mockCacheService,
-      mockImageCacheService
-    )
+    it('should handle both cache and direct fetch errors and return fallback projects', async () => {
+      const cacheError = new Error('Cache service failed')
+      const fetchError = new Error('GitHub API failed')
+      
+      mockCacheService.getCachedProjects.mockRejectedValue(cacheError)
+      mockFetchGitHubProjects.mockRejectedValue(fetchError)
+
+      const result = await getProjects(mockEnv)
+
+      expect(result).toHaveLength(2)
+      expect(result[0].name).toBe('tre-website')
+      expect(result[1].name).toBe('geno-1')
+      expect(mockCacheService.getCachedProjects).toHaveBeenCalledOnce()
+      expect(mockFetchGitHubProjects).toHaveBeenCalledTimes(1)
+    })
+
+    it('should handle empty projects array from GitHub', async () => {
+      mockCacheService.getCachedProjects.mockResolvedValue(null)
+      mockFetchGitHubProjects.mockResolvedValue([])
+
+      const result = await getProjects(mockEnv)
+
+      expect(result).toEqual([])
+      expect(mockFetchGitHubProjects).toHaveBeenCalledWith(
+        mockCacheService,
+        mockImageCacheService
+      )
+    })
+
+    it('should handle null projects from cache gracefully', async () => {
+      mockCacheService.getCachedProjects.mockResolvedValue(null)
+
+      const result = await getProjects(mockEnv)
+
+      expect(result).toEqual(mockProjects)
+      expect(mockFetchGitHubProjects).toHaveBeenCalledWith(
+        mockCacheService,
+        mockImageCacheService
+      )
+    })
   })
 
-  it('should handle empty projects array', async () => {
-    mockFetchGitHubProjects.mockResolvedValue([])
+  describe('refreshProjects', () => {
+    it('should successfully refresh projects and clear caches', async () => {
+      const result = await refreshProjects(mockEnv)
 
-    const result = await refreshProjects(mockEnv)
+      expect(result).toEqual({
+        success: true,
+        message: 'Successfully refreshed 2 projects',
+      })
 
-    expect(result).toEqual({
-      success: true,
-      message: 'Successfully refreshed 0 projects',
+      expect(mockCreateCacheService).toHaveBeenCalledWith(mockEnv)
+      expect(mockCreateImageCacheService).toHaveBeenCalledWith(mockEnv)
+      expect(mockCacheService.clearCache).toHaveBeenCalledOnce()
+      expect(mockImageCacheService.clearAllScreenshots).toHaveBeenCalledOnce()
+      expect(mockFetchGitHubProjects).toHaveBeenCalledWith(
+        mockCacheService,
+        mockImageCacheService
+      )
+    })
+
+    it('should work without environment parameter', async () => {
+      const result = await refreshProjects()
+
+      expect(result.success).toBe(true)
+      expect(mockCreateCacheService).toHaveBeenCalledWith(undefined)
+      expect(mockCreateImageCacheService).toHaveBeenCalledWith(undefined)
+    })
+
+    it('should handle cache clearing errors gracefully', async () => {
+      const cacheError = new Error('Cache clear failed')
+      mockCacheService.clearCache.mockRejectedValue(cacheError)
+
+      const result = await refreshProjects(mockEnv)
+
+      expect(result).toEqual({
+        success: false,
+        message: 'Failed to refresh projects',
+      })
+
+      expect(mockCacheService.clearCache).toHaveBeenCalledOnce()
+      expect(mockImageCacheService.clearAllScreenshots).not.toHaveBeenCalled()
+      expect(mockFetchGitHubProjects).not.toHaveBeenCalled()
+    })
+
+    it('should handle image cache clearing errors gracefully', async () => {
+      const imageError = new Error('Image cache clear failed')
+      mockImageCacheService.clearAllScreenshots.mockRejectedValue(imageError)
+
+      const result = await refreshProjects(mockEnv)
+
+      expect(result).toEqual({
+        success: false,
+        message: 'Failed to refresh projects',
+      })
+
+      expect(mockCacheService.clearCache).toHaveBeenCalledOnce()
+      expect(mockImageCacheService.clearAllScreenshots).toHaveBeenCalledOnce()
+      expect(mockFetchGitHubProjects).not.toHaveBeenCalled()
+    })
+
+    it('should handle fetch errors gracefully', async () => {
+      const fetchError = new Error('GitHub fetch failed')
+      mockFetchGitHubProjects.mockRejectedValue(fetchError)
+
+      const result = await refreshProjects(mockEnv)
+
+      expect(result).toEqual({
+        success: false,
+        message: 'Failed to refresh projects',
+      })
+
+      expect(mockCacheService.clearCache).toHaveBeenCalledOnce()
+      expect(mockImageCacheService.clearAllScreenshots).toHaveBeenCalledOnce()
+      expect(mockFetchGitHubProjects).toHaveBeenCalledWith(
+        mockCacheService,
+        mockImageCacheService
+      )
+    })
+
+    it('should handle empty projects array', async () => {
+      mockFetchGitHubProjects.mockResolvedValue([])
+
+      const result = await refreshProjects(mockEnv)
+
+      expect(result).toEqual({
+        success: true,
+        message: 'Successfully refreshed 0 projects',
+      })
     })
   })
 })

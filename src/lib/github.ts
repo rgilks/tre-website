@@ -207,8 +207,13 @@ export async function fetchProjectScreenshotsFromGitHub(
 
         if (!response.ok) return null
 
-        const data = (await response.json()) as { download_url?: string }
-        return data.download_url || null
+        try {
+          const data = (await response.json()) as { download_url?: string }
+          return data.download_url || null
+        } catch (jsonError) {
+          console.error(`Error parsing JSON for path ${path}:`, jsonError)
+          return null
+        }
       } catch (error) {
         console.error(`Error checking path ${path}:`, error)
         return null
