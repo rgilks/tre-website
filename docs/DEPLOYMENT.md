@@ -31,7 +31,7 @@ The application requires several secrets to function properly in production. Set
 #### GitHub API Token
 
 ```bash
-wrangler secret put GITHUB_TOKEN
+wrangler secret put TOKEN_GITHUB
 ```
 
 When prompted, enter your GitHub Personal Access Token. This token should have:
@@ -85,7 +85,7 @@ npm run deploy
 
 | Variable                      | Required | Description                             | Local Development | Production        |
 | ----------------------------- | -------- | --------------------------------------- | ----------------- | ----------------- |
-| `GITHUB_TOKEN`                | Yes      | GitHub API token for higher rate limits | `.env.local`      | Cloudflare Secret |
+| `TOKEN_GITHUB`                | Yes      | GitHub API token for higher rate limits | `.env.local`      | Cloudflare Secret |
 | `GITHUB_USERNAME`             | No       | GitHub username (defaults to 'rgilks')  | `.env.local`      | Hardcoded         |
 | `CLOUDFLARE_ACCOUNT_ID`       | No       | Cloudflare account ID for Images API    | `.env.local`      | Cloudflare Secret |
 | `CLOUDFLARE_IMAGES_API_TOKEN` | No       | Cloudflare Images API token             | `.env.local`      | Cloudflare Secret |
@@ -111,8 +111,8 @@ A cron job runs every 6 hours to refresh GitHub data. The cron endpoint is:
 
 ### Common Issues
 
-1. **"GITHUB_TOKEN not configured"**
-   - Ensure you've set the secret: `wrangler secret put GITHUB_TOKEN`
+1. **"TOKEN_GITHUB not configured"**
+   - Ensure you've set the secret: `wrangler secret put TOKEN_GITHUB`
 
 2. **"KV namespace not found"**
    - The KV namespace is created automatically during deployment

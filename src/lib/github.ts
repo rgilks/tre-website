@@ -17,7 +17,7 @@ const MAX_SCREENSHOT_PROJECTS = 10
 
 // Extend globalThis to include Cloudflare environment variables
 declare global {
-  var GITHUB_TOKEN: string | undefined
+  var TOKEN_GITHUB: string | undefined
   var GITHUB_USERNAME: string | undefined
 }
 
@@ -61,7 +61,7 @@ export async function fetchGitHubProjects(
         }
 
         throw new Error(
-          `GitHub API authentication failed. Please check your GITHUB_TOKEN environment variable. Status: ${response.status} ${response.statusText}${errorDetails}`
+          `GitHub API authentication failed. Please check your TOKEN_GITHUB environment variable. Status: ${response.status} ${response.statusText}${errorDetails}`
         )
       }
       if (response.status === 403) {
@@ -120,13 +120,13 @@ function getGitHubHeaders(): Record<string, string> {
     'User-Agent': 'tre-website',
   }
 
-  const token = globalThis.GITHUB_TOKEN || process.env.GITHUB_TOKEN
+  const token = globalThis.TOKEN_GITHUB || process.env.TOKEN_GITHUB
   if (token) {
     headers.Authorization = `token ${token}`
   } else {
     console.warn(
       '⚠️  No GitHub token found. API requests will be limited to 60 per hour for unauthenticated requests. ' +
-        'Set GITHUB_TOKEN environment variable for higher limits. See .env.example for setup instructions.'
+        'Set TOKEN_GITHUB environment variable for higher limits. See .env.example for setup instructions.'
     )
   }
 

@@ -34,7 +34,7 @@ zone_name = "tre.systems"
 
 # Secrets that need to be set via wrangler secret put
 # Run these commands to set the secrets:
-# wrangler secret put GITHUB_TOKEN
+# wrangler secret put TOKEN_GITHUB
 # wrangler secret put CLOUDFLARE_ACCOUNT_ID
 # wrangler secret put CLOUDFLARE_IMAGES_API_TOKEN
 # wrangler secret put CRON_SECRET

@@ -32,7 +32,7 @@ describe('GitHub API', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     // Set up test environment variables
-    globalThis.GITHUB_TOKEN = 'test-token'
+    globalThis.TOKEN_GITHUB = 'test-token'
     globalThis.GITHUB_USERNAME = 'rgilks'
   })
 
@@ -129,13 +129,17 @@ describe('GitHub API', () => {
 
       vi.mocked(fetch).mockResolvedValue(mockResponse as Response)
 
-      await expect(fetchGitHubProjects()).rejects.toThrow('GitHub API rate limit exceeded. Status: 403 Forbidden')
+      await expect(fetchGitHubProjects()).rejects.toThrow(
+        'GitHub API rate limit exceeded. Status: 403 Forbidden'
+      )
     })
 
     it('should handle network errors gracefully', async () => {
       vi.mocked(fetch).mockRejectedValue(new Error('Network error'))
 
-      await expect(fetchGitHubProjects()).rejects.toThrow('Failed to fetch projects from GitHub')
+      await expect(fetchGitHubProjects()).rejects.toThrow(
+        'Failed to fetch projects from GitHub'
+      )
     })
 
     it('should handle JSON parsing errors gracefully', async () => {
@@ -146,14 +150,18 @@ describe('GitHub API', () => {
 
       vi.mocked(fetch).mockResolvedValue(mockResponse as Response)
 
-      await expect(fetchGitHubProjects()).rejects.toThrow('Failed to fetch projects from GitHub')
+      await expect(fetchGitHubProjects()).rejects.toThrow(
+        'Failed to fetch projects from GitHub'
+      )
     })
 
     it('should handle missing environment variables gracefully', async () => {
-      delete globalThis.GITHUB_TOKEN
+      delete globalThis.TOKEN_GITHUB
       delete globalThis.GITHUB_USERNAME
 
-      await expect(fetchGitHubProjects()).rejects.toThrow('Failed to fetch projects from GitHub')
+      await expect(fetchGitHubProjects()).rejects.toThrow(
+        'Failed to fetch projects from GitHub'
+      )
     })
 
     it('should work with cache service when provided', async () => {
@@ -182,10 +190,16 @@ describe('GitHub API', () => {
 
       vi.mocked(fetch).mockResolvedValue(mockResponse as Response)
 
-      const result = await fetchGitHubProjects(undefined, mockImageCacheService, true)
+      const result = await fetchGitHubProjects(
+        undefined,
+        mockImageCacheService,
+        true
+      )
 
       expect(result).toHaveLength(1)
-      expect(mockImageCacheService.getCachedScreenshots).toHaveBeenCalledWith('test-repo')
+      expect(mockImageCacheService.getCachedScreenshots).toHaveBeenCalledWith(
+        'test-repo'
+      )
     })
 
     it('should handle screenshot fetch errors gracefully', async () => {
@@ -217,7 +231,11 @@ describe('GitHub API', () => {
         .mockResolvedValueOnce(mockResponse as Response)
         .mockRejectedValueOnce(new Error('Screenshot fetch failed'))
 
-      const result = await fetchGitHubProjects(undefined, mockImageCacheService, true)
+      const result = await fetchGitHubProjects(
+        undefined,
+        mockImageCacheService,
+        true
+      )
 
       expect(result).toHaveLength(1)
       expect(result[0].screenshotUrl).toBeUndefined()
@@ -264,7 +282,14 @@ describe('GitHub API', () => {
     it('should handle multiple screenshot paths', async () => {
       const mockResponses = [
         { ok: false, status: 404 },
-        { ok: true, json: vi.fn().mockResolvedValue({ download_url: 'https://example.com/screenshot.png' }) },
+        {
+          ok: true,
+          json: vi
+            .fn()
+            .mockResolvedValue({
+              download_url: 'https://example.com/screenshot.png',
+            }),
+        },
         { ok: false, status: 404 },
       ]
 
@@ -281,8 +306,18 @@ describe('GitHub API', () => {
 
     it('should handle individual path fetch errors gracefully', async () => {
       const mockResponses = [
-        { ok: true, json: vi.fn().mockRejectedValue(new Error('JSON parse error')) },
-        { ok: true, json: vi.fn().mockResolvedValue({ download_url: 'https://example.com/screenshot.png' }) },
+        {
+          ok: true,
+          json: vi.fn().mockRejectedValue(new Error('JSON parse error')),
+        },
+        {
+          ok: true,
+          json: vi
+            .fn()
+            .mockResolvedValue({
+              download_url: 'https://example.com/screenshot.png',
+            }),
+        },
       ]
 
       // Use a more robust mocking approach

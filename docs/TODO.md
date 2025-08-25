@@ -2,6 +2,14 @@
 
 ## Completed ✅
 
+### Environment Variable Naming Convention Update (2025-01-27)
+
+- **GitHub token standardization**: Updated environment variable name from `GITHUB_TOKEN` to `TOKEN_GITHUB` for consistency
+- **Documentation updates**: Updated README.md, DEPLOYMENT.md, and wrangler.toml to reflect new naming convention
+- **Code updates**: Updated src/lib/github.ts and test files to use new environment variable name
+- **Maintained functionality**: All tests pass and application builds successfully with updated naming
+- **Improved consistency**: Environment variable names now follow a more consistent pattern
+
 ### Mobile Optimization and iPhone Compatibility (2025-01-27)
 
 - **Fixed iPhone status bar**: Changed theme color from green to black in viewport metadata and manifest

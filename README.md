@@ -63,11 +63,11 @@ A modern, elegant portfolio website showcasing innovative software engineering p
    Configure your GitHub token:
 
    ```env
-   GITHUB_TOKEN=your_github_personal_access_token
+   TOKEN_GITHUB=your_github_personal_access_token
    GITHUB_USERNAME=your_github_username
    ```
 
-   > **Note**: The `GITHUB_TOKEN` is required for production and recommended for development.
+   > **Note**: The `TOKEN_GITHUB` is required for production and recommended for development.
    > Without it, the app will use fallback project data and you'll see warnings about API rate limits.
    >
    > To get a GitHub token:
