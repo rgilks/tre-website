@@ -63,5 +63,22 @@ svg {
       min-height: 100vh;
       min-height: -webkit-fill-available;
     }
+    
+    /* Fix for iPhone Safari 100vh issue */
+    .min-h-screen {
+      min-height: -webkit-fill-available;
+    }
+  }
+  
+  /* Improve touch targets on mobile */
+  button, a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Better mobile spacing */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 }

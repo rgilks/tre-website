@@ -10,7 +10,10 @@ export function HeroSection() {
   const animations = getHeroAnimations()
 
   return (
-    <section data-testid="hero-section" className="min-h-screen flex items-center justify-center bg-gradient-to-br from-tre-black via-tre-black to-tre-black/95 relative overflow-hidden">
+    <section
+      data-testid="hero-section"
+      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-tre-black via-tre-black to-tre-black/95 relative overflow-hidden"
+    >
       {/* Background glow effect */}
       <div className="absolute inset-0 bg-gradient-radial from-tre-green/10 via-transparent to-transparent" />
 
@@ -21,15 +24,13 @@ export function HeroSection() {
           className="mb-8"
           suppressHydrationWarning
         >
-          <TRELogo
-            className="mx-auto mb-6 animate-glow w-full max-w-[600px] h-auto"
-          />
+          <TRELogo className="mx-auto mb-6 animate-glow w-full max-w-[600px] h-auto" />
         </motion.div>
 
         <motion.h1
           key="hero-title"
           {...animations[1]}
-          className="text-6xl md:text-7xl font-bold text-tre-green font-mono mb-6 tracking-tight"
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-tre-green font-mono mb-6 tracking-tight px-4"
           suppressHydrationWarning
         >
           Total Reality Engineering
@@ -38,7 +39,7 @@ export function HeroSection() {
         <motion.p
           key="hero-description"
           {...animations[2]}
-          className="text-xl md:text-2xl text-tre-white/80 max-w-3xl mx-auto mb-12 leading-relaxed"
+          className="text-lg sm:text-xl md:text-2xl text-tre-white/80 max-w-3xl mx-auto mb-12 leading-relaxed px-4"
           suppressHydrationWarning
         >
           Where imagination meets implementation. We build innovative solutions

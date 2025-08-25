@@ -97,6 +97,8 @@ Automated data refresh via Cloudflare Workers cron triggers:
 
 - **Responsive Design**: Mobile-first approach with Tailwind CSS
 - **Mobile Optimizations**: iPhone-specific viewport handling and status bar styling
+- **Mobile Navigation**: Hamburger menu for mobile devices with smooth animations
+- **Touch-Friendly**: Optimized touch targets and mobile-specific interactions
 - **Logo Scaling**: Responsive SVG logo that scales appropriately on all devices
 - **Smooth Animations**: Framer Motion for engaging interactions
 - **Accessibility**: Proper ARIA labels and keyboard navigation support
