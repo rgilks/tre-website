@@ -14,7 +14,7 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:install": "playwright install",
-    "check": "npm run lint && npm run type-check && vitest --coverage --run",
+    "check": "npm run lint && npm run type-check && vitest --coverage --run && npm run test:e2e",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "nuke": "rm -rf .next .open-next .wrangler node_modules package-lock.json && npm install && npm run dev",

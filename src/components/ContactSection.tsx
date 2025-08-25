@@ -1,6 +1,7 @@
 export function ContactSection() {
   return (
     <section
+      data-testid="contact-section"
       id="contact"
       className="py-16 bg-gradient-to-t from-tre-black to-tre-black/95"
     >

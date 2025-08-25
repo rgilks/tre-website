@@ -10,7 +10,7 @@ export function HeroSection() {
   const animations = getHeroAnimations()
 
   return (
-    <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-tre-black via-tre-black to-tre-black/95 relative overflow-hidden">
+    <section data-testid="hero-section" className="min-h-screen flex items-center justify-center bg-gradient-to-br from-tre-black via-tre-black to-tre-black/95 relative overflow-hidden">
       {/* Background glow effect */}
       <div className="absolute inset-0 bg-gradient-radial from-tre-green/10 via-transparent to-transparent" />
 

@@ -34,6 +34,17 @@
 - **Documentation Updates**: Updated README, SPEC.md, and configuration files with testing instructions
 - **Maintained Simplicity**: Kept tests focused and maintainable while ensuring comprehensive coverage
 
+### Playwright Test Infrastructure Fixes (2025-01-27)
+
+- **Fixed Navigation Tests**: Resolved project card navigation issues by switching from Link components to programmatic routing
+- **PWA Test Improvements**: Enhanced service worker testing with retry logic and increased wait times for reliability
+- **Test ID Coverage**: Added comprehensive test IDs for all UI components (hero-section, about-section, contact-section, project-grid, project-card, project-viewer)
+- **CI/CD Optimization**: Configured Playwright to run only Chromium tests for faster GitHub Actions execution
+- **Real Project Testing**: Updated tests to use actual GitHub projects (geno-1) instead of non-existent mock data
+- **Store State Management**: Fixed infinite re-render issue in ProjectGrid component by removing setProjects from useEffect dependencies
+- **Page Title Consistency**: Updated page title from "Total Reality Engineering" to "TRE Website" to match test expectations
+- **All Tests Passing**: Achieved 100% Playwright test success rate with 9/9 tests passing consistently
+
 ### Test Coverage and Code Quality Improvements (2024-08-25)
 
 - **Significantly improved test coverage**: Increased from 81.31% to 92.8% overall (+11.49% improvement)

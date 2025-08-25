@@ -10,7 +10,6 @@ import { LoadingSkeleton } from './LoadingSkeleton'
 import { ErrorMessage } from './ErrorMessage'
 import { EmptyState } from './EmptyState'
 
-
 interface ProjectGridProps {
   initialProjects: Project[]
 }
@@ -23,7 +22,8 @@ export function ProjectGrid({ initialProjects }: ProjectGridProps) {
     if (projects.length === 0 && initialProjects.length > 0) {
       setProjects(initialProjects)
     }
-  }, [projects.length, initialProjects, setProjects])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projects.length, initialProjects])
 
   if (isLoading) return <LoadingSkeleton />
   if (error)
@@ -33,7 +33,10 @@ export function ProjectGrid({ initialProjects }: ProjectGridProps) {
   if (filteredProjects.length === 0) return <EmptyState />
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div
+      data-testid="project-grid"
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+    >
       {filteredProjects.map((project, index) => (
         <ProjectCard
           key={project.id}

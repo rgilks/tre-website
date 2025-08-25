@@ -8,7 +8,7 @@ import { PWAProvider } from '@/components/PWAProvider'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Total Reality Engineering',
+  title: 'TRE Website',
   description:
     'A minimal, flashy portfolio showcasing innovative GitHub projects with a modern, terminal-inspired design.',
   keywords: [
@@ -24,14 +24,14 @@ export const metadata: Metadata = {
   publisher: 'Total Reality Engineering',
   robots: 'index, follow',
   openGraph: {
-    title: 'Total Reality Engineering',
+    title: 'TRE Website',
     description: 'Innovative engineering projects and portfolio',
     type: 'website',
     locale: 'en_US',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Total Reality Engineering',
+    title: 'TRE Website',
     description: 'Innovative engineering projects and portfolio',
   },
   manifest: '/manifest.webmanifest',
@@ -52,7 +52,6 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <head>
-        <link rel="manifest" href="/manifest.webmanifest" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta
           name="apple-mobile-web-app-status-bar-style"

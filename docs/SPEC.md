@@ -210,9 +210,10 @@ Primary Cache (Cloudflare KV) → Fallback Cache → Direct Fetch
 ### 3. Testing Strategy
 
 - **Unit Tests**: Vitest for component and utility function testing
-- **E2E Tests**: Playwright for cross-browser user journey validation
+- **E2E Tests**: Playwright for cross-browser user journey validation (Chromium only for CI/CD efficiency)
 - **CI/CD Integration**: Automated testing integrated with deployment pipeline
 - **Fail-Fast Approach**: Build fails immediately if any tests fail, ensuring quality
+- **Test Coverage**: 92.8% statement coverage with comprehensive test suite
 
 ## Recent Refactoring Achievements
 
@@ -233,6 +234,14 @@ Primary Cache (Cloudflare KV) → Fallback Cache → Direct Fetch
 - **Focused utilities**: Kept only essential utility functions that are actually used
 - **Removed duplication**: Eliminated redundant code and interfaces
 - **Better test coverage**: Improved test quality and coverage
+
+### 4. Playwright Test Infrastructure
+
+- **Fixed Navigation Tests**: Resolved project card navigation issues using programmatic routing
+- **PWA Test Improvements**: Enhanced service worker and manifest testing with retry logic
+- **Test ID Coverage**: Added comprehensive test IDs for all UI components
+- **CI/CD Optimization**: Configured Playwright to run only Chromium tests for faster CI/CD
+- **Real Project Testing**: Updated tests to use actual GitHub projects instead of mock data
 
 ## Future Enhancements
 

@@ -24,7 +24,7 @@ export function ProjectViewer({ project }: ProjectViewerProps) {
   }
 
   return (
-    <div className="relative w-full h-screen">
+    <div data-testid="project-viewer" className="relative w-full h-screen">
       {/* Header with project info */}
       <div className="absolute top-0 left-0 right-0 z-20 bg-tre-black/90 backdrop-blur-sm border-b border-tre-green/20 p-4">
         <div className="max-w-4xl mx-auto">
