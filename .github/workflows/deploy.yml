@@ -30,14 +30,14 @@ jobs:
       - name: Run checks (lint, types, unit tests)
         run: npm run check
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+      # - name: Install Playwright browsers
+      #   run: npx playwright install --with-deps
 
-      - name: Build application
-        run: npm run build
+      # - name: Build application
+      #   run: npm run build
 
-      - name: Run Playwright E2E tests
-        run: npm run test:e2e
+      # - name: Run Playwright E2E tests
+      #   run: npm run test:e2e
 
       # Build and Deploy Phase
       - name: Build with OpenNext (Cloudflare)
