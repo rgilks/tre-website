@@ -284,11 +284,9 @@ describe('GitHub API', () => {
         { ok: false, status: 404 },
         {
           ok: true,
-          json: vi
-            .fn()
-            .mockResolvedValue({
-              download_url: 'https://example.com/screenshot.png',
-            }),
+          json: vi.fn().mockResolvedValue({
+            download_url: 'https://example.com/screenshot.png',
+          }),
         },
         { ok: false, status: 404 },
       ]
@@ -312,11 +310,9 @@ describe('GitHub API', () => {
         },
         {
           ok: true,
-          json: vi
-            .fn()
-            .mockResolvedValue({
-              download_url: 'https://example.com/screenshot.png',
-            }),
+          json: vi.fn().mockResolvedValue({
+            download_url: 'https://example.com/screenshot.png',
+          }),
         },
       ]
 
@@ -347,6 +343,31 @@ describe('GitHub API', () => {
       const result = await fetchProjectScreenshotsFromGitHub('test-repo')
 
       expect(result).toHaveLength(0)
+    })
+
+    it('should handle errors in catch block and return empty array', async () => {
+      // Test the outer catch block by making SCREENSHOT_PATHS.map throw synchronously
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+      // Create a scenario where the outer catch block is triggered
+      // by temporarily replacing Array.prototype.map to throw
+      const originalMap = Array.prototype.map
+      Array.prototype.map = function (this: unknown[]) {
+        throw new Error('Synchronous error in map')
+      } as typeof Array.prototype.map
+
+      const result = await fetchProjectScreenshotsFromGitHub('test-repo')
+
+      expect(result).toHaveLength(0)
+      // Verify error was logged by the outer catch block
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Error fetching screenshots for test-repo:',
+        expect.any(Error)
+      )
+
+      // Restore
+      Array.prototype.map = originalMap
+      consoleSpy.mockRestore()
     })
   })
 

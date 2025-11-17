@@ -3,7 +3,6 @@
 import { Project } from '@/types/project'
 
 import { ProjectCardHeader } from './ProjectCardHeader'
-// import { ProjectCardTopics } from './ProjectCardTopics'
 import { ProjectCardFooter } from './ProjectCardFooter'
 
 interface ProjectCardProps {
@@ -47,8 +46,6 @@ export function ProjectCard({
             name={project.name}
             description={project.description}
           />
-
-          {/* <ProjectCardTopics topics={project.topics} /> */}
         </div>
 
         <div className="mt-auto pt-6">

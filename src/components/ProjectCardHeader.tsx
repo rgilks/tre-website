@@ -17,7 +17,7 @@ export function ProjectCardHeader({
       </h3>
       <p
         data-testid="project-description"
-        className="text-tre-white/80 text-sm line-clamp-3 leading-relaxed"
+        className="text-tre-white/80 text-sm leading-relaxed"
       >
         {description}
       </p>

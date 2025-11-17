@@ -62,11 +62,7 @@ export const TRELogo: React.FC<TRELogoProps> = ({
         preserveAspectRatio="xMidYMid meet"
       >
         {/* background; remove if you want transparent */}
-        <rect
-          width="100%"
-          height="100%"
-          fill="#000000"
-        />
+        <rect width="100%" height="100%" fill="#000000" />
 
         {/* Original 512x512 artwork - no scaling needed */}
         <g>
@@ -92,12 +88,7 @@ export const TRELogo: React.FC<TRELogoProps> = ({
           />
 
           {/* White circle overlapping the bar */}
-          <circle
-            cx="256"
-            cy="288"
-            r="40"
-            fill="#F5F5F5"
-          />
+          <circle cx="256" cy="288" r="40" fill="#F5F5F5" />
         </g>
       </svg>
     )

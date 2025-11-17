@@ -1,6 +1,10 @@
 export function AboutSection() {
   return (
-    <section data-testid="about-section" id="about" className="py-16 bg-tre-black/95">
+    <section
+      data-testid="about-section"
+      id="about"
+      className="py-16 bg-tre-black/95"
+    >
       <div className="container mx-auto px-4 text-center">
         <h2 className="text-4xl font-bold text-tre-green font-mono mb-8 animate-fade-in">
           About Total Reality Engineering
@@ -23,8 +27,8 @@ export function AboutSection() {
                 className="text-tre-green hover:text-tre-green-dark transition-colors underline"
               >
                 Robert Gilks
-              </a>
-              {' '}partners directly with clients to deliver bespoke interactive
+              </a>{' '}
+              partners directly with clients to deliver bespoke interactive
               experiences, research tools, and production platforms.
             </p>
             <p className="text-sm text-tre-white/60 font-mono">

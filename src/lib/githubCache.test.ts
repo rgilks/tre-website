@@ -99,6 +99,20 @@ describe('GitHubCacheService', () => {
         expect.any(String)
       )
     })
+
+    it('should handle errors when caching projects', async () => {
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      mockKV.put.mockRejectedValueOnce(new Error('KV error'))
+
+      await cacheService.setCachedProjects(mockProjects)
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Error caching projects:',
+        expect.any(Error)
+      )
+
+      consoleSpy.mockRestore()
+    })
   })
 
   describe('clearCache', () => {
@@ -108,6 +122,20 @@ describe('GitHubCacheService', () => {
       expect(mockKV.delete).toHaveBeenCalledTimes(2)
       expect(mockKV.delete).toHaveBeenCalledWith('github_projects')
       expect(mockKV.delete).toHaveBeenCalledWith('github_projects_timestamp')
+    })
+
+    it('should handle errors when clearing cache', async () => {
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      mockKV.delete.mockRejectedValueOnce(new Error('KV delete error'))
+
+      await cacheService.clearCache()
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Error clearing cache:',
+        expect.any(Error)
+      )
+
+      consoleSpy.mockRestore()
     })
   })
 
@@ -136,6 +164,21 @@ describe('GitHubCacheService', () => {
       const result = await cacheService.isCacheValid()
 
       expect(result).toBe(false)
+    })
+
+    it('should handle errors when checking cache validity', async () => {
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      mockKV.get.mockRejectedValueOnce(new Error('KV get error'))
+
+      const result = await cacheService.isCacheValid()
+
+      expect(result).toBe(false)
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Error checking cache validity:',
+        expect.any(Error)
+      )
+
+      consoleSpy.mockRestore()
     })
   })
 })

@@ -145,6 +145,116 @@ describe('Project Store', () => {
     expect(state.filteredProjects[0].language).toBe('TypeScript')
   })
 
+  it('should filter projects by topic', () => {
+    const mockProjects: Project[] = [
+      {
+        id: '1',
+        name: 'React App',
+        fullName: 'user/react-app',
+        description: 'A React application',
+        htmlUrl: 'https://github.com/user/react-app',
+        topics: ['react', 'typescript'],
+        language: 'TypeScript',
+        updatedAt: '2024-01-01T00:00:00Z',
+        createdAt: '2024-01-01T00:00:00Z',
+        isCurrentlyWorking: false,
+      },
+      {
+        id: '2',
+        name: 'Node API',
+        fullName: 'user/node-api',
+        description: 'A Node.js API',
+        htmlUrl: 'https://github.com/user/node-api',
+        topics: ['node', 'javascript'],
+        language: 'JavaScript',
+        updatedAt: '2024-01-02T00:00:00Z',
+        createdAt: '2024-01-01T00:00:00Z',
+        isCurrentlyWorking: false,
+      },
+    ]
+
+    useProjectStore.getState().setProjects(mockProjects)
+    useProjectStore.getState().updateFilters({ topic: 'react' })
+
+    const state = useProjectStore.getState()
+    expect(state.filteredProjects).toHaveLength(1)
+    expect(state.filteredProjects[0].topics).toContain('react')
+  })
+
+  it('should sort projects by created date', () => {
+    const mockProjects: Project[] = [
+      {
+        id: '1',
+        name: 'Project A',
+        fullName: 'user/project-a',
+        description: 'Description A',
+        htmlUrl: 'https://github.com/user/project-a',
+        topics: ['react'],
+        updatedAt: '2024-01-02T00:00:00Z',
+        createdAt: '2024-01-02T00:00:00Z',
+        isCurrentlyWorking: false,
+      },
+      {
+        id: '2',
+        name: 'Project B',
+        fullName: 'user/project-b',
+        description: 'Description B',
+        htmlUrl: 'https://github.com/user/project-b',
+        topics: ['node'],
+        updatedAt: '2024-01-01T00:00:00Z',
+        createdAt: '2024-01-01T00:00:00Z',
+        isCurrentlyWorking: false,
+      },
+    ]
+
+    useProjectStore.getState().setProjects(mockProjects)
+    useProjectStore.getState().updateFilters({
+      sortBy: 'created',
+      sortOrder: 'asc',
+    })
+
+    const state = useProjectStore.getState()
+    expect(state.filteredProjects[0].id).toBe('2')
+    expect(state.filteredProjects[1].id).toBe('1')
+  })
+
+  it('should sort projects by updated date descending', () => {
+    const mockProjects: Project[] = [
+      {
+        id: '1',
+        name: 'Project A',
+        fullName: 'user/project-a',
+        description: 'Description A',
+        htmlUrl: 'https://github.com/user/project-a',
+        topics: ['react'],
+        updatedAt: '2024-01-01T00:00:00Z',
+        createdAt: '2024-01-01T00:00:00Z',
+        isCurrentlyWorking: false,
+      },
+      {
+        id: '2',
+        name: 'Project B',
+        fullName: 'user/project-b',
+        description: 'Description B',
+        htmlUrl: 'https://github.com/user/project-b',
+        topics: ['node'],
+        updatedAt: '2024-01-02T00:00:00Z',
+        createdAt: '2024-01-01T00:00:00Z',
+        isCurrentlyWorking: false,
+      },
+    ]
+
+    useProjectStore.getState().setProjects(mockProjects)
+    useProjectStore.getState().updateFilters({
+      sortBy: 'updated',
+      sortOrder: 'desc',
+    })
+
+    const state = useProjectStore.getState()
+    expect(state.filteredProjects[0].id).toBe('2')
+    expect(state.filteredProjects[1].id).toBe('1')
+  })
+
   it('should clear filters', () => {
     const mockProjects: Project[] = [
       {
@@ -204,5 +314,26 @@ describe('Project Store', () => {
       language: '',
       topic: '',
     })
+  })
+
+  it('should set highlighted project', () => {
+    const mockProject: Project = {
+      id: '1',
+      name: 'Test Project',
+      fullName: 'user/test-project',
+      description: 'A test project',
+      htmlUrl: 'https://github.com/user/test-project',
+      topics: ['test'],
+      updatedAt: '2024-01-01T00:00:00Z',
+      createdAt: '2024-01-01T00:00:00Z',
+      isCurrentlyWorking: false,
+    }
+
+    useProjectStore.getState().setHighlightedProject(mockProject)
+
+    expect(useProjectStore.getState().highlightedProject).toEqual(mockProject)
+
+    useProjectStore.getState().setHighlightedProject(null)
+    expect(useProjectStore.getState().highlightedProject).toBeNull()
   })
 })

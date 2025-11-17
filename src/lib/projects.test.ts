@@ -132,7 +132,7 @@ describe('projects', () => {
     it('should handle both cache and direct fetch errors and return fallback projects', async () => {
       const cacheError = new Error('Cache service failed')
       const fetchError = new Error('GitHub API failed')
-      
+
       mockCacheService.getCachedProjects.mockRejectedValue(cacheError)
       mockFetchGitHubProjects.mockRejectedValue(fetchError)
 

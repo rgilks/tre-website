@@ -171,7 +171,9 @@ describe('CloudflareImageCacheService', () => {
 
       const putCall = mockPut.mock.calls[0]
       const updatedCache = JSON.parse(putCall[1])
-      expect(updatedCache['test-project'].cloudflareIds).toEqual(['existing-id'])
+      expect(updatedCache['test-project'].cloudflareIds).toEqual([
+        'existing-id',
+      ])
     })
 
     it('should handle KV get errors during set operation', async () => {

@@ -20,7 +20,7 @@ header {
 
 /* Ensure TRE green borders work properly */
 .border-tre-green {
-  border-color: #39FF14 !important;
+  border-color: #39ff14 !important;
 }
 
 /* Custom scrollbar */
@@ -62,30 +62,31 @@ svg {
   .w-full {
     width: 100% !important;
   }
-  
+
   .max-w-\[600px\] {
     max-width: 90vw !important;
   }
-  
+
   /* Optimize for iPhone viewport */
   @supports (-webkit-touch-callout: none) {
     .min-h-screen {
       min-height: 100vh;
       min-height: -webkit-fill-available;
     }
-    
+
     /* Fix for iPhone Safari 100vh issue */
     .min-h-screen {
       min-height: -webkit-fill-available;
     }
   }
-  
+
   /* Improve touch targets on mobile */
-  button, a {
+  button,
+  a {
     min-height: 44px;
     min-width: 44px;
   }
-  
+
   /* Better mobile spacing */
   .container {
     padding-left: 1rem;
