@@ -7,15 +7,15 @@ export function AboutSection() {
         </h2>
         <div className="max-w-4xl mx-auto space-y-6">
           <p className="text-xl text-tre-white/80 leading-relaxed">
-            I build innovative solutions that bridge the gap between
-            imagination and reality. Our portfolio showcases cutting-edge
-            projects that demonstrate technical excellence and creative
-            problem-solving.
+            I design systems that pair artistic instincts with disciplined
+            engineering, delivering software that is durable, performant, and
+            delightful to use. Every engagement focuses on solving hard problems
+            with precise execution rather than hype.
           </p>
           <div className="border-t border-tre-green/20 pt-6">
             <p className="text-lg text-tre-white/70 leading-relaxed mb-4">
-              Total Reality Engineering is the personal contracting business of
-              artist and software engineer{' '}
+              Total Reality Engineering is a solo practice where artist and
+              software engineer{' '}
               <a
                 href="https://www.linkedin.com/in/rob-gilks-39bb03/"
                 target="_blank"
@@ -24,7 +24,8 @@ export function AboutSection() {
               >
                 Robert Gilks
               </a>
-              .
+              partners directly with clients to deliver bespoke interactive
+              experiences, research tools, and production platforms.
             </p>
             <p className="text-sm text-tre-white/60 font-mono">
               Founded in Australia in 1998 • Established in the UK in 2008
