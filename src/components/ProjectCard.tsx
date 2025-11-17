@@ -35,25 +35,29 @@ export function ProjectCard({
     <div
       data-testid="project-card"
       data-testid-specific={`project-card-${project.id}`}
-      className={`relative border rounded-lg p-6 overflow-hidden transition-all duration-300 ${borderClass}`}
+      className={`relative border rounded-lg p-6 overflow-hidden transition-all duration-300 flex flex-col ${borderClass}`}
     >
       {/* Screenshot background */}
       <div className="absolute inset-0 -z-10" style={backgroundStyle} />
 
       {/* Content overlay */}
-      <div className="relative z-10">
-        <ProjectCardHeader
-          name={project.name}
-          description={project.description}
-        />
+      <div className="relative z-10 flex h-full flex-col">
+        <div className="space-y-4">
+          <ProjectCardHeader
+            name={project.name}
+            description={project.description}
+          />
 
-        <ProjectCardTopics topics={project.topics} />
+          <ProjectCardTopics topics={project.topics} />
+        </div>
 
-        <ProjectCardFooter
-          updatedAt={project.updatedAt}
-          homepageUrl={project.homepageUrl}
-          htmlUrl={project.htmlUrl}
-        />
+        <div className="mt-auto pt-6">
+          <ProjectCardFooter
+            updatedAt={project.updatedAt}
+            homepageUrl={project.homepageUrl}
+            htmlUrl={project.htmlUrl}
+          />
+        </div>
       </div>
     </div>
   )

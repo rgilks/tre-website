@@ -24,7 +24,7 @@ export function AboutSection() {
               >
                 Robert Gilks
               </a>
-              partners directly with clients to deliver bespoke interactive
+              {' '}partners directly with clients to deliver bespoke interactive
               experiences, research tools, and production platforms.
             </p>
             <p className="text-sm text-tre-white/60 font-mono">
